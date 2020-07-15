@@ -1,0 +1,854 @@
+#+title: NEDR - Named Entity Disambiguation in R
+#+author: Stanislav A. Vlasov
+#+email: stanislav.a.vlasov@gmail.com
+# ------------------------------------------------------------------------------
+Description: file:readme.org
+* Make & Deploy
+#+BEGIN_SRC emacs-lisp :results none
+  ;; tangle source code
+  (org-babel-tangle)
+  ;; run package deployment scripts
+  (let ((org-confirm-babel-evaluate nil))
+        (save-excursion
+          (org-babel-goto-named-src-block "document")
+          (org-babel-execute-src-block)))
+#+END_SRC
+** Package documentation
+:PROPERTIES:
+:ID:       org:g01ja7119ri0
+:END:
+
+#+BEGIN_SRC R :results silent :session :tangle R/andr.r :mkdirp yes
+  #' @details
+  #' AND EVA Algorithm
+  #' This is work in progress. Please, file an issues or suggestion if you have any.
+  #' @keywords internal
+  "_PACKAGE"
+#+END_SRC
+** Set .Rprofile (developer enviroment)
+*** CRAN Packages
+:PROPERTIES:
+:ID:       org:ihcia7119ri0
+:END:
+#+BEGIN_SRC R :results silent :session :tangle no
+  ## --------------------------------------------------------------------------------
+  ## First load default packages getOption("defaultPackages")
+  ## Otherwise it will add it at the end which can mask some funcitons
+  .First.sys()
+
+  ## --------------------------------------------------------------------------------
+  ## Load or Install Packages
+  ## --------------------------------------------------------------------------------
+  for(pkg in c('devtools'
+             , 'roxygen2'
+             , 'xml2'
+             , 'tibble'
+             , 'stringi'
+             , 'stringr'
+             , 'stringdist'
+             , 'digest'
+             , 'magrittr'
+             , 'lubridate'
+             , 'plyr'
+             , 'pipeR'
+             , 'ggplot2'
+             , 'microbenchmark'
+             , 'data.table'
+             , 'dplyr'))
+    if(!require(pkg, character.only = TRUE)) {
+      install.packages(pkg, repos = 'http://cloud.r-project.org')
+      require(pkg, character.only = TRUE)
+    }
+  ## --------------------------------------------------------------------------------
+
+  ## update.packages(ask = FALSE, repos = 'http://cloud.r-project.org')
+
+#+END_SRC
+*** My Packages
+:PROPERTIES:
+:ID:       org:hzuia7119ri0
+:END:
+#+BEGIN_SRC R :results silent :session :tangle .Rprofile
+  ## --------------------------------------------------------------------------------
+  ## Load My pakcages
+  ## --------------------------------------------------------------------------------
+  ## detach(package:romRDS, unload = TRUE)
+  ## remove.packages("romRDS")
+  if (!require("romRDS", character.only = TRUE)) {
+    if(!require("devtools")) {
+      install.packages("devtools"
+                     , repos = 'http://cloud.r-project.org'
+                     , dependencies = TRUE)
+      require("devtools", character.only = TRUE)
+    }
+    install_github("stasvlasov/romRDS")
+    require("romRDS", character.only = TRUE)
+  }
+  ## --------------------------------------------------------------------------------
+#+END_SRC
+** Set up package
+#+name: document
+#+BEGIN_SRC R :results none :tangle no
+
+  .First.sys()
+
+  ## --------------------------------------------------------------------------------
+  ## Load or Install Packages
+  ## --------------------------------------------------------------------------------
+  for(pkg in c('devtools'
+             , 'roxygen2'
+             , 'xml2'
+             , 'tibble'
+             , 'stringi'
+             , 'stringr'
+             , 'stringdist'
+             , 'digest'
+             , 'magrittr'
+             , 'lubridate'
+             , 'plyr'
+             , 'pipeR'
+             , 'ggplot2'
+             , 'microbenchmark'
+             , 'data.table'
+             , 'dplyr'))
+    if(!require(pkg, character.only = TRUE)) {
+      install.packages(pkg, repos = 'http://cloud.r-project.org')
+      require(pkg, character.only = TRUE)
+    }
+  ## --------------------------------------------------------------------------------
+
+  ## Describint package
+  ## --------------------------------------------------------------------------------
+
+  ## Include packages:
+  package.packages <- c(
+      "data.table"
+    , "magrittr"
+    , "stringi"
+    , "stringr"
+    , "tibble"
+    , "xml2"
+    , "dplyr")
+
+  ## Print current packages verstions
+  ## package.packages %>%
+  ##     sapply(function(pkg)
+  ##     paste0(pkg, " (>= ", packageVersion(pkg), ")"), USE.NAMES = FALSE) %>%
+  ##     cat(sep = "\n")
+
+  ## Adjust verstions manually
+  package.packages.man.ver  <- c(
+      "data.table (>= 1.12)"
+    , "magrittr (>= 1.5)"
+    , "stringi (>= 1.4)"
+    , "stringr (>= 1.4)"
+    , "dplyr (>= 0.8)"
+    , "tibble (>= 2.0)"
+    , "xml2 (>= 1.0)"
+  )
+
+  ## make description
+  list(Package = "nedr"
+     , Title  = "NEDR - Named Entity Disambiguation in R"
+     , Description = "NEDR - Named Entity Disambiguation in R"
+     , `Authors@R` = c(person(given = c("Stanislav" ,"A.") , family = "Vlasov"
+                     , email = "stanislav.a.vlasov@gmail.com"
+                     , role = c("aut", "cre"))
+              , person(given = c("Olmo", "R."), family = "van den Akker"
+                     , email = "ovdakker@gmail.com"
+                     , role = "aut")
+              , person(given = "Sacha", family = "Epskamp"
+                     , email = "sacha.epskamp@gmail.com"
+                     , role = "aut"))
+     , Imports = paste(package.packages.man.ver
+                     , collapse = ", ")
+     , Depends = "R (>= 3.4)"
+     , Version = "0.02"
+     , Date = Sys.Date()) %>% use_description()
+
+  use_lgpl_license(name = "Stanislav Vlasov")
+
+  use_tidy_description()
+
+  ## ----------------------------------------------------------------------------
+  ## Update name spaces and documentation for functions
+  roxygenise()
+
+
+  ## This function is a wrapper for the ‘roxygen2::roxygenize()’ but also load the package
+  ## document()
+
+  ## ----------------------------------------------------------------------------
+  ## Set up TestThat
+  usethis::use_testthat()
+#+END_SRC
+** Deploy package
+#+BEGIN_SRC R :results silent :tangle no
+  ## Deploy
+  ## --------------------------------------------------------------------------------
+  install(".")
+
+  install_github("stasvlasov/andr")
+
+  ## Test
+  ## --------------------------------------------------------------------------------
+  library("andr")
+
+  ## Remove
+  ## --------------------------------------------------------------------------------
+  detach(package:and, unload = TRUE)
+  remove.packages("andr")
+
+#+END_SRC
+
+
+
+* Functions
+** nedr.read
+:PROPERTIES:
+:ID:       org:1p6ja7119ri0
+:END:
+#+BEGIN_SRC R :results silent :session :tangle R/disambr.r :mkdirp yes
+  ##' Stops process unless cond is true
+  ##' @param cond 
+  ##' @param message.if.false 
+  ##' @param stop.if.false 
+  ##' @param return.if.true 
+  ##' @param return.if.false 
+  ##' @inheritDotParams 
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @export 
+  stop.unless <- function(cond
+                        , message.if.false = paste("cond in not TRUE")
+                        , stop.if.false = TRUE
+                        , return.if.true = TRUE
+                        , return.if.false = isFALSE(return.if.true)) {
+      if(isTRUE(cond)) {
+          return(return.if.true)
+      } else if(isTRUE(stop.if.false)){
+          stop(message.if.false, call. = FALSE)
+      } else {
+          warning(message.if.false, call. = FALSE)
+          return(return.if.false)
+      }
+  }
+
+
+  ##' Returns vector of file paths from path(s) recursively
+  ##' @param files.path Path(s) where the files are
+  ##' @param recursive Whether to look in subfolders recursively
+  ##' @return Vector of file paths from path(s) recursively
+  ##' 
+  ##' @md
+  ##' @importFrom magrittr %>%
+  ##' @export 
+  parse.files.path <- function(files.path, recursive = TRUE) {
+      stop.unless(is.character(files.path), "Files path shoud be a character string!")
+      lapply(files.path, function(file.path) {
+          if(stop.unless(file.exists(file.path)
+                       , paste(file.path, " - does not exist!")
+                       , stop.if.false = FALSE
+                       , return.if.true = FALSE)) {
+              NULL
+          } else if(dir.exists(file.path)) {
+              dir(file.path
+                , full.names = TRUE
+                , recursive = recursive)
+          } else {
+              file.path
+          }
+      }) %>% unlist %>% normalizePath %>% unique
+  }
+
+  ##' Reads all the data
+  ##' @param files.path anything goes
+  ##' @inheritDotParams 
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @export 
+  disambr.read <- function(files.path) {
+      files.path <- parse.files.path(files.path)
+      lapply(files.path, disambr.read.file)
+  }
+
+
+  disambr.read.file <- function(f) {
+      f.extention <- tools::file_ext(f)
+      switch(f.extention
+           , "tsv" = disambr.read.tsv(f)
+             ## here we can add reading from .txt wos files
+           , "txt" = disambr.read.tsv(f)
+           , message("No procedure is defined for the extention: ", f.extention
+                   , "\n\\->Skipping file: ", f))
+  }
+
+
+  disambr.read.tsv <- function(f) {
+      ## check tsv file type base on first line
+      first.line <- readLines(f, n = 1
+                            , warn = FALSE
+                            , skipNul = TRUE)
+      header <- parse.tsv.wos.header(first.line)
+      if(!isFALSE(header)) {
+          disambr.read.tsv.wos(f, header)
+      } else {
+          ## here we can add more tsv types
+          NULL
+      } %>% return()
+  }
+
+  parse.tsv.wos.header <- function(first.line) {
+      header <- stri_split_fixed(first.line, "\t")[[1]]
+      if( ## check if at least 10 fields two big letters
+          sum(stri_detect_regex(header, "^[A-Z0-9]{2}$")) > 10 &&
+          ## check if main fields are present
+          all(c('AU', 'TI') %in% header)) {
+          stri_extract_first_regex(header, "[A-Z0-9]{2}")
+      } else {FALSE}
+  }
+
+
+  disambr.read.tsv.wos <- function(f, header) {
+      s <- read.to.utf8(f)
+      s <- recode.return.characters(s, f)
+      dat <- fread(text = s
+                 , skip = 1
+                 , strip.white = TRUE
+                 , header = FALSE
+                 , col.names = header
+                 , select = 1:length(header)
+                   ## , colClasses = rep("character", length(header))
+                 , quote=""
+                 , keepLeadingZeros = FALSE
+                 , encoding = "UTF-8"
+                 , sep = "\t")
+      dat$AU <- disambr.read.tsv.wos.parse.AU(dat$AU)
+      ## set attrib (file, funcall, meanning of the fields and data scheme)
+      attributes(dat)$disambr.read.call <- "disambr.read.tsv.wos"
+      attributes(dat)$disambr.read.file.md5 <- tools::md5sum(f)
+      attributes(dat)$disambr.set.unit <- "publication"
+      attributes(dat)$disambr.set.unit.ids.self <- TRUE
+      return(dat)
+  }
+
+
+
+  disambr.read.tsv.wos.parse.AU <- function(au) {
+      au <- stri_split_fixed(au, ";")
+      parse.a <- function(a) {
+          a <- stri_trim(a)
+          last.name <- stri_extract_first_regex(a, "^.+(?=,)")
+          initials <- stri_extract_first_regex(a, "(?<=, )[A-Z]+")
+          mapply(function(x, y) list(initials = x, last.name = y)
+               , initials
+               , last.name
+               , SIMPLIFY = FALSE
+               , USE.NAMES = FALSE)
+      }
+      lapply(au, parse.a)
+  }
+
+
+
+  read.to.utf8 <- function(f, bytes.to.check = 2^14) {
+      ## read file as raw bytes (not to Assume any encodings)
+      bin <- readBin(f, raw(), n = file.size(f))
+      ## check first 2^14 bytes for encoding
+      encoding <- stringi::stri_enc_detect2(bin[1:bytes.to.check])[[1]][[1]][1]
+      if(is.na(encoding)) {
+          message("Could not detect encoding of file: ", f)
+          s <- rawToChar(bin, multiple = FALSE)
+      } else if(!(encoding %in% iconvlist())) {
+          message("Does not know how to convert from ", encoding, "for file: ", f)
+      } else if(encoding == "UTF8") {
+          s <- rawToChar(bin, multiple = FALSE)
+      } else {
+          ## message("Converting to utf-8")
+          s <- iconv(list(NULL, bin), from = encoding, to = "UTF-8")
+      }
+      return(s)
+  }
+
+  ## stringi::stri_enc_detect2(NULL)[[1]][[1]][1]
+  ## stringi::stri_enc_detect2(NA)[[1]][[1]][1]
+  ## stringi::stri_enc_detect2(123)[[1]][[1]][1]
+  ## stringi::stri_enc_detect2("")[[1]][[1]][1]
+  ## stringi::stri_enc_detect2("sadf")[[1]][[1]][1]
+
+  recode.return.characters <- function(s, assoc.file = NA) {
+      has.return.chars <- function(s, test.first.n.char = 10^4) {
+          s <- stri_sub(s, to = test.first.n.char)
+          any(stri_detect_regex(s, "\\r"))
+      }
+      if(has.return.chars(s)) {
+          message("'\\r' characters in the file: ", assoc.file
+                , "\n Removing to fix 'datatable::fread'")
+          s <- stri_replace_all_regex(s, "\\R+", "\n")
+      }
+      return(s)
+   }
+
+  ##' Returns sets of people ids that are defenetely different based on co-authorship
+  ##' @param sets 
+  ##' @param procedures 
+  ##' @inheritDotParams 
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @importFrom magrittr %>%
+  ##' @import magrittr data.table dplyr stringr
+  ##' @export 
+  disambr.get.different.authors <- function(sets, procedures = NULL) {
+      if(!is.list(sets)) stop("sets should be list!")
+      new.set <- sets %>%
+          extract(sapply(.,attr, "disambr.set.unit") == "publication") %>%
+          data.table::rbindlist(fill=TRUE) %>%
+          ## extract2(1) %>%
+          ## TODO: implement extraction from different data type
+          extract2("AU") %>%
+          lapply(length) %>%
+          lapply(seq) %>%
+          {mapply(function(x,y) lapply(x, function(x) c(y,x))
+                , ., 1:length(.)
+                , SIMPLIFY = FALSE)}
+      ## set set's attributes
+      attributes(new.set)$disambr.set.unit <- "person"
+      attributes(new.set)$disambr.set.unit.ref.md5 <- digest(sets[[1]], "md5")
+      return(c(sets, list(new.set)))
+  }
+
+
+  ##' Returns set of people with similar initials
+  ##' @param sets 
+  ##' @param procedures 
+  ##' @inheritDotParams 
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @importFrom magrittr %>%
+  ##' @import magrittr data.table dplyr stringr
+  ##' @export 
+  disambr.get.similar.initials <- function(sets, procedures = NULL) {
+      ## sapply(sets,attr, "disambr.set.unit")
+      set.different.authors <-
+          sets %>%
+          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
+          extract2(1) ## %>% extract(1:3)
+          ## sets$different.authors## [1:3]
+      set.data <-sets %>%
+          extract(sapply(.,attr, "disambr.set.unit") == "publication") %>%
+          data.table::rbindlist(fill=TRUE) 
+          ## sets$data[[1]]
+      ## procedurs
+      get.initials.by.address <- function(address) {
+          set.data$AU[[address[1]]][[address[2]]][["initials"]]
+      }
+      subset.similar.initials <- function(comb) {
+          a <- set.different.authors[[comb[1]]]
+          b <- set.different.authors[[comb[2]]]
+          expand.grid(a, b)
+      }
+      new.set <- combn(1:length(set.different.authors), 2
+                 , simplify = FALSE
+                 , FUN = subset.similar.initials) %>%
+          data.table::rbindlist() %>% 
+          dplyr::mutate(initials.dist = stringdist(sapply(Var1, get.initials.by.address)
+                                                 , sapply(Var2, get.initials.by.address)
+                                                 , method = "lv")) %>%
+          dplyr::filter(initials.dist < 2)
+          attributes(new.set)$disambr.set.unit <- "similar.initials"
+          return(c(sets, list(new.set)))
+  }
+
+
+  ##' Returns set of people with similar last names
+  ##' @param sets 
+  ##' @param procedures 
+  ##' @inheritDotParams 
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @importFrom magrittr %>%
+  ##' @import magrittr data.table dplyr stringr
+  ##' @export 
+  disambr.get.similar.last.names <- function(sets, procedures = NULL) {
+      ## TODO: extract teh set that we need here (person, dyads)
+      set.similar.initials <- sets %>%
+          extract(sapply(.,attr, "disambr.set.unit") == "similar.initials") %>%
+          extract2(1) ## %>% extract(1:3)
+      ## sets[['similar.initials']]
+      set.data <-sets %>%
+          extract(sapply(.,attr, "disambr.set.unit") == "publication") %>%
+          data.table::rbindlist(fill=TRUE) 
+      get.attrib.by.address <- function(address, attrib) {
+          set.data$AU[[address[1]]][[address[2]]][[attrib]]
+      }
+      set.similar.initials %>%
+          ## {print(names(.))} %>% 
+          dplyr::mutate(last.name.dist =
+                        stringdist(sapply(Var1, get.attrib.by.address, "last.name")
+                                 , sapply(Var2, get.attrib.by.address, "last.name")
+                                 , method = "dl"))
+  }
+
+
+#+END_SRC
+
+#+BEGIN_SRC R :results none :session :tangle no
+
+  my.dir <- '../data'
+  my.dir.small <- '../data/Journals in Mathematical Psychology'
+  my.dir.large <- '/mnt/md5/data/wos/wos-sci-expanded.firm-names-query.analytical-instruments'
+  my.dir.huge <- '/mnt/md5/data/wos'
+
+  my.file <- '../data/Journals in Mathematical Psychology/Applied Psychological Measurement.txt' 
+  my.file1 <- "/mnt/md5/data/wos/wos-sci-expanded.firm-names-query.analytical-instruments/LN Public NAICS records from 10001 to 10500.txt"
+  my.files <-
+      c('../data/Journals in Mathematical Psychology/Applied Measurement in Education.txt'
+      , '../data/Journals in Mathematical Psychology/Applied Psychological Measurement.txt')
+
+
+  ## ----------------------------------------------------------------------------
+
+  my.dat <- nedr.read(my.dir)
+
+  my.dat <- nedr.read(my.file)
+
+  my.dat <- nedr.read("../data/new_export")
+
+  my.dat[[1]]$AU[1:4]
+
+
+  my.dat %>%
+      disambr.get.different.authors
+
+
+
+  dat <- nedr.read(my.file)
+
+  dat %>% extract(1) %>% disambr.get.different.authors
+
+
+
+  dat %>% 
+      disambr.get.different.authors %>% 
+      disambr.get.similar.initials %>%
+      disambr.get.similar.last.names
+
+
+  disambr.eva <- function(data) {
+      data %>% 
+          disambr.get.different.authors %>% 
+          disambr.get.similar.initials %>%
+          disambr.get.similar.last.names
+  }
+
+  ## Usage
+  disambr.eva(data)
+
+
+  disambr.get.different.authors <- disambr.define.procedure(data %>% 
+                                                            get(publication) %>%
+                                                            for.each %>%
+                                                            get(person = author))
+
+  ## or
+  disambr.get.different.authors <- disambr.define.procedure(data$
+                                                            publication$
+                                                            person(author))
+
+
+
+
+
+  list(data = my.dat
+     , similar.initials = set.similar.initials) %>% 
+      disambr.get.similar.last.names
+
+
+  set.different.authors <- disambr.get.different.authors(my.dat)
+
+  set.similar.initials <- 
+      list(data = my.dat
+         , different.authors = set.different.authors) %>% 
+      disambr.get.similar.initials
+
+
+
+
+
+#+END_SRC
+
+#+BEGIN_SRC R :results none :session :tangle tests/testthat/test.stop.unless.r :mkdirp yes
+test_that("stop.unless", {
+      expect_warning(stop.unless(FALSE, "Lala", FALSE))
+      expect_error(stop.unless(FALSE))
+      expect_true(stop.unless(TRUE))
+      expect_false(stop.unless("sdfasdf", stop.if.false = FALSE))
+      expect_true(stop.unless("sdfasdf", stop.if.false = FALSE, return.if.true = FALSE))
+  })
+#+END_SRC
+
+#+BEGIN_SRC R :results none :session :tangle tests/testthat/test.parse.files.path.r :mkdirp yes
+    test_that("parse.files.path", {
+          expect_error(parse.files.path(3423))
+          expect_warning(parse.files.path(c(".", "gibirish file")))
+          expect_is(parse.files.path("."), "character")
+          ## empty dirs
+          tmp.dir <- "test_dir_for_parse.files.path"
+          dir.create(tmp.dir, showWarnings = FALSE)
+          expect_equal(parse.files.path(tmp.dir), character(0))
+          file.remove(tmp.dir)
+      })
+
+#+END_SRC
+
+Testing help
+#+BEGIN_SRC R :results none :session :tangle no
+  options(browser="firefox")
+  help(sum, help_type = "html")
+#+END_SRC
+
+
+*** get.file.extension                                               :util:
+:PROPERTIES:
+:ID:       org:5dtbqwb0wri0
+:END:
+
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+## my own file.extention extractor
+get.file.extension <- function(f) {
+    if(length(f) == 1) {
+        if(is.character(f)) {
+            f %>% basename %>% 
+                stri_split_fixed(".") %>% 
+                extract2(1) %>%
+                extract(ifelse(length(.) == 1, NA, length(.))) %>%
+                ifelse(is.na(.), "", .)
+        } else if(is.na(f)) {
+            NA
+        }
+    } else {
+        NULL
+    }
+}
+
+get.file.extension(my.file)
+get.file.extension(my.file1)
+get.file.extension("sdfsdf....")
+get.file.extension("sdf")
+get.file.extension("")
+get.file.extension(NULL)
+get.file.extension(NA)
+get.file.extension("...sdf...sdf.df...sd.")
+get.file.extension(".")
+get.file.extension(".....")
+
+## build in
+file_ext(my.file)
+file_ext(my.file1)
+file_ext("sdfsdf....")
+file_ext("sdf")
+file_ext("")
+file_ext(NULL)
+file_ext(NA)
+file_ext("...sdf...sdf.df...sd.")
+file_ext(".")
+file_ext(".....")
+#+END_SRC
+
+
+*** experiments with read.wos
+
+#+BEGIN_SRC R :results none :session :tangle no
+  ## ------------------------------------------------------------------------------------
+  ## Script that loads and refine raw data
+  ## ------------------------------------------------------------------------------------
+
+  ## Setting session ----
+  rm(list = ls())
+  setwd("/Users/Stan/Cloud/ECKM-15/Analysis in R")
+  options(java.parameters = "-Xmx2g")  # Otherwise will be an error of few memory when reading big xlsx files
+
+  ## Loading required packages ----
+  library("xlsx")
+  library("data.table")
+  library(XML)
+  ## library('pander')
+
+  ## ------------------------------------------------------------------------------------
+                # Reading list of data folders ----
+  Data <- list(Folders = read.csv("/Users/Stan/Cloud/Data/Data List.csv"
+                                       , stringsAsFactors = F))
+
+
+
+  ## ------------------------------------------------------------------------------------
+  ## TODO Reading list of WoS conferences ----
+  ## TODO folder paths as variables in headings
+  ## TODO Varaibles lables
+  ## WoSConf <- read.xlsx2("/Users/Stan/Google Drive/ECKM'15/science-confs-1990-2014-dec.xlsx"
+  ##                      , 1
+  ##                      , header = TRUE)
+
+
+  ## ------------------------------------------------------------------------------------
+  ## Reading Proceedigs and Other Publications Data
+
+  ### Reading contents of folders ----
+  Data$Files.Pub <- list.files(Data$Folders$Folder.Path[Data$Folders$Type %in% c("Proceedings", "Publications")]
+                                , full.names = T
+                                , pattern = ".*\\.txt$")
+
+  ### Reading files and combinng into the single datafame ----
+
+  Pub <- lapply(Data$Files.Pub[1:30]
+                , function(x) {
+                  print(paste0(round(100 * which(Data$Files.Pub == x) / length(Data$Files.Pub), 0)
+                               ,"% - Reading ", which(Data$Files.Pub == x), "th file from total ", length(Data$Files.Pub)
+                               , " files. Time: ", Sys.time()))
+
+
+                  data.table(File = x
+                             , ReadedTime = Sys.time()
+                             , read.table(x
+                                          , header = F
+                                          , sep = "\t"
+                                          , fileEncoding = "UTF-16LE"
+                                          , fill = T
+                                          , quote = ""
+                                          , comment.char=""
+                                          , skip = 1
+                                          , allowEscapes = T
+                                          , stringsAsFactors = F))
+                })
+
+
+  Pub <- rbindlist(Pub)
+
+  ## Name the variables ----
+  ## Getting field names from some random file in list Data$Files.Pub
+  setnames(Pub, c("File"
+                  , "Added"
+                  , as.character(read.table(Data$Files.Pub[sample(1:length(Data$Files.Pub), 1)]
+                                            , nrows = 1
+                                            , header = F
+                                            , sep = "\t"
+                                            , fileEncoding = "UTF-16",
+                                            , stringsAsFactors = F))
+                  , "Empty"))
+
+  ## Read variables and discription from file (http://images.webofknowledge.com/WOK46/help/DII/h_fieldtags.html)
+  Data$Names.Pub <- readHTMLTable(Data$Folders$Folder.Path[Data$Folders$Data.Name == "Names.Pub"], trim = TRUE)[[2]]
+  names(Data$Names.Pub) <- c("Tag", "Name")
+
+  #### MAYBE Make human names
+  names(Pub)[!(names(Pub) %in% Data$Names.Pub$Tag)]
+
+
+  ### Coding samples of publications data from data list ----
+  Pub <- cbind(Data.Name = as.factor(Data$Folders$Data.Name[match(as.factor(sub("/[^/]*$","", Pub$File))
+                                                                       , Data$Folders$Folder.Path)])
+               , Pub)
+
+
+  ## Saving raw data
+  save(Pub, file = paste0("RData/Raw publications - ",Sys.Date(),".RData"))
+
+  ## Filtering excessive fields and saving data
+  Pub <- Pub[,.(Data.Name, PT, AU, AF, LA, DT, CT, CY, HO, CL, SP, C1, RP, FU, TC, PD, PY, UT)]  #  .() is alias for list() in datatables
+  save(Pub, file =  paste0("RData/Publications set - ",Sys.Date(),".RData"))
+
+
+  ## In case I want to do semantic networks
+  ## DE                              #  Author Keywords
+  ## ID                               #  Keywords Plus®
+  ## WC                        # Web of Science Category
+  ## SC                              # Subject Category
+
+  ## In case I want to do citation analysis
+  ## TI
+  ## CR                             # Cited References
+  ## NR                         # Cited Reference Count
+
+
+  ## ------------------------------------------------------------------------------------
+                # Reading Patent Data
+
+  ## rm(Pub)
+
+  ## Reading contents of folders ----
+  Data$Files.Pat <- list.files(Data$Folders$Folder.Path[Data$Folders$Type %in% c("Patents")]
+                                     , full.names = T
+                                     , pattern = ".*\\.txt$")
+
+  ## Reading files and combinng into the single datafame ----
+
+  ## Function "fread" fails for some files in the list because they are proceedigs.. 
+  ## I do not understand how it happent but these proceedings are in Pub table already
+  ## Files that fail: Data$Files.Pat[c(484, 1394, 1832, 2176, 2415, 2579, 2587)]
+  ## I use fread for speed..
+
+  Data$Files.Pat <- Data$Files.Pat[-c(484, 1394, 1832, 2176, 2415, 2579, 2587)]
+
+  Pat <- lapply(Data$Files.Pat[1:30]
+                     , function(x) {
+                       print(paste0(round(100 * which(Data$Files.Pat == x) / length(Data$Files.Pat), 0)
+                                    ,"% - Reading ", which(Data$Files.Pat == x), "th file from total ", length(Data$Files.Pat)
+                                    , " files. Time: ", Sys.time()))
+                       data.table(File = x
+                                  , Readed.Time = Sys.time()
+                                  , fread(x
+                                          , colClasses = rep("character", 24)
+                                          , showProgress = F
+                                          , verbose = F))
+                     })
+
+  Pat <- rbindlist(Pat)  # This sould be much faster than rbind
+
+
+  ## TODO Name the variables
+  ## Getting field names from some random file in list Data$Files.Pat
+  setnames(Pat, c("File"
+                  , "Added"
+                  , gsub(" ","", as.character(fread(Data$Files.Pat[sample(1:length(Data$Files.Pat), 1)]
+                                                    , nrows = 1
+                                                    , header = F)))))
+
+  ## Read variables and discription from file (http://images.webofknowledge.com/WOK46/help/DII/h_fieldtags.html)
+  Data$Names.Pat <- readHTMLTable(Data$Folders$Folder.Path[Data$Folders$Data.Name == "Names.Pat"], trim = TRUE)[[4]]
+  names(Data$Names.Pat) <- c("Tag", "Name")
+
+  ## MAYBE Make human names
+  names(Pat)[!(names(Pat) %in% Data$Names.Pat$Tag)]
+
+
+  ## Coding samples of patents data from data list ----
+  Pat <- cbind(Data.Name = as.factor(Data$Folders$Data.Name[match(as.factor(sub("/[^/]*$","", Pat$File))
+                                                                       , Data$Folders$Folder.Path)])
+               , Pat)
+
+  ## Saving raw data
+  save(Pat, file = paste0("RData/Raw patents - ",Sys.Date(),".RData"))
+
+  ## Filtering excessive fields and saving data
+  Pat <- Pat[,.(Data.Name, PN, AU, AE, GA, AD, PI)]
+  save(Pat, file =  paste0("RData/Patents set - ",Sys.Date(),".RData"))
+
+  ## Fields for citations analysis
+  ## TI
+  ## 20  CP                                      Cited Patent(s)
+  ## 21  CR                                     Cited Article(s)
+
+  ### Fields for classes and coveradge analysis
+  ## 11  DC                                Derwent Class Code(s)
+  ## 12  MC                               Derwent Manual Code(s)
+  ## 13  IP                  International Patent Classification
+  ## 18  DS                                    Designated States
+
+#+END_SRC
+** nedr.disambiguate
+** nedr.graph

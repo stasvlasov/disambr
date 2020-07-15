@@ -1,0 +1,264 @@
+#+title: Author Name Disambiguation
+#+author: Stanislav A. Vlasov
+#+email: stanislav.a.vlasov@gmail.com
+# ------------------------------------------------------------------------------
+
+The creation of co-authorship networks is a valuable way to depict the social structure of scientific fields. However, these co-authorship networks often get distorted because of the problems of author name synonymy (the same author is split into two nodes because his name is spelled differently in different publications) and author name homonymy (different authors are compounded into one node because they share the same name). The practice of author name disambiguation (AND) tries to solve these problems by correctly identifying the authors of scientific articles.
+
+Several algorithms have been put forward in the context of AND, but none of them are suitable for large datasets of the Web of Science database. Therefore, in an earlier part of this project we proposed a new unsupervised learning algorithm based on the most recent AND literature. This so-called AE- algorithm involves two phases: a blocking phase, in which pairs of authors are selected that are sufficiently similar, and a disambiguation phase, in which similar author names are either split or combined into one node based on information retrieved from the Web of Science database. In the disambiguation phase, the algorithm uses information about co-authorship, e-mail addresses, institutional affiliations, cited references, and article keywords.
+
+* Installation
+#+BEGIN_SRC R
+  ## Installs devtools it if not yet installed
+  if (!require("devtools")) install.packages("devtools", repos = 'http://cloud.r-project.org')
+
+  ## Installs and loads andr
+  devtools::install_github("stasvlasov/andr")
+  library("andr")
+#+END_SRC
+
+* Design principles
+
+Thoughts on data structures:
+- The procedure should return sets (e.g., same person sets, different person sets, other probability of being the same person sets)
+- Each basic operation takes sets and returns a new adjusted sets (this is a key to modular design)
+- List of sets from basic operations will be then merged (using sets algebra) according to specific algorithm that will return final sets.
+- Initial input should be in the form of a list of initial sets (the simplest input is one set with every person assumed to be different)
+- Person is a basic unit. These units can be created from data (i.e., person ids assignments)
+- Everything else are person attributes (i.e., it is basically table(s) of links and optional table of attributes)
+- When reading data (person id assignment) try to do as many sets as possible on a fly
+- Do not create persons from data until it is not needed (implement lazy data processing)
+- Using these output sets return adjusted networks (igraphs)
+
+
+
+* Objects naming convention
+- All functions should have a verb
+- Variables should not have a verb
+- Everything that is available to user should start with "and" (i.e., package name)
+- Internal functions and variables does not have to have this prefix
+  
+* Web of Science Field Tags 2018-06-27
+https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Science-Core-Collection-List-of-field-tags-in-output?language=en_US
+
+| FN | File Name                                                |
+| VR | Version Number                                           |
+| PT | Publication Type (J=Journal; B=Book; S=Series; P=Patent) |
+| AU | Authors                                                  |
+| AF | Author Full Name                                         |
+| BA | Book Authors                                             |
+| BF | Book Authors Full Name                                   |
+| CA | Group Authors                                            |
+| GP | Book Group Authors                                       |
+| BE | Editors                                                  |
+| TI | Document Title                                           |
+| SO | Publication Name                                         |
+| SE | Book Series Title                                        |
+| BS | Book Series Subtitle                                     |
+| LA | Language                                                 |
+| DT | Document Type                                            |
+| CT | Conference Title                                         |
+| CY | Conference Date                                          |
+| CL | Conference Location                                      |
+| SP | Conference Sponsors                                      |
+| HO | Conference Host                                          |
+| DE | Author Keywords                                          |
+| ID | Keywords Plus®                                           |
+| AB | Abstract                                                 |
+| C1 | Author Address                                           |
+| RP | Reprint Address                                          |
+| EM | E-mail Address                                           |
+| RI | ResearcherID Number                                      |
+| OI | ORCID Identifier (Open Researcher and Contributor ID)    |
+| FU | Funding Agency and Grant Number                          |
+| FX | Funding Text                                             |
+| CR | Cited References                                         |
+| NR | Cited Reference Count                                    |
+| TC | Web of Science Core Collection Times Cited Count         |
+| Z9 | Total Times Cited Count*                                 |
+| U1 | Usage Count (Last 180 Days)                              |
+| U2 | Usage Count (Since 2013)                                 |
+| PU | Publisher                                                |
+| PI | Publisher City                                           |
+| PA | Publisher Address                                        |
+| SN | International Standard Serial Number (ISSN)              |
+| EI | Electronic International Standard Serial Number (eISSN)  |
+| BN | International Standard Book Number (ISBN)                |
+| J9 | 29-Character Source Abbreviation                         |
+| JI | ISO Source Abbreviation                                  |
+| PD | Publication Date                                         |
+| PY | Year Published                                           |
+| VL | Volume                                                   |
+| IS | Issue                                                    |
+| SI | Special Issue                                            |
+| PN | Part Number                                              |
+| SU | Supplement                                               |
+| MA | Meeting Abstract                                         |
+| BP | Beginning Page                                           |
+| EP | Ending Page                                              |
+| AR | Article Number                                           |
+| DI | Digital Object Identifier (DOI)                          |
+| D2 | Book Digital Object Identifier (DOI)                     |
+| PG | Page Count                                               |
+| P2 | Chapter Count (Book Citation Index)                      |
+| WC | Web of Science Categories                                |
+| SC | Research Areas                                           |
+| GA | Document Delivery Number                                 |
+| UT | Accession Number                                         |
+| PM | PubMed ID                                                |
+| ER | End of Record                                            |
+| EF | End of File                                              |
+
+* Existing tools for reading WoS data
+| name             | comments                                                   |
+|------------------+------------------------------------------------------------|
+| bibliometrix     | reads only plaintext format into bibliometrixDB object     |
+| wosr             | Requires WoS API subscription                              |
+| refsplitr        | package ‘refsplitr’ is not available (for R version 4.0.1) |
+| read.wos.R       | Does not work...                                           |
+| metagear         | scrape_bibliography by DOI                                 |
+| hindexcalculator | ?                                                          |
+
+** bibliometrix
+:PROPERTIES:
+:ID:       org:pfjja7119ri0
+:END:
+https://github.com/massimoaria/bibliometrix
+
+Site: https://bibliometrix.org/index.html
+
+#+BEGIN_SRC shell
+  git clone https://github.com/massimoaria/bibliometrix
+#+END_SRC
+
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+  install.packages("bibliometrix")
+  library("bibliometrix")
+  library("magrittr")
+
+
+  bmdata <- convert2df(file = 'https://www.bibliometrix.org/datasets/wos_plaintext.txt', dbsource = 'wos', format = "plaintext")
+
+
+  bmdata %>% class
+  ## [1] "data.frame"     "bibliometrixDB"
+
+  bmdata %>% names
+
+
+  bmdata <- convert2df(file = 'https://www.bibliometrix.org/datasets/wos_plaintext.txt', dbsource = 'wos', format = "csv")
+#+END_SRC
+
+** metagear
+:PROPERTIES:
+:ID:       org:6apja7119ri0
+:END:
+
+CRAN docs: https://cran.r-project.org/web/packages/metagear/metagear.pdf
+
+GitHub: https://github.com/cran/metagear/
+#+BEGIN_SRC shell
+  git clone https://github.com/cran/metagear/
+#+END_SRC
+
+
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+  scrape_bibliography
+#+END_SRC
+
+** BibPlots
+CRAN docs: https://cran.r-project.org/web/packages/BibPlots/BibPlots.pdf
+
+Paper: https://arxiv.org/pdf/1905.09095.pdf
+
+** hindexcalculator
+CRAN docs:  https://cran.r-project.org/web/packages/hindexcalculator/hindexcalculator.pdf
+** refsplitr
+:PROPERTIES:
+:ID:       org:fztja7119ri0
+:END:
+
+#+BEGIN_SRC shell
+ git clone https://github.com/ropensci/refsplitr
+#+END_SRC
+
+
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+  install.packages("refsplitr")
+  library("refsplitr")
+#+END_SRC
+
+
+** wosr
+:PROPERTIES:
+:ID:       org:fx0ka7119ri0
+:END:
+
+Requires premium WoS API - https://clarivate.com/webofsciencegroup/solutions/xml-and-apis
+
+CRAN doc: https://cran.r-project.org/web/packages/wosr/wosr.pdf
+
+Site: https://github.com/vt-arc/wosr
+
+GitHub: https://github.com/vt-arc/wosr
+#+BEGIN_SRC shell
+ git clone https://github.com/vt-arc/wosr
+#+END_SRC
+
+
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+  install.packages("wosr")
+  library(wosr)
+
+  ## Get session ID
+  sid <- auth("s.vlasov@tilburguniversity.edu", password = "")
+  ## Error: No matches returned for Username s.vlasov@tilburguniversity.edu
+
+  ## Query WoS to see how many results match your query
+  query <- 'TS = ("animal welfare") AND PY = (2002-2003)'
+  query_wos(query, sid = sid)
+
+  ## Download data
+  pull_wos(query, sid = sid)
+#+END_SRC
+
+** read.wos.R
+:PROPERTIES:
+:ID:       org:9d6ka7119ri0
+:END:
+GitHub: https://github.com/alberto-martin/read.wos.R
+#+BEGIN_SRC shell
+ git clone https://github.com/alberto-martin/read.wos.R
+#+END_SRC
+
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+  ## load functions
+  ## --------------------------------------------------------------------------------
+  source("../lib/read.wos.R/read.wos.functions.R")
+  ## --------------------------------------------------------------------------------
+
+
+  ## test
+
+  wos.data.mp <- read.wos(dir("../data/Journals in Mathematical Psychology", no.. = TRUE, full.names = TRUE))
+  ## Error in substring(fields, 4) : invalid multibyte string at '<ff><fe>P'
+  ## In addition: Warning message:
+  ## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul
+
+  wos.data.mp <- read.wos("../data/Journals in Mathematical Psychology/Psychonomic Bulletin & Review 2.txt")
+  ## Error in substring(fields, 4) : invalid multibyte string at '<ff><fe>P'
+  ## In addition: Warning message:
+  ## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul
+
+  wos.data <- read.wos("/mnt/md5/data/wos/wos-sci-expanded.firm-names-query.analytical-instruments/LN Public NAICS records from 10001 to 10500.txt")
+  ## Error in substring(fields, 4) : invalid multibyte string at '<ff><fe>P'
+  ## In addition: Warning message:
+  ## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul
+#+END_SRC
+
+
+
+
+
+* References
+/This research was supported (in part) by the Fetzer Franklin Fund of the John E. Fetzer Memorial Trust./
