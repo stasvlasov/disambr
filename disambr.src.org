@@ -205,7 +205,7 @@ Description: file:readme.org
 
 
 * Functions
-** nedr.read
+** disambr.read
 :PROPERTIES:
 :ID:       org:1p6ja7119ri0
 :END:
@@ -851,5 +851,5 @@ file_ext(".....")
   ## 18  DS                                    Designated States
 
 #+END_SRC
-** nedr.disambiguate
-** nedr.graph
+** disambr.disambiguate
+** disambr.graph

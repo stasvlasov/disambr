@@ -13,8 +13,8 @@ Several algorithms have been put forward in the context of AND, but none of them
   if (!require("devtools")) install.packages("devtools", repos = 'http://cloud.r-project.org')
 
   ## Installs and loads andr
-  devtools::install_github("stasvlasov/andr")
-  library("andr")
+  devtools::install_github("stasvlasov/disambr")
+  library("disambr")
 #+END_SRC
 
 * Design principles
@@ -30,6 +30,51 @@ Thoughts on data structures:
 - Do not create persons from data until it is not needed (implement lazy data processing)
 - Using these output sets return adjusted networks (igraphs)
 
+
+* Definitions
+a set:
+- a data from =disambr.read=
+- a list of indixes refering to data with special attributes, such as:
+  - 
+
+sets:
+- a list of sets
+
+* Usage
+
+The idea of basic usage is simply piping the disambiguation procedures. Each procedure takes list of sets as input and returns list of sets either by adding a new set or modifying input list of sets.
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+      data %>% 
+          disambr.get.different.authors %>% 
+          disambr.get.similar.initials %>%
+          disambr.get.similar.last.names
+
+#+END_SRC
+
+Sequence (piped functions) of disambiguation procedures defines a disambiguation algorithm.
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+  disambr.eva <- function(data) {
+      data %>% 
+          disambr.get.different.authors %>% 
+          disambr.get.similar.initials %>%
+          disambr.get.similar.last.names
+  }
+#+END_SRC
+
+
+A procedure can be defined as follows (not implemented). Just an idea.
+#+name: 
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+disambr.get.different.authors <- disambr.define.procedure(data %>% 
+                                                            get(publication) %>%
+                                                            for.each %>%
+                                                            get(person = author))
+
+  ## or
+  disambr.get.different.authors <- disambr.define.procedure(data$
+                                                            publication$
+                                                            person(author))
+#+END_SRC
 
 
 * Objects naming convention
