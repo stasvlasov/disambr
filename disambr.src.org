@@ -61,7 +61,8 @@ Description: file:readme.org
     }
   ## --------------------------------------------------------------------------------
 
-  ## update.packages(ask = FALSE, repos = 'http://cloud.r-project.org')
+  
+ ## update.packages(ask = FALSE, repos = 'http://cloud.r-project.org')
 
 #+END_SRC
 *** My Packages
