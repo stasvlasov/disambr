@@ -1,4 +1,4 @@
 library(testthat)
-library(nedr)
+library(disambr)
 
-test_check("nedr")
+test_check("disambr")

@@ -1,3 +1,9 @@
+#' @details
+#' AND EVA Algorithm
+#' This is work in progress. Please, file an issues or suggestion if you have any.
+#' @keywords internal
+"_PACKAGE"
+
 ##' Stops process unless cond is true
 ##' @param cond 
 ##' @param message.if.false 

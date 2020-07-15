@@ -18,7 +18,7 @@ Description: file:readme.org
 :ID:       org:g01ja7119ri0
 :END:
 
-#+BEGIN_SRC R :results silent :session :tangle R/andr.r :mkdirp yes
+#+BEGIN_SRC R :results silent :session :tangle R/disambr.r :mkdirp yes
   #' @details
   #' AND EVA Algorithm
   #' This is work in progress. Please, file an issues or suggestion if you have any.
@@ -68,7 +68,7 @@ Description: file:readme.org
 :PROPERTIES:
 :ID:       org:hzuia7119ri0
 :END:
-#+BEGIN_SRC R :results silent :session :tangle .Rprofile
+#+BEGIN_SRC R :results silent :session :tangle no
   ## --------------------------------------------------------------------------------
   ## Load My pakcages
   ## --------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ Description: file:readme.org
   )
 
   ## make description
-  list(Package = "nedr"
+  list(Package = "disambr"
      , Title  = "NEDR - Named Entity Disambiguation in R"
      , Description = "NEDR - Named Entity Disambiguation in R"
      , `Authors@R` = c(person(given = c("Stanislav" ,"A.") , family = "Vlasov"
