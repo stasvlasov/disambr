@@ -1,7 +1,7 @@
 Package: disambr
 Title: NEDR - Named Entity Disambiguation in R
 Version: 0.02
-Date: 2020-07-15
+Date: 2020-08-06
 Authors@R: 
     c(person(given = c("Stanislav", "A."),
              family = "Vlasov",

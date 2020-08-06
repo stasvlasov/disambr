@@ -31,38 +31,39 @@ Description: file:readme.org
 :ID:       org:ihcia7119ri0
 :END:
 #+BEGIN_SRC R :results silent :session :tangle no
-  ## --------------------------------------------------------------------------------
-  ## First load default packages getOption("defaultPackages")
-  ## Otherwise it will add it at the end which can mask some funcitons
-  .First.sys()
+   ## --------------------------------------------------------------------------------
+   ## First load default packages getOption("defaultPackages")
+   ## Otherwise it will add it at the end which can mask some funcitons
+   .First.sys()
 
-  ## --------------------------------------------------------------------------------
-  ## Load or Install Packages
-  ## --------------------------------------------------------------------------------
-  for(pkg in c('devtools'
-             , 'roxygen2'
-             , 'xml2'
-             , 'tibble'
-             , 'stringi'
-             , 'stringr'
-             , 'stringdist'
-             , 'digest'
-             , 'magrittr'
-             , 'lubridate'
-             , 'plyr'
-             , 'pipeR'
-             , 'ggplot2'
-             , 'microbenchmark'
-             , 'data.table'
-             , 'dplyr'))
-    if(!require(pkg, character.only = TRUE)) {
-      install.packages(pkg, repos = 'http://cloud.r-project.org')
-      require(pkg, character.only = TRUE)
-    }
-  ## --------------------------------------------------------------------------------
+   ## --------------------------------------------------------------------------------
+   ## Load or Install Packages
+   ## --------------------------------------------------------------------------------
+   for(pkg in c('devtools'
+              , 'roxygen2'
+              , 'xml2'
+              , 'tibble'
+              , 'stringi'
+              , 'stringr'
+              , 'stringdist'
+              , 'digest'
+              , 'magrittr'
+              , 'lubridate'
+              , 'plyr'
+              , 'pipeR'
+              , 'ggplot2'
+              , 'pbapply'
+              , 'microbenchmark'
+              , 'data.table'
+              , 'dplyr'))
+     if(!require(pkg, character.only = TRUE)) {
+       install.packages(pkg, repos = 'http://cloud.r-project.org')
+       require(pkg, character.only = TRUE)
+     }
+   ## --------------------------------------------------------------------------------
+  library(disambr)
 
-  
- ## update.packages(ask = FALSE, repos = 'http://cloud.r-project.org')
+  ## update.packages(ask = FALSE, repos = 'http://cloud.r-project.org')
 
 #+END_SRC
 *** My Packages
@@ -189,16 +190,16 @@ Description: file:readme.org
   ## --------------------------------------------------------------------------------
   install(".")
 
-  install_github("stasvlasov/andr")
+  install_github("stasvlasov/disambr")
 
   ## Test
   ## --------------------------------------------------------------------------------
-  library("andr")
+  library("disambr")
 
   ## Remove
   ## --------------------------------------------------------------------------------
   detach(package:and, unload = TRUE)
-  remove.packages("andr")
+  remove.packages("disamber")
 
 #+END_SRC
 
@@ -326,7 +327,10 @@ Description: file:readme.org
                  , keepLeadingZeros = FALSE
                  , encoding = "UTF-8"
                  , sep = "\t")
-      dat$AU <- disambr.read.tsv.wos.parse.AU(dat$AU)
+      dat$AU <- disambr.read.tsv.wos.parse.authors(dat$AU
+                                                 , dat$EM
+                                                 , dat$RP)
+      dat$AF <- disambr.read.tsv.wos.parse.AF(dat$AF)
       ## set attrib (file, funcall, meanning of the fields and data scheme)
       attributes(dat)$disambr.read.call <- "disambr.read.tsv.wos"
       attributes(dat)$disambr.read.file.md5 <- tools::md5sum(f)
@@ -335,7 +339,43 @@ Description: file:readme.org
       return(dat)
   }
 
+  disambr.read.tsv.wos.parse.authors <- function(au, em, rp) {
+      au <- stri_split_fixed(au, ";")
+      em <- stri_split_fixed(em, ";")
+      rp <- stri_split_fixed(rp, ";")
+      parse.a <- function(authrs, emails) {
+          authrs <- stri_trim(authrs)
+          emails <- stri_trim(emails)
+          reprints <- stri_trim(reprints)
+          reprints <- stri_replace_first_regex(authrs, "\\s+(corresponding author).*", "")
+          reprints <- stri_trim(reprints)
+          reprints <- unique(reprints)
+          last.name <- stri_extract_first_regex(authrs, "^.+(?=,)")
+          initials <- stri_extract_first_regex(authrs, "(?<=, )[A-Z]+")
+          if(length(emails) == length(authrs)) {
+              emails <- emails
+          } else if(length(emails) == length(reprints)) {
+              ## assume same names
+              emails <- emails[match(authrs, reprints)]
+          } else if(length(emails) == 1) {
+              emails <- emails[ifelse(authrs == reprints[1], 1, NA)]
+          } else {
+              emails <- ifelse(authrs == reprints[1], emails, NA)
+          }
+          mapply(function(x, y, z)
+              list(initials = x
+                 , last.name = y
+                 , email = z)
+            , initials
+            , last.name
+            , email
+            , SIMPLIFY = FALSE
+            , USE.NAMES = FALSE)
+      }
+      lapply(au, parse.a)
+  }
 
+  match(c(1,2,3), c(2,3))
 
   disambr.read.tsv.wos.parse.AU <- function(au) {
       au <- stri_split_fixed(au, ";")
@@ -351,6 +391,8 @@ Description: file:readme.org
       }
       lapply(au, parse.a)
   }
+
+
 
 
 
@@ -392,7 +434,150 @@ Description: file:readme.org
       return(s)
    }
 
-  ##' Returns sets of people ids that are defenetely different based on co-authorship
+#+END_SRC
+
+*** tests
+
+#+BEGIN_SRC R :results none :session :tangle tests/testthat/test.stop.unless.r :mkdirp yes
+test_that("stop.unless", {
+      expect_warning(stop.unless(FALSE, "Lala", FALSE))
+      expect_error(stop.unless(FALSE))
+      expect_true(stop.unless(TRUE))
+      expect_false(stop.unless("sdfasdf", stop.if.false = FALSE))
+      expect_true(stop.unless("sdfasdf", stop.if.false = FALSE, return.if.true = FALSE))
+  })
+#+END_SRC
+
+#+BEGIN_SRC R :results none :session :tangle tests/testthat/test.parse.files.path.r :mkdirp yes
+    test_that("parse.files.path", {
+          expect_error(parse.files.path(3423))
+          expect_warning(parse.files.path(c(".", "gibirish file")))
+          expect_is(parse.files.path("."), "character")
+          ## empty dirs
+          tmp.dir <- "test_dir_for_parse.files.path"
+          dir.create(tmp.dir, showWarnings = FALSE)
+          expect_equal(parse.files.path(tmp.dir), character(0))
+          file.remove(tmp.dir)
+      })
+
+#+END_SRC
+** EVA Functions
+#+name: 
+#+BEGIN_SRC R :results none :session :tangle :eval no-export
+    ##' Returns sets of people ids that are defenetely different based on co-authorship
+    ##' @param sets 
+    ##' @param procedures 
+    ##' @inheritDotParams 
+    ##' @return 
+    ##' 
+    ##' @md 
+    ##' @importFrom magrittr %>%
+    ##' @import magrittr data.table dplyr stringr
+    ##' @export 
+    disambr.get.different.authors <- function(sets, procedures = NULL) {
+        message("Starting disambr.get.different.authors...")
+        if(!is.list(sets)) stop("sets should be list!")
+        new.set <- sets %>%
+            extract(sapply(.,attr, "disambr.set.unit") == "publication") %>%
+            data.table::rbindlist(fill=TRUE) %>%
+            ## extract2(1) %>%
+            ## TODO: implement extraction from different data type
+            extract2("AU") %>%
+            lapply(length) %>%
+            lapply(seq) %>%
+            {mapply(function(x,y) lapply(x, function(x) c(y,x))
+                  , ., 1:length(.)
+                  , SIMPLIFY = FALSE)}
+        ## set set's attributes
+        attributes(new.set)$disambr.set.unit <- "person"
+        attributes(new.set)$disambr.set.unit.ref.md5 <- digest(sets[[1]], "md5")
+        return(c(sets, list(new.set)))
+    }
+
+    ##' Returns set of people with similar initials
+    ##' @param sets 
+    ##' @param procedures 
+    ##' @inheritDotParams 
+    ##' @return 
+    ##' 
+    ##' @md 
+    ##' @importFrom magrittr %>%
+    ##' @import magrittr data.table dplyr stringr
+    ##' @export 
+    disambr.get.similar.initials <- function(sets, procedures = NULL) {
+        message("Starting disambr.get.similar.initials...")
+        ## sapply(sets,attr, "disambr.set.unit")
+        set.different.authors <-
+            sets %>%
+            extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
+            extract2(1) ## %>% extract(1:3)
+        ## sets$different.authors## [1:3]
+        set.data <-sets %>%
+            extract(sapply(.,attr, "disambr.set.unit") == "publication") %>%
+            data.table::rbindlist(fill=TRUE) 
+        ## sets$data[[1]]
+        ## procedurs
+        get.attrib.by.address <- function(address, attrib) {
+            set.data$AU[[address[1]]][[address[2]]][[attrib]]
+        }
+        subset.similar.initials <- function(comb) {
+            a <- set.different.authors[[comb[1]]]
+            b <- set.different.authors[[comb[2]]]
+            expand.grid(a, b)
+        }
+        new.set <- combn(1:length(set.different.authors), 2
+                       , simplify = FALSE
+                         ## , FUN = subset.similar.initials
+                         )
+        message("...combn produced ", length(new.set), " pairs of pubs")
+        new.set <- pblapply(new.set, subset.similar.initials)
+        message("...subset.similar.initials is done")
+        new.set <- data.table::rbindlist(new.set)
+        message("...rbindlist produced ", nrow(new.set), "pairs")
+        new.set <- dplyr::mutate(new.set
+                    , initials.dist =
+                          stringdist(pbsapply(Var1, get.attrib.by.address, "initials", cl = 5)
+                                   , pbsapply(Var2, get.attrib.by.address, "initials", cl = 5)
+                                   , method = "lv"))
+        new.set <- dplyr::filter(new.set, initials.dist < 2)
+        attributes(new.set)$disambr.set.unit <- "similar.initials"
+        return(c(sets, list(new.set)))
+    }
+
+    ##' Returns set of people with similar last names
+    ##' @param sets 
+    ##' @param procedures 
+    ##' @inheritDotParams 
+    ##' @return 
+    ##' 
+    ##' @md 
+    ##' @importFrom magrittr %>%
+    ##' @import magrittr data.table dplyr stringr
+    ##' @export 
+    disambr.get.similar.last.names <- function(sets, procedures = NULL) {
+        message("Starting disambr.get.similar.last.names...")
+        ## TODO: extract teh set that we need here (person, dyads)
+        set.similar.initials <- sets %>%
+            extract(sapply(.,attr, "disambr.set.unit") == "similar.initials") %>%
+            extract2(1) ## %>% extract(1:3)
+        ## sets[['similar.initials']]
+        set.data <-sets %>%
+            extract(sapply(.,attr, "disambr.set.unit") == "publication") %>%
+            data.table::rbindlist(fill=TRUE) 
+        get.attrib.by.address <- function(address, attrib) {
+            set.data$AU[[address[1]]][[address[2]]][[attrib]]
+        }
+        new.set <- dplyr::mutate(set.similar.initials, last.name.dist =
+                              stringdist(pbsapply(Var1, get.attrib.by.address, "last.name")
+                                       , pbsapply(Var2, get.attrib.by.address, "last.name")
+                                       , method = "dl"))
+        new.set <- dplyr::filter(new.set, last.name.dist < 2)
+        attributes(new.set)$disambr.set.unit <- "similar.last.names"
+        return(c(sets, list(new.set)))
+    }
+
+
+  ##' Returns set of people with save email addresses
   ##' @param sets 
   ##' @param procedures 
   ##' @inheritDotParams 
@@ -402,83 +587,11 @@ Description: file:readme.org
   ##' @importFrom magrittr %>%
   ##' @import magrittr data.table dplyr stringr
   ##' @export 
-  disambr.get.different.authors <- function(sets, procedures = NULL) {
-      if(!is.list(sets)) stop("sets should be list!")
-      new.set <- sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "publication") %>%
-          data.table::rbindlist(fill=TRUE) %>%
-          ## extract2(1) %>%
-          ## TODO: implement extraction from different data type
-          extract2("AU") %>%
-          lapply(length) %>%
-          lapply(seq) %>%
-          {mapply(function(x,y) lapply(x, function(x) c(y,x))
-                , ., 1:length(.)
-                , SIMPLIFY = FALSE)}
-      ## set set's attributes
-      attributes(new.set)$disambr.set.unit <- "person"
-      attributes(new.set)$disambr.set.unit.ref.md5 <- digest(sets[[1]], "md5")
-      return(c(sets, list(new.set)))
-  }
-
-
-  ##' Returns set of people with similar initials
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @inheritDotParams 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
-  ##' @export 
-  disambr.get.similar.initials <- function(sets, procedures = NULL) {
-      ## sapply(sets,attr, "disambr.set.unit")
-      set.different.authors <-
-          sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
-          extract2(1) ## %>% extract(1:3)
-          ## sets$different.authors## [1:3]
-      set.data <-sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "publication") %>%
-          data.table::rbindlist(fill=TRUE) 
-          ## sets$data[[1]]
-      ## procedurs
-      get.initials.by.address <- function(address) {
-          set.data$AU[[address[1]]][[address[2]]][["initials"]]
-      }
-      subset.similar.initials <- function(comb) {
-          a <- set.different.authors[[comb[1]]]
-          b <- set.different.authors[[comb[2]]]
-          expand.grid(a, b)
-      }
-      new.set <- combn(1:length(set.different.authors), 2
-                 , simplify = FALSE
-                 , FUN = subset.similar.initials) %>%
-          data.table::rbindlist() %>% 
-          dplyr::mutate(initials.dist = stringdist(sapply(Var1, get.initials.by.address)
-                                                 , sapply(Var2, get.initials.by.address)
-                                                 , method = "lv")) %>%
-          dplyr::filter(initials.dist < 2)
-          attributes(new.set)$disambr.set.unit <- "similar.initials"
-          return(c(sets, list(new.set)))
-  }
-
-
-  ##' Returns set of people with similar last names
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @inheritDotParams 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
-  ##' @export 
-  disambr.get.similar.last.names <- function(sets, procedures = NULL) {
+  disambr.get.same.email <- function(sets, procedures = NULL) {
+      message("Starting disambr.get.similar.last.names...")
       ## TODO: extract teh set that we need here (person, dyads)
       set.similar.initials <- sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "similar.initials") %>%
+          extract(sapply(.,attr, "disambr.set.unit") == "similar.last.names") %>%
           extract2(1) ## %>% extract(1:3)
       ## sets[['similar.initials']]
       set.data <-sets %>%
@@ -490,14 +603,18 @@ Description: file:readme.org
       set.similar.initials %>%
           ## {print(names(.))} %>% 
           dplyr::mutate(last.name.dist =
-                        stringdist(sapply(Var1, get.attrib.by.address, "last.name")
-                                 , sapply(Var2, get.attrib.by.address, "last.name")
-                                 , method = "dl"))
+                            stringdist(pbsapply(Var1, get.attrib.by.address, "last.name")
+                                     , pbsapply(Var2, get.attrib.by.address, "last.name")
+                                     , method = "dl"))
+      new.set <- dplyr::filter(new.set, last.name.dist < 2)
+      attributes(new.set)$disambr.set.unit <- "similar.last.names"
+      return(c(sets, list(new.set)))
   }
 
 
 #+END_SRC
 
+** testing
 #+BEGIN_SRC R :results none :session :tangle no
 
   my.dir <- '../data'
@@ -514,30 +631,59 @@ Description: file:readme.org
 
   ## ----------------------------------------------------------------------------
 
-  my.dat <- nedr.read(my.dir)
+  my.dat <- disambr.read(my.dir)
 
-  my.dat <- nedr.read(my.file)
+  my.dat <- disambr.read(my.file)
 
-  my.dat <- nedr.read("../data/new_export")
+  attributes(my.dat[[1]])
+
+  my.dat <- disambr.read("../data/new_export")
 
   my.dat[[1]]$AU[1:4]
 
-
-  my.dat %>%
+  my.dat <- 
+      my.dat %>%
       disambr.get.different.authors
 
 
+  my.dat[[2]]
 
-  dat <- nedr.read(my.file)
+
+  my.dat %>% 
+      disambr.get.different.authors %>% 
+      disambr.get.similar.initials %>%
+      disambr.get.similar.last.names
+
+
+  dat <- disambr.read(my.file)
 
   dat %>% extract(1) %>% disambr.get.different.authors
 
 
+  ## new testing
+  d <- disambr.read("../data/wos-researchers-ids")
 
-  dat %>% 
+  d <- d[[1]][1:1000,] %>% list
+
+  d.done <- 
+      d %>% 
       disambr.get.different.authors %>% 
-      disambr.get.similar.initials %>%
+      disambr.get.similar.initials  %>%
+
+
+  d.done %>% length
+
+  d.done2 %>% length
+
+  d.done2[[4]] %>% nrow
+
+  d.done2 <- 
+      d.done %>%
       disambr.get.similar.last.names
+
+  saveRDS(d.done2, "../data/d.done2.rds")
+
+
 
 
   disambr.eva <- function(data) {
@@ -583,36 +729,11 @@ Description: file:readme.org
 
 #+END_SRC
 
-#+BEGIN_SRC R :results none :session :tangle tests/testthat/test.stop.unless.r :mkdirp yes
-test_that("stop.unless", {
-      expect_warning(stop.unless(FALSE, "Lala", FALSE))
-      expect_error(stop.unless(FALSE))
-      expect_true(stop.unless(TRUE))
-      expect_false(stop.unless("sdfasdf", stop.if.false = FALSE))
-      expect_true(stop.unless("sdfasdf", stop.if.false = FALSE, return.if.true = FALSE))
-  })
-#+END_SRC
-
-#+BEGIN_SRC R :results none :session :tangle tests/testthat/test.parse.files.path.r :mkdirp yes
-    test_that("parse.files.path", {
-          expect_error(parse.files.path(3423))
-          expect_warning(parse.files.path(c(".", "gibirish file")))
-          expect_is(parse.files.path("."), "character")
-          ## empty dirs
-          tmp.dir <- "test_dir_for_parse.files.path"
-          dir.create(tmp.dir, showWarnings = FALSE)
-          expect_equal(parse.files.path(tmp.dir), character(0))
-          file.remove(tmp.dir)
-      })
-
-#+END_SRC
-
 Testing help
 #+BEGIN_SRC R :results none :session :tangle no
   options(browser="firefox")
-  help(sum, help_type = "html")
+  help(disambr.read, help_type = "html")
 #+END_SRC
-
 
 *** get.file.extension                                               :util:
 :PROPERTIES:
@@ -851,5 +972,5 @@ file_ext(".....")
   ## 18  DS                                    Designated States
 
 #+END_SRC
-** disambr.disambiguate
+
 ** disambr.graph
