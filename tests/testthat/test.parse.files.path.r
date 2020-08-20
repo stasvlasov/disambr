@@ -1,3 +1,4 @@
+## [[file:~/org/research/disambr/disambr/disambr.src.org::*testthat][testthat:2]]
 test_that("parse.files.path", {
       expect_error(parse.files.path(3423))
       expect_warning(parse.files.path(c(".", "gibirish file")))
@@ -8,3 +9,4 @@ test_that("parse.files.path", {
       expect_equal(parse.files.path(tmp.dir), character(0))
       file.remove(tmp.dir)
   })
+## testthat:2 ends here
