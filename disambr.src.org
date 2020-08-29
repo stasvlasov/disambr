@@ -896,7 +896,7 @@ disabmr_get_last_unmerged_set <- function() {}
 **** disabmr_in_first_data_set
 #+BEGIN_SRC R :tangle R/disambr_sets.r
   disabmr_in_first_data_set <- function(sets, ...) {
-      set_num <- disambr_in_sets(sets, recipie = "disambr_eject_authors", ...)
+      set_num <- disambr_in_sets(sets, recipie = "disambr_make_wos_tsv_authors", ...)
       set_num <- which(set_num)[1]
       return(sets[[set_num]])
   }
@@ -1135,7 +1135,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
 #+END_SRC
 
 
-** disambr_eject_wos
+** disambr_wos_tsv
 :PROPERTIES:
 :ID:       org:55peaz31gti0
 :END:
@@ -1147,7 +1147,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
 
 #+END_SRC
 
-*** disambr_eject_authors_parse_au
+*** disambr_wos_tsv_parse_au
 :PROPERTIES:
 :ID:       org:3q0cnb60jti0
 :END:
@@ -1157,7 +1157,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ##' @return data.table
   ##' 
   ##' @md 
-  disambr_eject_authors_parse_au <- function(author_name) {
+  disambr_wos_tsv_parse_au <- function(author_name) {
       author_last_name <-
           stringi::stri_extract_first_regex(author_name, "^[^,]+")
       author_initials <-
@@ -1171,10 +1171,10 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ## tests
 
   ## "Tilly, TB; Nelson, MT; Chakravarthy, KB; Shira, EA; Debrose, MC; Grabinski, CM; Salisbury, RL; Mattie, DR; Hussain, SM" %>% stri_split_fixed("; ") %>% 
-  ## disambr_eject_authors_parse_au
+  ## disambr_wos_tsv_parse_au
 #+END_SRC
 
-*** disambr_eject_authors_parse_af
+*** disambr_wos_tsv_parse_af
 :PROPERTIES:
 :ID:       org:vy2cnb60jti0
 :END:
@@ -1182,7 +1182,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ##' Parses AF (author full name) column of WoS saved records export
   ##' @param record.au a record string from AF column
   ##' @return Data.table
-  disambr_eject_authors_parse_af <- function(name) {
+  disambr_wos_tsv_parse_af <- function(name) {
       last_name <- stringi::stri_extract_first_regex(name, "^[^,]+")
       first_names <- stringi::stri_extract_first_regex(name, "(?<=, ).*")
       first_names <-
@@ -1203,10 +1203,10 @@ disabmr_in_last_unmerged_person_set <- function() {}
 
   ## test
   ## "Tilly, Trevor B.; Nelson, M. Tyler; Chakravarthy, Karthik B.; Shira, Emily A.; Debrose, Madeline C.; Grabinski, Christin M.; Salisbury, Richard L.; Mattie, David R.; Hussain, Saber M." %>%
-  ## disambr_eject_authors_parse_af
+  ## disambr_wos_tsv_parse_af
 #+END_SRC
 
-*** disambr_eject_authors_parse_rp
+*** disambr_wos_tsv_parse_rp
 :PROPERTIES:
 :ID:       org:1t5cnb60jti0
 :END:
@@ -1214,7 +1214,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ##' Parses RP (reprint author) column of WoS saved records export
   ##' @param record_rp a record string from RP column
   ##' @return Data.table with two columns -  author_name and affiliations
-  disambr_eject_authors_parse_rp <- function(record_rp) {
+  disambr_wos_tsv_parse_rp <- function(record_rp) {
       record_rp_init <- ""
       authors_table <-
           data.table::data.table(author_name = character(0)
@@ -1260,23 +1260,23 @@ disabmr_in_last_unmerged_person_set <- function() {}
   }
 
   ## "Guesmi, S (corresponding author), Natl Agron Inst Tunisia INAT, 43 Ave Charles Nicolle, Tunis 1082, Tunisia.; Guesmi, S; Sghaier, H (corresponding author), Sidi Thabet Technopk, Natl Ctr Nucl Sci & Technol, Lab Energy & Matter Dev Nucl Sci LR16CNSTN02, Sidi Thabet 2020, Tunisia.; Sghaier, H (corresponding author), Sidi Thabet Technopk, Lab Biotechnol & Nucl Technol LR16CNSTN01, Sidi Thabet 2020, Tunisia.; Sghaier, H (corresponding author), Sidi Thabet Technopk, Lab Biotechnol & Biogeo Resources Valorizat LR11E, Sidi Thabet 2020, Tunisia." %>%
-  ## disambr_eject_authors_parse_rp %>% print
+  ## disambr_wos_tsv_parse_rp %>% print
 
   ## "" %>%
-  ## disambr_eject_authors_parse_rp %>% nrow
+  ## disambr_wos_tsv_parse_rp %>% nrow
 #+END_SRC
 
-*** disambr_eject_authors_parse_em
+*** disambr_wos_tsv_parse_em
 :PROPERTIES:
 :ID:       org:wl8cnb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_eject_wos.r
   ##' Parses EM (email) column of WoS saved records export
   ##' @param record_em  a record string from EM column
-  ##' @param record_au_table a data_tabe after parsing AU column with disambr_eject_authors_parse_au
-  ##' @param record_rp_table a data_tabe after parsing RP column with disambr_eject_authors_parse_rp
+  ##' @param record_au_table a data_tabe after parsing AU column with disambr_wos_tsv_parse_au
+  ##' @param record_rp_table a data_tabe after parsing RP column with disambr_wos_tsv_parse_rp
   ##' @return Data.table with columns - author_name, affiliations and email
-  disambr_eject_authors_parse_em <- function(emails
+  disambr_wos_tsv_parse_em <- function(emails
                                            , record_au_table
                                            , record_rp_table) {
       if (isTRUE(length(emails) == 1 && emails == "")) {
@@ -1303,13 +1303,13 @@ disabmr_in_last_unmerged_person_set <- function() {}
 
 
   ## tests
-  ## disambr_eject_authors_parse_em(
+  ## disambr_wos_tsv_parse_em(
   ## record_em = "a"
   ## , record_au_table = data.table(author_name = c(1,2,3,4))
   ## , record_rp_table = data.table(author_name = c(3))
   ## ) %>% print
 #+END_SRC
-*** disambr_eject_authors_parse_c1
+*** disambr_wos_tsv_parse_c1
 :PROPERTIES:
 :ID:       org:qrdfnb60jti0
 :END:
@@ -1317,7 +1317,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ##' Parses C1 (author adress/affiliation) column of WoS saved records export
   ##' @param record_c1 a record string from RP column
   ##' @return Data.table with two columns -  author_name and affiliations
-  disambr_eject_authors_parse_c1 <- function(record_c1
+  disambr_wos_tsv_parse_c1 <- function(record_c1
                                            , table_af = NULL) {
       record_c1_init <- ""
       authors_table <-
@@ -1366,13 +1366,13 @@ disabmr_in_last_unmerged_person_set <- function() {}
 
 
   ## "[Wang, Menglei; Li, Shunyi; Zhu, Rencheng; Zhang, Ruiqin] Zhengzhou Univ, Sch Ecol & Environm, Zhengzhou 450001, Peoples R China; [Wang, Menglei] Zhengzhou Univ, Sch Chem Engn, Zhengzhou 450001, Peoples R China; [Zu, Lei; Wang, Yunjing; Bao, Xiaofeng] Chinese Res Inst Environm Sci, State Environm Protect Key Lab Vehicle Emiss Cont, Beijing 100012, Peoples R China" %>%
-  ## disambr_eject_authors_parse_c1
+  ## disambr_wos_tsv_parse_c1
 
 
   ## "[Wang, Menglei; Li, Shunyi; Zhu, Rencheng; Zhang, Ruiqin] Zhengzhou Univ, Sch Ecol & Environm, Zhengzhou 450001, Peoples R China; [Wang, Menglei] Zhengzhou Univ, Sch Chem Engn, Zhengzhou 450001, Peoples R China; [Zu, Lei; Wang, Yunjing; Bao, Xiaofeng] Chinese Res Inst Environm Sci, State Environm Protect Key Lab Vehicle Emiss Cont, Beijing 100012, Peoples R China" %>%
-  ## disambr_eject_authors_parse_c1(disambr_eject_authors_parse_af("Wang, Menglei; Zu, Lei; Wang, Yunjing; Bao, Xiaofeng"))
+  ## disambr_wos_tsv_parse_c1(disambr_wos_tsv_parse_af("Wang, Menglei; Zu, Lei; Wang, Yunjing; Bao, Xiaofeng"))
 #+END_SRC
-*** disambr_eject_authors_parse_oi
+*** disambr_wos_tsv_parse_oi
 :PROPERTIES:
 :ID:       org:jygfnb60jti0
 :END:
@@ -1382,7 +1382,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ##' @return data.table
   ##' 
   ##' @md 
-  disambr_eject_authors_parse_oi <- function(authors
+  disambr_wos_tsv_parse_oi <- function(authors
                                             , table_af = NULL) {
       author_full_name <-
           stringi::stri_extract_first_regex(authors, "^[^/]+")
@@ -1413,22 +1413,22 @@ disabmr_in_last_unmerged_person_set <- function() {}
 
 
   ## "Estrela, Pedro/0000-0001-6956-1146; Maxted, Grace/0000-0002-6816-9107; Rainbow, Joshua/0000-0003-3911-928X; Richtera, Lukas/0000-0002-8288-3999; Moschou, Despina/0000-0001-9175-5852" %>%
-      ## disambr_eject_authors__parse_oi
+      ## disambr_make_wos_tsv_authors__parse_oi
 
 
 
   ## "Estrela, Pedro/0000-0001-6956-1146; Maxted, Grace/0000-0002-6816-9107; Rainbow, Joshua/0000-0003-3911-928X; Rainbow, Joshua/0000-0003-3911-928X; Richtera, Lukas/0000-0002-8288-3999; Moschou, Despina/0000-0001-9175-5852" %>%
-      ## disambr_eject_authors__parse_oi(
+      ## disambr_make_wos_tsv_authors__parse_oi(
           ## table_af = data.table(author_full_name =
                                     ## c("Rainbow, Joshua", "Moschou, Despina")))                                                                                       
 
-  ## "" %>% disambr_eject_authors__parse_oi(
+  ## "" %>% disambr_make_wos_tsv_authors__parse_oi(
              ## table_af = data.table(author_full_name = c("Rainbow, Joshua")))
 
-  ## NA %>% disambr_eject_authors__parse_oi
+  ## NA %>% disambr_make_wos_tsv_authors__parse_oi
 #+END_SRC
 
-*** disambr_eject_authors_parse_ri
+*** disambr_wos_tsv_parse_ri
 :PROPERTIES:
 :ID:       org:5ljfnb60jti0
 :END:
@@ -1438,7 +1438,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ##' @return data.table
   ##' 
   ##' @md 
-  disambr_eject_authors_parse_ri <- function(authors
+  disambr_wos_tsv_parse_ri <- function(authors
                                             , table_af = NULL) {
       author_full_name <-
           stringi::stri_extract_first_regex(authors, "^[^/]+")
@@ -1469,7 +1469,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
 
 
 #+END_SRC
-*** disambr_eject_authors
+*** disambr_make_wos_tsv_authors
 :PROPERTIES:
 :ID:       org:7cofnb60jti0
 :END:
@@ -1487,7 +1487,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ## ri researcher ID
   ## oi ORCID Identifier (Open Researcher and Contributor ID)
   ## eject authors table (after combining initiall export tables)
-  disambr_eject_authors <- function(wos_data_table
+  disambr_make_wos_tsv_authors <- function(wos_data_table
                                   , verbose = getOption("disambr_verbose")
                                   , list_of_author_fields =
                                         c("author_order"
@@ -1515,7 +1515,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
           authors_tables$au <-
               lapply(
                   stringi::stri_split_fixed(wos_data_table$AU, "; ")
-                , disambr_eject_authors_parse_au)
+                , disambr_wos_tsv_parse_au)
       }
       ## AF
       if(any(c("author_full_name"
@@ -1529,7 +1529,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
           authors_tables$af <-
               lapply(
                   stringi::stri_split_fixed(wos_data_table$AF, "; ")
-                , disambr_eject_authors_parse_af)
+                , disambr_wos_tsv_parse_af)
       }
       ## RP
       if(any(c("author_email") %in% list_of_author_fields) &&
@@ -1538,16 +1538,16 @@ disabmr_in_last_unmerged_person_set <- function() {}
           ## save RP separately as it is different order from AU
           rp <-
               lapply(wos_data_table$RP
-                   , disambr_eject_authors_parse_rp)
+                   , disambr_wos_tsv_parse_rp)
       }
 
       ## EM
       if(any(c("author_email") %in% list_of_author_fields) &&
          all(c("AU", "EM", "RP") %in% names(wos_data_table))) {
           if(verbose) message("--- parsing EM field")
-          ## disambr_eject_authors_parse_em updates authors_tables$au
+          ## disambr_wos_tsv_parse_em updates authors_tables$au
           ## so no need to save it
-          pbmapply(disambr_eject_authors_parse_em
+          pbmapply(disambr_wos_tsv_parse_em
                , stringi::stri_split_fixed(wos_data_table$EM, "; ")
                , authors_tables$au
                , rp
@@ -1559,7 +1559,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
          all(c("C1", "AF") %in% names(wos_data_table))) {
           if(verbose) message("--- parsing C1 field")
           authors_tables$c1 <-
-              pbmapply(disambr_eject_authors_parse_c1
+              pbmapply(disambr_wos_tsv_parse_c1
                    , wos_data_table$C1
                    , authors_tables$af
                    , SIMPLIFY = FALSE)
@@ -1569,7 +1569,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
          all(c("RI", "AF") %in% names(wos_data_table))) {
           if(verbose) message("--- parsing RI field")
           authors_tables$ri <-
-              pbmapply(disambr_eject_authors_parse_ri
+              pbmapply(disambr_wos_tsv_parse_ri
                    , stringi::stri_split_fixed(wos_data_table$RI, "; ")
                    , authors_tables$af
                    , SIMPLIFY = FALSE
@@ -1580,7 +1580,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
          all(c("OI", "AF") %in% names(wos_data_table))) {
           if(verbose) message("--- parsing OI field")
           authors_tables$oi <-
-              pbmapply(disambr_eject_authors_parse_oi
+              pbmapply(disambr_wos_tsv_parse_oi
                    , stringi::stri_split_fixed(wos_data_table$OI, "; ")
                    , authors_tables$af
                    , SIMPLIFY = FALSE
@@ -1614,7 +1614,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
   ## my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
   ## dt <- disambr_read(my.file2)[[1]]
 
-  ## dt %>% disambr_eject_authors
+  ## dt %>% disambr_make_wos_tsv_authors
 
   ## testing dt merge
   ## a <- data.table(name = c("a", "b", "c"), order = c(1,2,3))
@@ -1679,12 +1679,12 @@ disabmr_in_last_unmerged_person_set <- function() {}
       ## stri_match_first_regex("([a-z ]*[A-Z][^ ]+)\\s+([A-Z])")
       ## stringi::stri_extract_first_regex("[a-z ]*[A-Z][^ ]+")
 #+END_SRC
-*** disambr_eject_references
+*** disambr_make_wos_tsv_references
 :PROPERTIES:
 :ID:       org:jxufnb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_eject_wos.r
-  disambr_eject_references <- function(wos_data_table
+  disambr_make_wos_tsv_references <- function(wos_data_table
                                      , verbose = getOption("disambr_verbose")) {
       if(length(verbose) == 0) verbose <- TRUE
       if("CR" %in% names(wos_data_table)) {
@@ -1797,12 +1797,12 @@ this one is not needed as doi is unique and we can add them to refs_table
 
 
 #+END_SRC
-*** disambr_eject_citations_name                               
+*** disambr_make_wos_tsv_author_year_citations                               
 :PROPERTIES:
 :ID:       org:to0gnb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_eject_wos.r
-  disambr_eject_citations_name <- function(pub_table, ref_table) {
+  disambr_make_wos_tsv_author_year_citations <- function(pub_table, ref_table) {
       ## filter before maching
       pub_table[, "year" := as.character(PY)]
       pub_table <- pub_table[!is.na(first_author_last_name) &
@@ -1837,7 +1837,7 @@ this one is not needed as doi is unique and we can add them to refs_table
         , disambr_set_name = "wos_name_citations"
         , disambr_set_collection = "directed_dyads_table"
         , disambr_entity_id_reference = "wos_records_tsv"
-        , disambr_recipe = "disambr_eject_citations_name")
+        , disambr_recipe = "disambr_make_wos_tsv_author_year_citations")
       return(cit_table)
   }
 
@@ -1874,9 +1874,9 @@ this one is not needed as doi is unique and we can add them to refs_table
   ## dt[[1]] %>% nrow
   ## dt[[3]] %>% nrow
 
-  ## disambr_eject_citations_name(dt[[1]], dt[[3]])
+  ## disambr_make_wos_tsv_author_year_citations(dt[[1]], dt[[3]])
 
-  ## disambr_eject_citations_name(dt[[1]], dt[[3]])$first_author_last_name %>% sapply(is.na) %>% sum
+  ## disambr_make_wos_tsv_author_year_citations(dt[[1]], dt[[3]])$first_author_last_name %>% sapply(is.na) %>% sum
 
   ## ## dt[[1]]$AU[3771]
   ## ## dt[[1]]$CR[3514]
@@ -1891,7 +1891,7 @@ this one is not needed as doi is unique and we can add them to refs_table
   ## ##' @param record_ri a record string from RP column
   ## ##' @param table_af 
   ## ##' @return Data.table with columns - author_full_name and author_researcher_id 
-  ## disambr_eject_authors_parse_ri <- function(record_ri
+  ## disambr_wos_tsv_parse_ri <- function(record_ri
   ##                                          , table_af = NULL) {
   ##     if(isTRUE(record_ri != "")) {
   ##         authors <- stringi::stri_split_fixed(record_ri, "; ")[[1]]
@@ -1917,9 +1917,9 @@ this one is not needed as doi is unique and we can add them to refs_table
   ## }
 
   ## rbindlist(list("Girabent, Montserrat/B-8536-2008; Maydeu-Olivares, Alberto/B-5178-2010" %>%
-  ## disambr_eject_authors_parse_ri
+  ## disambr_wos_tsv_parse_ri
   ## , "" %>%
-  ## disambr_eject_authors_parse_ri))
+  ## disambr_wos_tsv_parse_ri))
 
 
   ## a <- data.table(a1 = c(1,2,2,3,4), a2 = c(11,22,22,33,44))
@@ -1931,14 +1931,14 @@ this one is not needed as doi is unique and we can add them to refs_table
   ## b[a, on = "a1"]
 
   ## NA %>%
-  ## disambr_eject_authors_parse_ri
+  ## disambr_wos_tsv_parse_ri
 
 
 
   ## ##' Parses OI (ORCID) column of WoS saved records export
   ## ##' @param record_oi a record string from OI column
   ## ##' @return Data.table with columns - author_full_name and author_orcid
-  ## disambr_eject_authors_parse_oi <- function(record_oi
+  ## disambr_wos_tsv_parse_oi <- function(record_oi
   ##                                          , table_af = NULL) {
   ##     if(isTRUE(record_oi != "")) {
   ##         authors <- stringi::stri_split_fixed(record_oi, "; ")[[1]]
@@ -1964,7 +1964,7 @@ this one is not needed as doi is unique and we can add them to refs_table
   ## }
 
 
-  ## "Estrela, Pedro/0000-0001-6956-1146; Maxted, Grace/0000-0002-6816-9107; Rainbow, Joshua/0000-0003-3911-928X; Richtera, Lukas/0000-0002-8288-3999; Moschou, Despina/0000-0001-9175-5852" %>% disambr_eject_authors_parse_oi
+  ## "Estrela, Pedro/0000-0001-6956-1146; Maxted, Grace/0000-0002-6816-9107; Rainbow, Joshua/0000-0003-3911-928X; Richtera, Lukas/0000-0002-8288-3999; Moschou, Despina/0000-0001-9175-5852" %>% disambr_wos_tsv_parse_oi
 
   ## ----------------------------------------------------------------------------
 
@@ -1989,12 +1989,12 @@ this one is not needed as doi is unique and we can add them to refs_table
 #+END_SRC
 
 
-*** disambr_rbind_wos
+*** disambr_make_wos_tsv_publications
 :PROPERTIES:
 :ID:       org:l7egnb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_read.r
-  disambr_rbind_wos <- function(tables_list, tables_recipes) {
+  disambr_make_wos_tsv_publications <- function(tables_list, recipes) {
       publication_table <-
           data.table::rbindlist(tables_list, fill=TRUE)
       ## add ids, first_author_last_name, first_author_first_initials
@@ -2017,10 +2017,10 @@ this one is not needed as doi is unique and we can add them to refs_table
         , disambr_entity_id_reference = "self"
         , disambr_set_type = "different_entities"
         , disambr_set_coefficient = 1
-        , disambr_set_name = "wos_records_tsv_export"
+        , disambr_set_name = "wos_tsv_publications"
         , disambr_set_collection = "single_set_table"
           ## add files recipies
-        , disambr_recipe = tables_recipes)
+        , disambr_recipe = recipes)
       return(publication_table)
   }
 
@@ -2030,12 +2030,12 @@ this one is not needed as doi is unique and we can add them to refs_table
   ## a[[1]][, .(id, first_author_last_name, first_author_first_initials)]
 #+END_SRC
 
-*** disambr_process_files_data
+*** disambr_make_data
 :PROPERTIES:
 :ID:       org:33ignb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_read.r
-  disambr_process_files_data <- function(files_data_list
+  disambr_make_data <- function(files_data_list
                                        , verbose = getOption("disambr_verbose")
                                        , drop_ejected = FALSE) {
         ## TODO: add other data processing here
@@ -2053,11 +2053,11 @@ this one is not needed as doi is unique and we can add them to refs_table
             ## check if all headers ate the same before rbindlist
             if (length(unique(processabe_data_headers)) == 1) {
                 if(verbose) message("disambr: processing wos tsv export data..")
-                if(verbose) message("- rbinding wos tables..")
+                if(verbose) message("- rbinding wos publication tables..")
                 wos_publication <-
-                    disambr_rbind_wos(files_data_list, processabe_data_recipes)
-                if(verbose) message("- ejecting wos authors..")
-                wos_author <- disambr_eject_authors(wos_publication
+                    disambr_make_wos_tsv_publications(files_data_list, processabe_data_recipes)
+                if(verbose) message("- making wos authors table..")
+                wos_author <- disambr_make_wos_tsv_authors(wos_publication
                 , verbose = verbose)
                 if(drop_ejected) {
                     ## remove fields that we do not need
@@ -2069,8 +2069,8 @@ this one is not needed as doi is unique and we can add them to refs_table
                     ## to use a varialbe it should be in ()
                     wos_publication[, (remove_headers) := NULL]
                 }
-                if(verbose) message("- ejecting wos references..")
-                wos_reference <- disambr_eject_references(wos_publication)
+                if(verbose) message("- making wos references table..")
+                wos_reference <- disambr_make_wos_tsv_references(wos_publication)
                 if(drop_ejected) {
                     remove_headers <- c("CR")
                     ## filter those that exists
@@ -2082,9 +2082,9 @@ this one is not needed as doi is unique and we can add them to refs_table
                 ## if(verbose) message("- ejecting DOI citations table..")
                 ## citation_doi_table <-
                     ## disambr_eject_citations_doi(wos_publication, wos_reference)
-                if(verbose) message("- ejecting author-year citations table..")
+                if(verbose) message("- making author-year citations table..")
                 citation_name_table <-
-                    disambr_eject_citations_name(wos_publication, wos_reference)
+                    disambr_make_wos_tsv_author_year_citations(wos_publication, wos_reference)
                 ## if all data is wos data return only that
                 if(length(processabe_data) == length(files_data_list)) {
                     return(list(wos_publication
@@ -2225,7 +2225,7 @@ disambr_read_tsv <- function(f) {
       if(length(verbose) == 0) verbose <- TRUE
       files_path <- parse_files_path(files_path)
       files_data_list <- lapply(files_path, disambr_read_file)
-      sets <- disambr_process_files_data(files_data_list)
+      sets <- disambr_make_data(files_data_list)
       if(is.character(save_sets_as)) {
           disambr_save_set(sets, save_sets_as, use_time_stamp)
       }
