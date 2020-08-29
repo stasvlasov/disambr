@@ -798,36 +798,6 @@ disambr_cbind_lists <- function(...) {
 #+END_SRC
 
 
-*** disabmr_get_first_data_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-  disabmr_get_first_data_set <- function() {}
-#+END_SRC
-
-*** disabmr_get_last_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_get_last_set <- function() {}
-#+END_SRC
-
-*** disabmr_get_first_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_get_first_set <- function() {}
-#+END_SRC
-
-*** disabmr_get_merged_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_get_merged_set <- function() {}
-#+END_SRC
-
-*** disabmr_get_last_sans_merged_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_get_last_sans_merged_set <- function() {}
-#+END_SRC
-
-*** disabmr_get_last_unmerged_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_get_last_unmerged_set <- function() {}
-#+END_SRC
-
 *** disambr_in_sets
 :PROPERTIES:
 :ID:       org:84rht1n0mti0
@@ -835,16 +805,18 @@ disabmr_get_last_unmerged_set <- function() {}
 #+BEGIN_SRC R :tangle R/disambr_sets.r
   ##' Checks if sets with certain attribures are present
   ##' @param sets Sets to filter on sets attributes
-  ##' @param check_attr_names Whether to check for short names of attributes. See `attr_names_prefix`.
+  ##' @param match_attr_value_parcially whether attribute values can be matched partially
+  ##' @param check_attr_names_prefix Whether to check for short names of attributes. See `attr_names_prefix`.
   ##' @param attr_names_prefix If name does not start with this prefix (default is 'disambr_set_'), it will add this prefix before attribute name.
   ##' @param ... Named sets attributes to filter `sets` on
   ##' @return logical vector of length `length(sets)`
   ##' 
   ##' @export 
   disambr_in_sets <- function(sets
-                            , check_attr_names = TRUE
-                            , attr_names_prefix = "disambr_set_"
-                            , ...) {
+                            , ...
+                            , match_attr_value_parcially = FALSE
+                            , check_attr_names_prefix = TRUE
+                            , attr_names_prefix = "disambr_set_") {
       ## check if sets is list
       if(!is.list(sets)) disambr_stop("'sets' should be a list of sets!")
       attrs_values <- list(...)
@@ -855,7 +827,7 @@ disabmr_get_last_unmerged_set <- function() {}
       attrs_values_names <- names(attrs_values)
       if(length(attrs_values_names) != attrs_values_length)
           disambr_stop("'...' arguments should be all named!")
-      if(isTRUE(check_attr_names)) {
+      if(isTRUE(check_attr_names_prefix)) {
           ## add "disambr_set_" if attr names are short
           attrs_values_names_short <-
               !stringi::stri_detect_regex(attrs_values_names
@@ -865,8 +837,18 @@ disabmr_get_last_unmerged_set <- function() {}
                   paste0(attr_names_prefix
                        , attrs_values_names[attrs_values_names_short])
           }
+      }
+      if(isTRUE(match_attr_value_parcially)) {
           filter_sets <- function(attr_name, attr_value) {
-              sapply(lapply(sets, attr, attr_name), `[`, 1) %in% attr_value
+              vals <- lapply(lapply(sets, attr, attr_name, exact = TRUE), `[[`, 1)
+              vals <- unlist(lapply(vals, function(a) if(is.null(a)) NA else a))
+              sapply(stringi::stri_detect_fixed(vals, attr_value), isTRUE)
+          }
+      } else {
+          filter_sets <- function(attr_name, attr_value) {
+              vals <- lapply(lapply(sets, attr, attr_name, exact = TRUE), `[[`, 1)
+              vals <- unlist(lapply(vals, function(a) if(is.null(a)) NA else a))
+              vals %in% attr_value
           }
       }
       sets_filters <- mapply(filter_sets
@@ -878,55 +860,206 @@ disabmr_get_last_unmerged_set <- function() {}
   }
 #+END_SRC
 
-
 #+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
   test_that("disambr_in_sets", {
+
   a <- list(disambr_set_attr(c(1,2,3), a = 1)
           , disambr_set_attr(c(1,2,3), b = 2, a = 1)
-          , disambr_set_attr(c(1,2,3), c = 3, a = 2))
+          , disambr_set_attr(c(1,2,3), c = 3, a = 2)
+          , disambr_set_attr(c(1,2,3), d = 4, a = 212))
 
   expect_true(all(disambr_in_sets(a)))
   expect_false(any(disambr_in_sets(a, b= 2, a = 2)))
   expect_true(any(disambr_in_sets(a, b= 2, a = 1)))
   expect_true(any(disambr_in_sets(a, a = 1)))
   expect_true(any(disambr_in_sets(a, disambr_set_a = 1)))
+  expect_equal(sum(disambr_in_sets(a, a = 1, match_attr_value_parcially = TRUE)), 3)
   })
 #+END_SRC
 
-**** disabmr_in_first_data_set
+*** disambr_get_first_data_set
+:PROPERTIES:
+:ID:       org:13h9svy0mti0
+:END:
 #+BEGIN_SRC R :tangle R/disambr_sets.r
-  disabmr_in_first_data_set <- function(sets, ...) {
-      set_num <- disambr_in_sets(sets, recipie = "disambr_make_wos_tsv_authors", ...)
+  ##' Get first data set in list sets
+  ##' @param sets list of sets
+  ##' @param recipe function that produced the data set (parcial match allowed)
+  ##' @param ... other attributes
+  ##' @param match_parcially whether to match recipe partially
+  ##' @inheritDotParams disambr_in_sets
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @importFrom magrittr %>%
+  ##' @import magrittr data.table dplyr stringr
+  ##' @export 
+  disambr_get_first_data_set <- function(sets, recipe, ...
+                                      , match_parcially = TRUE) {
+      set_num <-
+          disambr_in_sets(sets, recipe = recipe, ...
+                        , match_attr_value_parcially = match_parcially)
+      ## get first
       set_num <- which(set_num)[1]
       return(sets[[set_num]])
   }
 #+END_SRC
 
-**** disabmr_in_last_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_in_last_set <- function() {}
+
+#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
+  test_that("disambr_get_first_data_set", {
+    a <- list(disambr_set_attr(c(1,2,3), recipe = "my_function_123")
+              , disambr_set_attr(c(1,2,3,4), recipe = "my_function_23")
+              , disambr_set_attr(c(1,2,3,4,5), recipe = "my_function_3a")
+              , disambr_set_attr(c(1,2,3,4,5,6), recipe = "my_function_1"))
+
+    expect_length(disambr_get_first_data_set(a, "3"), 3)
+    expect_length(disambr_get_first_data_set(a, "3a"), 5)
+    expect_null(disambr_get_first_data_set(a, "aaaaa"))
+  })
 #+END_SRC
 
-**** disabmr_in_first_set
+*** disambr_get_last_weak_set
+:PROPERTIES:
+:ID:       org:3ra9svy0mti0
+:END:
 #+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_in_first_set <- function() {}
+  ##' Gets last set in sets which strength less or equal than 0.5
+  ##' @param sets sets
+  ##' @param ... other attributes
+  ##' @inheritDotParams disambr_in_sets
+  ##' @return set or NULL if not found
+  ##' 
+  ##' @export 
+  disambr_get_last_weak_set <- function(sets, ...) {
+      set_index <- disambr_in_sets(sets, ...
+                                 , strength = seq(from = 0.1, to = 0.5, by = 0.01))
+      set_index <- which(set_index)
+      set_index <- set_index[length(set_index)]
+      if(length(set_index) == 1) {
+          return(sets[[set_index]])    
+      } else {
+          return()
+      }
+  }
 #+END_SRC
 
-**** disabmr_in_merged_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_in_merged_set <- function() {}
+#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
+test_that("disambr_get_last_weak_set", {
+a <- list(disambr_set_attr(c(1,2,3), strength = 0.1)
+        , disambr_set_attr(c(1,2,3,4), strength = 0.6)
+        , disambr_set_attr(c(1,2,3,4,5), strength = 0.5)
+        , disambr_set_attr(c(1,2,3,4,5,6), strength = 1))
+
+expect_length(disambr_get_last_weak_set(a), 5)
+
+a <- list(disambr_set_attr(c(1,2,3,4), strength = 0.6)
+        , disambr_set_attr(c(1,2,3,4,5,6), strength = 1))
+
+expect_null(disambr_get_last_weak_set(a))
+
+})
 #+END_SRC
 
-**** disabmr_in_last_sans_merged_set
+
+*** disambr_get_strong_set
+:PROPERTIES:
+:ID:       org:xz69svy0mti0
+:END:
 #+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_in_last_sans_merged_set <- function() {}
+  ##' Get sets with strength parameter of 1 and rbind them into sincle set
+  ##' @param sets sets
+  ##' @param ... other attributes
+  ##' @inheritDotParams disambr_in_sets
+  ##' @return set or NULL if none found
+  ##' 
+  ##' @export 
+  disambr_get_strong_set <- function(sets ...) {
+      sets_index <- disambr_in_sets(sets, ...
+                                  , strength = 1)
+      ## if not sets return NULL
+      if(!any(sets_index)) return()
+      sets <- sets[sets_index]
+      ## bind sets depending on class
+      sets_class <- sapply(lapply(sets, class), `[`, 1)
+      if(all(sets_class %in% "data.table")) {
+          sets <- data.table::rbindlist(sets)
+      } else if(all(sets_class %in% "list")) {
+          sets <- do.call(c, sets)
+      }
+      return(sets)
+  }
+
 #+END_SRC
 
-**** disabmr_in_last_unmerged_person_set
-#+BEGIN_SRC R :tangle R/disambr_sets.r
-disabmr_in_last_unmerged_person_set <- function() {}
+#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
+  test_that("disambr_get_strong_set", {
+    a <- list(disambr_set_attr(list(1,2,3), strength = 1)
+            , disambr_set_attr(list(1,2,3,4), strength = 0.6)
+            , disambr_set_attr(list(1,2,3,4,5), strength = 0.4)
+            , disambr_set_attr(list(1,2,3,4,5,6), strength = 1))
+
+    expect_length(disambr_get_strong_set(a), 9)
+
+    a <- list(disambr_set_attr(data.table::data.table(c(1,2,3)), strength = 1)
+            , disambr_set_attr(data.table::data.table(c(1,2,3,4)), strength = 0.6)
+            , disambr_set_attr(data.table::data.table(c(1,2,3,4,5)), strength = 0.4)
+            , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6)), strength = 1))
+
+    expect_is(disambr_get_strong_set(a), "data.table")
+
+    a <- list(disambr_set_attr(data.table::data.table(c(1,2,3)), strength = 0.1)
+            , disambr_set_attr(data.table::data.table(c(1,2,3,4)), strength = 0.6)
+            , disambr_set_attr(data.table::data.table(c(1,2,3,4,5)), strength = 0.4)
+            , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6)), strength = 0.1))
+
+    expect_null(disambr_get_strong_set(a))
+
+  })
 #+END_SRC
 
+
+*** disambr_get_last_unstrong_set
+:PROPERTIES:
+:ID:       org:4v89svy0mti0
+:END:
+#+BEGIN_SRC R :tangle R/disambr_sets.r
+  ##' Gets last set from sets with strength <= 0.5 and excludes from this set all sets with strength of 1
+  ##' @param sets sets
+  ##' @return set or NULL
+  ##' @export 
+  disambr_get_last_unstrong_set <- function(sets) {
+      weak_set <- disambr_get_last_weak_set(sets)
+      strong_set <- disambr_get_strong_set(sets)
+      if(is.null(strong_set) || is.null(weak_set)) {
+          return(weak_set)
+      } else if("data.table" %in% class(weak_set) &&
+                "data.table" %in% class(strong_set)) {
+          return(data.table::fsetdiff(weak_set, strong_set))
+          ## comb_set <- rbind(weak_set, strong_set)
+          ## comb_set <- 
+          ##     comb_set[!duplicated(comb_set, fromLast = FALSE) &
+          ##              !duplicated(comb_set, fromLast = TRUE)]
+          ## return(comb_set) #
+          ## return(weak_set[strong_set[[1]] !=  weak_set[[1]] ||
+                          ## strong_set[[2]] !=  weak_set[[2]]])
+      } else {
+          disambr_stop("Weak and strong sets should be data.tables!")
+      }
+  }
+
+#+END_SRC
+
+#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
+test_that("disambr_get_last_unstrong_set", {
+a <- list(disambr_set_attr(data.table::data.table(c(1,2,3), c(1,2,8)), strength = 1)
+        , disambr_set_attr(data.table::data.table(c(1,2,3,4), c(1,2,3,4)), strength = 0.6)
+        , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6,7,8), c(1,2,3,4,5,6,7,8)), strength = 0.4)
+        , disambr_set_attr(data.table::data.table(c(1,2,7,5), c(1,2,7,5)), strength = 1))
+
+expect_length(nrow(disambr_get_last_unstrong_set(a)), 4)
+})
+#+END_SRC
 
 
 *** disambr_set_attr
@@ -945,16 +1078,16 @@ disabmr_in_last_unmerged_person_set <- function() {}
 
   ##' Adds attribures to the set with data.table::setattr
   ##' @param focal_set Set to add attribute to
-  ##' @param check_attr_names Whether to check for short names of attributes. See `attr_names_prefix`.
+  ##' @param check_attr_names_prefix Whether to check for short names of attributes. See `attr_names_prefix`.
   ##' @param attr_names_prefix If name does not start with this prefix (default is 'disambr_set_'), it will add this prefix before attribute name.
   ##' @param ... Named attributes
   ##' @return `focal_set`
   ##' 
   ##' @export 
   disambr_set_attr <- function(focal_set
-                             , check_attr_names = TRUE
-                             , attr_names_prefix = "disambr_set_"
-                             , ...) {
+                             , ...
+                             , check_attr_names_prefix = TRUE
+                             , attr_names_prefix = "disambr_set_") {
       attrs_values <- list(...)
       ## check if ... is provided and if not do nothing
       attrs_values_length <- length(attrs_values)
@@ -963,7 +1096,7 @@ disabmr_in_last_unmerged_person_set <- function() {}
       attrs_values_names <- names(attrs_values)
       if(length(attrs_values_names) != attrs_values_length)
           disambr_stop("'...' arguments should be all named!")
-      if(isTRUE(check_attr_names)) {
+      if(isTRUE(check_attr_names_prefix)) {
       ## add "disambr_set_" if attr names are short
       attrs_values_names_short <-
           !stringi::stri_detect_regex(attrs_values_names
@@ -1005,6 +1138,17 @@ disabmr_in_last_unmerged_person_set <- function() {}
 
 #+END_SRC
 
+*** disambr_add_set_attr
+#+BEGIN_SRC R :tangle R/disambr_sets.r
+  disambr_add_set_attr <- function(focal_set, template_set, ...) {
+      ## copy attr from template_set
+      ## add time stamp
+      ## add duration
+      ## add recipie
+      ## set attributes from ...
+      return()
+   }
+#+END_SRC
 
 
 *** disambr_save_set
@@ -3485,11 +3629,11 @@ tests
       ## start message
       disambr_mess_start()
       ## get sets
-      input_set <- disabmr_get_last_unmerged(sets)
-      input_set <- disabmr_get_last_minus_merged(sets)
-      merged_set <- disabmr_get_all_merged(sets)
-      ## return_set <- disabmr_get_last_saved_set(...)
-      return_set <- disabmr_get_return_set(sets, ...)
+      input_set <- disambr_get_last_unmerged(sets)
+      input_set <- disambr_get_last_minus_merged(sets)
+      merged_set <- disambr_get_all_merged(sets)
+      ## return_set <- disambr_get_last_saved_set(...)
+      return_set <- disambr_get_return_set(sets, ...)
       ## procedure
       if(is.null(return_set)) {
           disambr_mess("- checking references in common")
