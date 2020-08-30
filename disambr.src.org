@@ -1139,61 +1139,251 @@ expect_length(nrow(disambr_get_last_unstrong_set(a)), 4)
 #+END_SRC
 
 *** disambr_add_set_attr
+:PROPERTIES:
+:ID:       org:2z9bmie0nti0
+:END:
 #+BEGIN_SRC R :tangle R/disambr_sets.r
-  disambr_add_set_attr <- function(focal_set, template_set, ...) {
-      ## copy attr from template_set
+  ##' Add disambr attribures to focal set from template set and update some of them
+  ##'
+  ##' It updates:
+  ##' - time stamp (disambr_set_st) to current
+  ##' - disambr_set_file to NULL
+  ##' - adds to disambr_set_recipe the calling procedure
+  ##' - adds disambr_set_duration 
+  ##' @param focal_set Set
+  ##' @param template_set Set to inhirit attributes from
+  ##' @param ... other attributes
+  ##' @param attr_names_prefix "disambr_set_" by default. Only prefixed by it will be copied from `template_set` 
+  ##' @inheritDotParams disambr_set_attr
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @export 
+  disambr_add_set_attr <- function(focal_set
+                                 , template_set = NULL
+                                 , ...
+                                 , attr_names_prefix = "disambr_set_") {
+      ## copy only disambr attr from template_set
+      template_attr <- attributes(template_set)
+      template_attr_disambr <- 
+          stringi::stri_detect_regex(names(template_attr)
+                                   , paste0("^", attr_names_prefix))
+      template_attr <- template_attr[template_attr_disambr]
+      mapply(function(a, name) {
+          data.table::setattr(focal_set, name, a)
+      }
+    , template_attr
+    , names(template_attr))
+      ## remove file attributes
+      disambr_set_attr(focal_set, file = NULL)
       ## add time stamp
+      disambr_set_attr(focal_set, ts = Sys.time())
       ## add duration
-      ## add recipie
+      if(exists("disambr_start_time", where = parent.frame())) {
+          disambr_start_time <- 
+              get("disambr_start_time", pos = parent.frame())
+          disambr_set_attr(focal_set
+                         , duration = Sys.time() - disambr_start_time)
+      }
+      ## add recipe (procedure call) and name
+      recipe <- attributes(template_set)$disambr_set_recipe
+      procedure_call <- deparse(sys.calls()[[sys.nframe() - 1]])
+      procedure_name <-
+          stringi::stri_extract_first_regex(procedure_call
+                                          , c("^[^()]+"))
+      procedure_short_name <-
+          stringi::stri_replace_first_regex(procedure_name
+                                          , paste0("^", attr_names_prefix), "")
+      disambr_set_attr(focal_set
+                     , name = procedure_short_name
+                     , recipe = c(list(list(func = procedure_name
+                                          , call = procedure_call))
+                                , recipe))
       ## set attributes from ...
-      return()
-   }
+      disambr_set_attr(focal_set, ...)
+      return(focal_set)
+  }
+
+
+
 #+END_SRC
 
+
+#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
+  test_that("disambr_add_set_attr", {
+
+  a <- data.table(a = c(1,2,3,4)
+                 ,b = c(11,22,33,44))
+
+  b <- data.table(a = c(6,7,8)
+                 ,b = c(66,77,88))
+
+  disambr_set_attr(a
+                 , name = "a"
+                 , strength = 0.5
+                 , ts = Sys.time()
+                 , file = "lalala.rds"
+                 , recipe = list("second_procedure"
+                               , "first_procedure"))
+
+  foo <- function(b, a, args = NULL, verbose = getOption("verbose"), ...) {
+      disambr_mess_start()
+      disambr_add_set_attr(b, a, ...)
+      return(attributes(b))
+  }
+
+  expect_equal(foo(b,a, name = "new.name")$disambr_set_name, "new.name")
+  expect_equal(foo(b,a, strength = 1)$disambr_set_strength, 1)
+  expect_equal(foo(b,a)$disambr_set_name, "foo")
+
+  expect_equal(foo(a), "foo")
+  expect_null(foo(NULL, a))
+  expect_length(foo(b, a)$disambr_set_recipe, 3)
+  expect_length(foo(b, NULL)$disambr_set_recipe, 1)
+
+  })
+
+#+END_SRC
 
 *** disambr_save_set
 :PROPERTIES:
 :ID:       org:7m03hcq0hti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_sets.r
+  ##' Save set and adds file attribute
+  ##' @param set_to_save set
+  ##' @param save_set_as if TRUE the the file name is made from disambr_set_name attribute
+  ##' @param save_set_prefix file prefix, default is "disambr-set."
+  ##' @param save_set_dir file dir, default is "disambr-sets-rds" in current directory
+  ##' @param use_time_stamp add time stamps at the end of file name, adds by default
+  ##' @return file namej
+  ##' 
+  ##' @export 
   disambr_save_set <- function(set_to_save
                              , save_set_as = getOption("disambr_save_as")
                              , save_set_prefix = getOption("disambr_save_set_prefix")
+                             , save_set_dir = getOption("disambr_save_set_dir")
                              , use_time_stamp = getOption("disambr_save_set_time_stamp")) {
+      ## do not save by default
       if(length(save_set_as) != 0) {
+          ## make name if it is just TRUE
           if(isTRUE(save_set_as)) {
               save_set_as <- attr(set_to_save, "disambr_set_name")
-              if(length(save_set_prefix) == 0) {
-                  save_set_prefix <- "disambr-set."
-              }
+              ## use timestamps by default
               if(isTRUE(use_time_stamp) ||
                  length(use_time_stamp) == 0) {
                   save_set_as <-
                       paste0(save_set_as, "."
                            , format(Sys.time(), "%Y-%m-%dT%H-%M"))
               }
-              save_set_as <-
-                  paste0(save_set_prefix
-                       , save_set_as
-                       , ".rds")
+              save_set_as <- paste0(save_set_as, ".rds")
+              if(length(save_set_prefix) == 0) {
+                  save_set_prefix <- "disambr-set."
+              }
           }
+          ## if save as provided use it, add prefix if it is provided as well
           if(is.character(save_set_as)) {
               if(length(save_set_prefix) != 0) {
                   save_set_as <- paste0(save_set_prefix, save_set_as)
               }
+              ## add directory or default
+              if(length(save_set_dir) == 0) {
+                  save_set_dir <- "disambr-sets-rds"
+              }
+              dir.create(save_set_dir, showWarnings = FALSE, recursive = TRUE)
+              save_set_as <- file.path(save_set_dir, save_set_as)
+              ## add file attribute
+              disambr_set_attr(set_to_save, file = save_set_as)
+              ## save
               saveRDS(set_to_save, file = save_set_as)
-              message(
-                  "- saved set as '", save_set_as, "'")
+              disambr_mess(paste0(
+                  "- set saved as '", save_set_as, "'"))
+              return(save_set_as)
           } else {
-              message(
-                  "disambr: do not know how to save 'set_to_save' as '", save_set_as, "'")
+              disambr_mess(
+                  paste0("- do not know how to save 'set_to_save' as '"
+                       , save_set_as, "'"))
+              return()
           }
+      } else {
+          return()
       }
-      return()
   }
 #+END_SRC
 
-*** disambr_subsets
+#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
+  test_that("disambr_save_set", {
+      ## check files manually
+      expect_null(disambr_save_set(disambr_set_attr(c(1,2,3)
+                                                  , name = "bar")
+                                 , save_set_as = NULL
+                                 , save_set_dir = "../disambr-sets-rds"))
+      ## readRDS("../disambr-sets-rds/disambr-set.bar.2020-08-30T10-25.rds")
+      ## with making files
+      expect_match(disambr_save_set(disambr_set_attr(c(1,2,3)
+                                                   , name = "bar")
+                                  , save_set_as = TRUE
+                                  , save_set_dir = "disambr-save-set-test")
+                 , "disambr-save-set-test/disambr-set\.bar\.")
+      unlink("disambr-save-set-test", recursive = TRUE)
+  })
+#+END_SRC
+
+
+*** disambr_get_output_set
+
+#+BEGIN_SRC R :tangle R/disambr_sets.r
+  ##' Gets output set from sets (in case we already made it)
+  ##' @param sets sets
+  ##' @param get_output_set Whether to search for output set. Default is not.
+  ##' @param attr_names_prefix prefix for attributes
+  ##' @return NULL or output set
+  ##' 
+  ##' @export 
+  disambr_get_output_set <- function(sets
+                                   , get_output_set = getOption("disambr_get_output_set")
+                                   , attr_names_prefix = "disambr_set_") {
+      if(isTRUE(get_output_set)) {
+          procedure_call <- deparse(sys.calls()[[sys.nframe() - 1]])
+          procedure_name <-
+              stringi::stri_extract_first_regex(
+                           procedure_call, c("^[^()]+"))
+          procedure_short_name <-
+              stringi::stri_replace_first_regex(
+                           procedure_name
+                         , paste0("^", attr_names_prefix), "")
+          output_set_index <-
+              which(disambr_in_sets(sets, name = procedure_short_name))
+          if(length(output_set_index) != 1) return()
+          else return(sets[[output_set_index]])
+      } else {
+          return()
+      }
+   }
+
+#+END_SRC
+
+
+#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
+test_that("disambr_get_output_set", {
+a <- list(disambr_set_attr(c(1,), name = "foo1")
+        , disambr_set_attr(c(1,2), name = "foo", a = 1)
+        , disambr_set_attr(c(1,2,3), name = "foo0", a = 2)
+        , disambr_set_attr(c(1,2,3,4), name = "bar", a = 212))
+
+
+foo <- function(sets, ...) {
+    return(disambr_get_output_set(sets, ...))
+}
+
+expect_length(foo(a, get_output_set = TRUE), 2)
+expect_null(foo(a))
+})
+#+END_SRC
+
+
+
+*** disambr_subsets                                            :depricated:
 :PROPERTIES:
 :ID:       org:vd6faz31gti0
 :END:
@@ -1256,7 +1446,7 @@ expect_length(nrow(disambr_get_last_unstrong_set(a)), 4)
   ##                                 , kind = "bad"))
 #+END_SRC
 
-*** disambr_setattr
+*** disambr_setattr                                            :depricated:
 :PROPERTIES:
 :ID:       org:oak78r30hti0
 :END:
@@ -3621,65 +3811,6 @@ tests
 
 #+END_SRC
 
-*** template
-#+BEGIN_SRC R
-  disambr_set_template <- function(sets
-                                 , refrerences_in_common = 3
-                                 , ...) {
-      ## start message
-      disambr_mess_start()
-      ## get sets
-      input_set <- disambr_get_last_unmerged(sets)
-      input_set <- disambr_get_last_minus_merged(sets)
-      merged_set <- disambr_get_all_merged(sets)
-      ## return_set <- disambr_get_last_saved_set(...)
-      return_set <- disambr_get_return_set(sets, ...)
-      ## procedure
-      if(is.null(return_set)) {
-          disambr_mess("- checking references in common")
-          check_self_citations <-
-              function(id1, id2) {
-                  own_papers <- 
-                      author_set$paper_id[
-                                     unique(merged_set[author_id1 %in% id1 |
-                                                       author_id2 %in% id1
-                                                     , c(author_id1, author_id2)])]
-                  ## mach onw papers to own sitations
-                  self_citations <- 
-                      match(own_papers
-                          , refs_set[paper_id %in% own_papers, c(doi_cited_id)]
-                          , nomatch = 0
-                          , incomparables = NA) > 0
-                  self_citations <- own_papers[self_citations]
-                  cite_self_citations <-
-                      match(refs_set[paper_id == id2, c(doi_cited_id)]
-                          , own_papers
-                          , nomatch = 0
-                          , incomparables = NA) > 0
-                  return(any(cite_self_citations))
-              }
-          return_set <- 
-              pbmapply(function(id1, id2) {
-                  if(check_self_citations(id1, id2)) {
-                      return(TRUE)
-                  } else if(check_self_citations(id2, id1)) {
-                      return(TRUE)
-                  } else {
-                      return(FALSE)
-                  }
-              }
-            , input_set$author_id1
-            , input_set$author_id2)
-          return_set <- input_set[return_set]
-      }
-      ## set attribures save and return
-      disambr_add_attr_and_save(return_set, input_set)
-      return(c(sets, list(return_set)))
-  }
-
-
-
-#+END_SRC
 
 ** disambr_aev_depricated
 *** disambr_set_co_authors                                     :depricated:
