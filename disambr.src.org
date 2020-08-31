@@ -983,9 +983,6 @@ expect_equal(nrow(match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "a
   ##' @inheritDotParams disambr_in_sets
   ##' @return 
   ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
   ##' @export 
   disambr_get_first_data_set <- function(sets, recipe, ...
                                        , match_parcially = TRUE) {
@@ -1895,7 +1892,6 @@ disambr_read_tsv <- function(f) {
   ##' 
   ##' @md 
   ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
   ##' @export 
   disambr_read_tsv_wos <- function(f, header) {
         s <- read_to_utf8(f)
@@ -4371,7 +4367,6 @@ microbenchmark(combi(v), combn(v,2))
   ##' 
   ##' @md 
   ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
   ##' @export 
   disambr_set_co_authors <- function(sets, procedures = NULL) {
       message("disambr: Starting disambr_set_co_authors...")
@@ -4408,7 +4403,6 @@ microbenchmark(combi(v), combn(v,2))
   ##' 
   ##' @md 
   ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
   ##' @export 
   disambr_get_3_refs_common <- function(sets, procedures = NULL) {
       message("Starting disambr_get_3_refs_common...")

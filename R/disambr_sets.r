@@ -73,9 +73,6 @@ disambr_in_sets <- function(sets
 ##' @inheritDotParams disambr_in_sets
 ##' @return 
 ##' 
-##' @md 
-##' @importFrom magrittr %>%
-##' @import magrittr data.table dplyr stringr
 ##' @export 
 disambr_get_first_data_set <- function(sets, recipe, ...
                                      , match_parcially = TRUE) {

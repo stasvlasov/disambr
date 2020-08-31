@@ -90,7 +90,6 @@ parse_tsv_wos_header <- function(first_line) {
 ##' 
 ##' @md 
 ##' @importFrom magrittr %>%
-##' @import magrittr data.table dplyr stringr
 ##' @export 
 disambr_read_tsv_wos <- function(f, header) {
       s <- read_to_utf8(f)
