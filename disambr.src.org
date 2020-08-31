@@ -184,7 +184,7 @@ Description: file:readme.org
                      , role = "aut"))
      , Imports = paste(package.packages.man.ver
                      , collapse = ", ")
-     , Depends = "R (>= 4.0)"
+     , Depends = "R (>= 4.0), data.table (>= 1.12)"
      , Suggests = "testthat"
      , Version = "0.1"
      , Date = Sys.Date()
@@ -2978,11 +2978,11 @@ this one is not needed as doi is unique and we can add them to refs_table
   ##' @export 
   disambr_set_tekles_bornmann <-
       function(sets
-               , file_path = "../data/tekles-bornmann-researcher-ids.txt"
-             ## , file_path =
-                   ## system.file("testdata" 
-                             ## , "tekles-bornmann-researcher-ids.txt"
-             ## , package = "disambr")
+               ## , file_path = "../data/tekles-bornmann-researcher-ids.txt"
+             , file_path =
+                   system.file("testdata" 
+                             , "tekles-bornmann-researcher-ids.txt"
+             , package = "disambr")
   ) {
       disambr_mess_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -4347,331 +4347,43 @@ microbenchmark(combi(v), combn(v,2))
   , save_sets_dir = "../data")
 #+END_SRC
 
-*** 
+*** on antec
 #+BEGIN_SRC R
   ds <- disambr_read("../data/wos-slow-export-subset"
                    , save_sets_as = "wos-slow-export-subset.rds"
                    , save_sets_dir = "../data")
 #+END_SRC
 
-** Depricated
-*** disambr_set_co_authors                                     :depricated:
-:PROPERTIES:
-:ID:       org:2mo3hcq0hti0
-:END:
-#+BEGIN_SRC R :tangle no
-##' Returns sets of people ids that are defenetely different based on co-authorship
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @export 
-  disambr_set_co_authors <- function(sets, procedures = NULL) {
-      message("disambr: Starting disambr_set_co_authors...")
-      if(!is.list(sets)) stop("disambr: 'sets' parameter should be list!")
-      disambr_subsets("person")
-      focal.set <- sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
-          ## TODO: implement extraction from different data type
-          extract2(1)
-      new.set <- focal.set %>%
-          {split(1:nrow(.), .$paper_id)}
-      ## set set's attributes
-      attributes(new.set)$disambr.set.unit <- "person.distinct"
-      attributes(new.set)$disambr.set.unit.ref.md5 <- digest(focal.set, "md5")
-      return(c(sets, list(new.set)))
-  }
 
-  ## my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
-  ## dt <- disambr_read(my.file2) %>% disambr_set_co_authors
-  ## dt[[4]]
+*** on blade
 
+#+BEGIN_SRC R
+  setwd("S:/disambr")
 
-#+END_SRC
-*** disambr_get_3_refs_common                                  :depricated:
-:PROPERTIES:
-:ID:       org:amr3hcq0hti0
-:END:
-#+BEGIN_SRC R :tangle no
+    options(disambr_get_output_set = TRUE)
+    options(disambr_mess_pretty = TRUE)
+    options(disambr_save_as = TRUE)
+    options(disambr_save_set_dir = "eva-1")
 
-  ##' Returns set of people with save email addresses
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @export 
-  disambr_get_3_refs_common <- function(sets, procedures = NULL) {
-      message("Starting disambr_get_3_refs_common...")
-      ## TODO: extract teh set that we need here (person, dyads)
-      similar.last.names <- sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "similar.last.names") %>%
-          extract2(1)
-      set.data <-sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
-          extract2(1)
-      new.set <-
-          similar.last.names %>% 
-          dplyr::mutate(same.affiliations =
-                            mapply(function(var1, var2)
-                                any(set.data$author_affiliations[var1] %in% 
-                                    set.data$author_affiliations[var2])
-                            , Var1, Var2))
-      ## new.set <- dplyr::filter(new.set, last.name.dist < 2)
-      attributes(new.set)$disambr.set.unit <- "same.affiliation"
-      return(c(sets, list(new.set)))
-  }
-
-  ## my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
-  ## dt <- disambr_read(my.file2) %>%
-      ## disambr_set_co_authors %>%
-      ## disambr_get_similar_initials %>%
-      ## disambr_get_similar_last_names %>% 
-      ## disambr_get_same_affiliation
-  ## dt[[7]]$same.affiliations
-#+END_SRC
-
-*** disambr_get_same_affiliation                               :depricated:
-:PROPERTIES:
-:ID:       org:nqu3hcq0hti0
-:END:
-#+BEGIN_SRC R :tangle no
-  ##' Returns set of people with save email addresses
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
-  ##' @export 
-  disambr_get_same_affiliation <- function(sets, procedures = NULL) {
-      message("Starting disambr_get_same_affiliation...")
-      ## TODO: extract teh set that we need here (person, dyads)
-      similar.last.names <- sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "similar.last.names") %>%
-          extract2(1)
-      set.data <-sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
-          extract2(1)
-      new.set <-
-          similar.last.names %>% 
-          dplyr::mutate(same.affiliations =
-                            mapply(function(var1, var2)
-                                any(set.data$author_affiliations[var1] %in% 
-                                    set.data$author_affiliations[var2])
-                            , Var1, Var2))
-      ## new.set <- dplyr::filter(new.set, last.name.dist < 2)
-      attributes(new.set)$disambr.set.unit <- "same.affiliation"
-      return(c(sets, list(new.set)))
-  }
-
-  ## my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
-  ## dt <- disambr_read(my.file2) %>%
-      ## disambr_set_co_authors %>%
-      ## disambr_get_similar_initials %>%
-      ## disambr_get_similar_last_names %>% 
-      ## disambr_get_same_affiliation
-  ## dt[[7]]$same.affiliations
-#+END_SRC
-
-*** disambr_get_same_coauthor                                  :depricated:
-:PROPERTIES:
-:ID:       org:hwx3hcq0hti0
-:END:
-#+BEGIN_SRC R :tangle no
-  ##' Returns set of people with save email addresses
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
-  ##' @export 
-  disambr_get_same_coauthor <- function(sets, procedures = NULL) {
-      message("Starting disambr_get_same_email...")
-      ## TODO: extract teh set that we need here (person, dyads)
-      similar.last.names <- sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "similar.last.names") %>%
-          extract2(1)
-      set.data <-sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
-          extract2(1)
-      fun <- function(var1, var2) {
-          any(set.data[paper_id %in% paper_id[var1] &
-                       !(author_name %in% author_name[var1])]$author_name %in% 
-              set.data[paper_id %in% paper_id[var2] &
-                       !(author_name %in% author_name[var2])]$author_name)
-      }
-      new.set <-
-          similar.last.names %>% 
-          dplyr::mutate(
-                     same.co.author = mapply(fun, Var1, Var2))
-      ## new.set <- dplyr::filter(new.set, last.name.dist < 2)
-      attributes(new.set)$disambr.set.unit <- "same.email"
-      return(c(sets, list(new.set)))
-  }
-
-  ## my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
-  ## dt <- disambr_read(my.file2) %>%
-      ## disambr_set_co_authors %>%
-      ## disambr_get_similar_initials %>%
-      ## disambr_get_similar_last_names %>% 
-      ## disambr_get_same_coauthor
-
-  ## dt[[7]]
+  ts_eva_full <-
+        disambr_read("wos-slow-export-subset"
+                   , save_sets_as = "wos-slow-export-subset.rds"
+                   , save_sets_dir = "eva-1") %>% 
+        disambr_set_tekles_bornmann %>% #59149  vs_1962896
+        disambr_set_on_same_paper %>%
+        disambr_set_similar_initials %>% 
+        disambr_set_similar_last_names %>%
+        disambr_set_same_email %>% 
+        disambr_set_same_affiliation %>%
+        disambr_set_cite_others_paper %>%
+        disambr_set_common_references %>%
+        disambr_set_cite_self_citation %>%
+        disambr_set_common_keywords %>%
+        disambr_set_same_researcher_ids
 #+END_SRC
 
 
-*** disambr_get_similar_last_names                             :depricated:
-:PROPERTIES:
-:ID:       org:y114hcq0hti0
-:END:
-#+BEGIN_SRC R :tangle no
-  ##' Returns set of people with similar last names
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
-  ##' @export 
-  disambr_get_similar_last_names <- function(sets, procedures = NULL) {
-      message("Starting disambr_get_similar_last_names...")
-      ## TODO: extract teh set that we need here (person, dyads)
-      set.similar.initials <- sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "similar.initials") %>%
-          extract2(1)
-      set.data <-sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
-          extract2(1)
-      new.set <-
-          dplyr::mutate(
-                     set.similar.initials
-                   , last.name.dist =
-                         stringdist(set.data$author_last_name[Var1]
-                                  , set.data$author_last_name[Var2]
-                                  , method = "dl"))
-      new.set <- dplyr::filter(new.set, last.name.dist < 2)
-      attributes(new.set)$disambr.set.unit <- "similar.last.names"
-      return(c(sets, list(new.set)))
-  }
-
-  ## my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
-  ## dt <- disambr_read(my.file2) %>%
-      ## disambr_set_co_authors %>%
-      ## disambr_get_similar_initials %>%
-      ## disambr_get_similar_last_names
-  ## dt[[6]]
-#+END_SRC
-
-*** disambr_get_same_email                                     :depricated:
-:PROPERTIES:
-:ID:       org:e544hcq0hti0
-:END:
-#+BEGIN_SRC R :tangle no
-  ##' Returns set of people with save email addresses
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
-  ##' @export 
-  disambr_get_same_email <- function(sets, procedures = NULL) {
-      message("Starting disambr_get_same_email...")
-      ## TODO: extract teh set that we need here (person, dyads)
-      similar.last.names <- sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "similar.last.names") %>%
-          extract2(1)
-      set.data <-sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
-          extract2(1)
-      new.set <-
-          similar.last.names %>% 
-          dplyr::mutate(same.email = mapply(function(var1, var2)
-                            set.data$author_email[var1] == set.data$author_email[var2]
-                            , Var1, Var2))
-      ## new.set <- dplyr::filter(new.set, last.name.dist < 2)
-      attributes(new.set)$disambr.set.unit <- "same.email"
-      return(c(sets, list(new.set)))
-  }
-
-  ## my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
-  ## dt <- disambr_read(my.file2) %>%
-      ## disambr_set_co_authors %>%
-      ## disambr_get_similar_initials %>%
-      ## disambr_get_similar_last_names %>% 
-      ## disambr_get_same_email
-#+END_SRC
-
-
-
-
-*** disambr_get_similar_initials                               :depricated:
-:PROPERTIES:
-:ID:       org:lk74hcq0hti0
-:END:
-#+BEGIN_SRC R :tangle no
-  ##' Returns set of people with similar initials
-  ##' @param sets 
-  ##' @param procedures 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
-  ##' @export 
-  disambr_get_similar_initials <- function(sets, procedures = NULL) {
-      message("Starting disambr_get_similar_initials...")
-      ## sapply(sets,attr, "disambr.set.unit")
-      set.different.authors <-
-          sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person.distinct") %>%
-          extract2(1)
-      set.data <-sets %>%
-          extract(sapply(.,attr, "disambr.set.unit") == "person") %>%
-          extract2(1)
-      ## procedurs
-      subset.similar.initials <- function(comb) {
-          a <- set.different.authors[[comb[1]]]
-          b <- set.different.authors[[comb[2]]]
-          expand.grid(a, b)
-      }
-      new.set <- combn(1:length(set.different.authors), 2
-                     , simplify = FALSE
-                       ## , FUN = subset.similar.initials
-                       )
-      message("...combn produced ", length(new.set), " pairs of pubs")
-      new.set <- pblapply(new.set, subset.similar.initials)
-      message("...subset.similar.initials is done")
-      new.set <- data.table::rbindlist(new.set)
-      message("...rbindlist produced ", nrow(new.set), " pairs")
-      new.set <- dplyr::mutate(new.set
-                             , initials.dist =
-                                   stringdist(set.data$author_initials[Var1]
-                                            , set.data$author_initials[Var2]
-                                            , method = "lv"))
-      new.set <- dplyr::filter(new.set, initials.dist < 2)
-      attributes(new.set)$disambr.set.unit <- "similar.initials"
-      return(c(sets, list(new.set)))
-  }
-
-  ## my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
-  ## dt <- disambr_read(my.file2) %>%
-      ## disambr_set_co_authors %>%
-      ## disambr_get_similar_initials
-  ## dt[[5]]
-
-#+END_SRC
-
-** tests
+*** tests
 
 #+BEGIN_SRC R :results none :session :tangle no
   my.dir <- '../data'

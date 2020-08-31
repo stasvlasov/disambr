@@ -11,11 +11,11 @@
 ##' @export 
 disambr_set_tekles_bornmann <-
     function(sets
-             , file_path = "../data/tekles-bornmann-researcher-ids.txt"
-           ## , file_path =
-                 ## system.file("testdata" 
-                           ## , "tekles-bornmann-researcher-ids.txt"
-           ## , package = "disambr")
+             ## , file_path = "../data/tekles-bornmann-researcher-ids.txt"
+           , file_path =
+                 system.file("testdata" 
+                           , "tekles-bornmann-researcher-ids.txt"
+           , package = "disambr")
 ) {
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
