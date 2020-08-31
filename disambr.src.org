@@ -163,10 +163,10 @@ Description: file:readme.org
       "data.table (>= 1.12)"
     , "magrittr (>= 1.5)"
     , "stringi (>= 1.4)"
-    , "stringr (>= 1.4)"
-    , "dplyr (>= 0.8)"
-    , "tibble (>= 2.0)"
-    , "xml2 (>= 1.0)"
+    ## , "stringr (>= 1.4)"
+    ## , "dplyr (>= 0.8)"
+    ## , "tibble (>= 2.0)"
+    ## , "xml2 (>= 1.0)"
   )
 
   ## make description
@@ -184,13 +184,13 @@ Description: file:readme.org
                      , role = "aut"))
      , Imports = paste(package.packages.man.ver
                      , collapse = ", ")
-     , Depends = "R (>= 3.4)"
+     , Depends = "R (>=4.0)"
      , Suggests = "testthat"
      , Version = "0.1"
      , Date = Sys.Date()
      , URL = "https://github.com/stasvlasov/disambr"
      , BugReports = "https://github.com/stasvlasov/disambr/issues"
-     , References = "This research was supported (in part) by the Fetzer Franklin Fund of the John E. Fetzer Memorial Trust.\n\nvan den Akker, O. R., Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithm—Author name disambiguation for large Web of Science datasets."
+     , References = "This research was supported (in part) by the Fetzer Franklin Fund of the John E. Fetzer Memorial Trust. The EVA disambiguation algorithm is described in van den Akker, O. R., Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithm—Author name disambiguation for large Web of Science datasets."
            ) %>% use_description()
 
   use_lgpl_license(name = "Stanislav Vlasov")
@@ -808,6 +808,9 @@ disambr_cbind_lists <- function(...) {
 #+END_SRC
 
 *** match_fuzzy
+:PROPERTIES:
+:ID:       org:t4zk2360oti0
+:END:
 #+BEGIN_SRC R :tangle R/disambr_utils.r
 ##' Fuzzy match all combinations of character vector
 ##' @param bank 
@@ -1055,6 +1058,9 @@ expect_length(disambr_get_last_set(a), 2)
 #+END_SRC
 
 *** disambr_get_last_weak_set
+:PROPERTIES:
+:ID:       org:tb303360oti0
+:END:
 
 #+BEGIN_SRC R :tangle R/disambr_sets.r
   ##' Gets last set in sets which strength less or equal than 0.5
@@ -1558,6 +1564,14 @@ expect_null(foo(a))
 :ID:       org:rb0d18v0nti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_sets.r
+  ##' Reads last output set saved on disk
+  ##' @param read_output_set toggle. default is no
+  ##' @param save_set_prefix file prefix
+  ##' @param save_set_dir file dir
+  ##' @param attr_names_prefix arrt prefix
+  ##' @return 
+  ##' 
+  ##' @export 
   disambr_read_output_set <- function(read_output_set = getOption("disambr_read_output_set")
                                     , save_set_prefix = getOption("disambr_save_set_prefix")
                                     , save_set_dir = getOption("disambr_save_set_dir")
@@ -1745,7 +1759,6 @@ unlink("disambr_read_output_set_test", recursive = TRUE)
 #+BEGIN_SRC R :tangle R/disambr_read.r
   ##' Reads the data for disambiguation
   ##' @param files_path Path to data. You can specify almost everything
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -1816,6 +1829,11 @@ test
 :ID:       org:zbtgnb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_read.r
+  ##' Reads file based on file extention
+  ##' @param f full file path name
+  ##' @return data
+  ##' 
+  ##' @export 
   disambr_read_file <- function(f) {
       f_extention <- tools::file_ext(f)
       switch(f_extention
@@ -1873,7 +1891,6 @@ disambr_read_tsv <- function(f) {
   ##' Reads WoS tsv export file and makes disambr set out of it (just adding some attributes to the data.table)
   ##' @param f 
   ##' @param header 
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -1969,10 +1986,11 @@ disambr_read_tsv <- function(f) {
                               ))
               } else {
                   return(list(
-                      disambr_subsets(files_data_list
-                                    , list(disambr_set_name = "wos_records_tsv_export")
-                                    , negate_subsets = TRUE)
-                    , wos_publication
+                      ## TODO implement
+                      ## disambr_subsets(files_data_list
+                                    ## , list(disambr_set_name = "wos_records_tsv_export")
+                                    ## , negate_subsets = TRUE)
+                    wos_publication
                     , wos_author
                     , wos_reference
                     , citation_name_table
@@ -2593,7 +2611,7 @@ test_that("disambr_make_wos_tsv_authors", {
                  , doi = doi
                  , name_year = name_year)
           })
-      suppressWarnings(rbindlist(references_list))
+      suppressWarnings(data.table::rbindlist(references_list))
   }
 
 #+END_SRC
@@ -2962,8 +2980,13 @@ this one is not needed as doi is unique and we can add them to refs_table
   ##' @return updated WoS data
   ##' 
   ##' @export 
-  disambr_set_tekles_bornmann <- function(sets
-                                        , file_path = "../data/tekles_bornmann_rids.txt") {
+  disambr_set_tekles_bornmann <-
+      function(sets
+               ## , file_path = "../data/tekles-bornmann-researcher-ids.txt"
+             , file_path =
+                   system.file("testdata"
+                             , "tekles-bornmann-researcher-ids.txt"
+                             , package = "disambr")) {
       disambr_mess_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
@@ -2972,9 +2995,14 @@ this one is not needed as doi is unique and we can add them to refs_table
       output_set <- disambr_read_output_set(sets)
       if(!is.null(output_set)) return(c(sets, list(output_sets)))
       ## ----------------------------------------------------------------------
+      disambr_mess("- Tekles, A., & Bornmann, L. (2019) researcher IDs")
+      if(file.exists(file_path)) {
+          researcher_ids <- readLines(file_path)
+      } else {
+          disambr_stop("- Can not find file with researcher IDs. Please, provide")
+      }
       disambr_mess("- coping 'wos_tsv_authors' data set")
       authors_data_set_index <- disambr_in_sets(sets
-                                              ## , recipe = "wos_tsv_authors"
                                               , recipe = "wos_tsv_authors"
                                               , match_attr_value_parcially = TRUE)
       authors_data_set_index <- which(authors_data_set_index)
@@ -2985,7 +3013,6 @@ this one is not needed as doi is unique and we can add them to refs_table
       authors_data_set <- sets[[authors_data_set_index]]
       ## ======================================================================
       disambr_mess("- filtering authors from Tekles & Bornmann (2019)")
-      researcher_ids <- readLines(file_path)
       authors_data_set_new <- authors_data_set[author_researcher_id %in% researcher_ids]
       ## ======================================================================
       mostattributes(authors_data_set_new) <- attributes(authors_data_set)
@@ -3115,6 +3142,11 @@ dt.test <-
 :ID:       org:n8blt1n0mti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_eva.r
+  ##' Makes set of similar authors based on their initials
+  ##' @param sets Sets
+  ##' @param maxDist see max_dist in `match_fuzzy`
+  ##' @return Sets with new appended
+  ##' @export 
   disambr_set_similar_initials <- function(sets
                                          , maxDist = 1) {
       disambr_mess_start()
@@ -3227,6 +3259,11 @@ dt.test <-
 :ID:       org:364lt1n0mti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_eva.r
+  ##' Makes set of similar authors based on their last names
+  ##' @param sets Sets
+  ##' @param maxDist see max_dist in `match_fuzzy`
+  ##' @return Sets with new appended
+  ##' @export 
   disambr_set_similar_last_names <- function(sets
                                            , maxDist = 1) {
       disambr_mess_start()
@@ -3248,23 +3285,9 @@ dt.test <-
       last_names_bank <- unique(last_name_data_set)
       ## lets leave NAs
       last_names_bank <- sort(last_names_bank, na.last = TRUE)
-      ## last_names_match <- 
-          ## lapply(last_names_bank
-               ## , function(name) {
-                   ## matched_names <- 
-                       ## stringdist::ain(last_names_bank
-                                     ## , name
-                                     ## , maxDist = maxDist
-                                     ## , method = "dl"
-                                     ## , matchNA = FALSE)
-                   ## if(any(matched_names)) {
-                       ## matched_names <- last_names_bank[matched_names]
-                       ## data.table::data.table(
-                                       ## author_last_name_1 = name
-                                     ## , author_last_name_2 = matched_names)
-                   ## } else NULL
-               ## })
-      ## last_names_match <- data.table::rbindlist(last_names_match)
+      ## TODO: implement treshholds
+      ## nchar(last_names_bank) > limit
+
       last_names_match <- match_fuzzy(last_names_bank
                                     , method = "dl"
                                     , max_dist = maxDist
@@ -3276,19 +3299,19 @@ dt.test <-
               pblapply(1:(input_set_l-1), function(i) {
 
                   ## this is data.table method
-                  comb <- data.table::CJ(author_id1 = input_set[[i]]
+                  combs <- data.table::CJ(author_id1 = input_set[[i]]
                                        , author_id2 = unlist(input_set[(i+1):input_set_l])
                                        , sorted = FALSE)
                   ## add names
-                  comb[, `:=`(
+                  combs[, `:=`(
                       author_last_name_1 = last_name_data_set[author_id1]
                     , author_last_name_2 = last_name_data_set[author_id2]
                   )]
                   ## check matches
-                  comb <- 
-                      merge(comb, last_names_match
+                  combs <- 
+                      merge(combs, last_names_match
                           , by = c("author_last_name_1", "author_last_name_2"))
-                  return(comb[,.(author_id1, author_id2)])
+                  return(combs[,.(author_id1, author_id2)])
               })
           disambr_mess("- rbinding dyads")
           output_set <- data.table::rbindlist(output_set)
@@ -3386,6 +3409,10 @@ tests
 :END:
 
 #+BEGIN_SRC R :tangle R/disambr_eva.r
+  ##' Makes set of matched authors bases on same email addresses
+  ##' @param sets Sets
+  ##' @return Sets with new attached
+  ##' @export 
   disambr_set_same_email <- function(sets) {
       disambr_mess_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -3453,6 +3480,10 @@ tests
 :END:
 
 #+BEGIN_SRC R :tangle R/disambr_eva.r
+  ##' Makes set of matched authors based on same affiliation
+  ##' @param sets Sets
+  ##' @return Sets with new attached
+  ##' @export 
   disambr_set_same_affiliation <- function(sets) {
       disambr_mess_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -3658,6 +3689,11 @@ tests
 :ID:       org:bqe0u1n0mti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_eva.r
+  ##' Make a set of matched authors bases on the cases when one author cites the others paper.
+  ##' @param sets Sets
+  ##' @param match_refrerences_by_name_year Whether to check citations based on first author name and year pair in addition to machich citations based on DOI
+  ##' @return 
+  ##' @export 
   disambr_set_cite_others_paper <- function(sets
                                           , match_refrerences_by_name_year = TRUE) {
       disambr_mess_start()
@@ -3879,6 +3915,10 @@ tests
 :END:
 
 #+BEGIN_SRC R :tangle R/disambr_eva.r
+  ##' Make a set of matched authors based on cases when one author cites others self citation. Self-citations here are detected based on DOI.
+  ##' @param sets Sets
+  ##' @return Sets with new appended
+  ##' @export 
   disambr_set_cite_self_citation <- function(sets) {
       disambr_mess_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -4010,35 +4050,35 @@ tests
 :END:
 
 #+BEGIN_SRC R :tangle R/disambr_eva.r
+  ##' Makes set of authors with number of keywords in their papers in common
+  ##' @param sets Sets
+  ##' @param keywords_in_common number of keywords in common
+  ##' @return Sets with new set appended
+  ##' 
+  ##' @export 
   disambr_set_common_keywords <- function(sets
-                                   , verbose = FALSE
-                                   , save_set_as = TRUE
-                                   , pubs_set_name =
-                                         "wos_records_tsv_export"
-                                   , author_set_name =
-                                         "wos_records_tsv_export_author_table"
-                                   , input_set_name = "similar_last_names"
-                                   , keywords_in_common = 3) {
-      if(verbose) message("disambr: Starting disambr_set_common_keywords...")
-      if(!is.list(sets)) stop("disambr: 'sets' parameter should be list!")
-      author_set <-
-          disambr_subsets(sets
-                        , list(disambr_set_name = author_set_name)
-                        , which_to_return = "first")
-      input_set <-
-          disambr_subsets(sets
-                        , list(disambr_set_name = input_set_name)
-                        , which_to_return = "first")
-      pubs_set <-
-          disambr_subsets(sets
-                        , list(disambr_set_name = pubs_set_name)
-                        , which_to_return = "first")
-      if(verbose) message("- checking common keywords (Author Keywords)")
+                                        , keywords_in_common = 3) {
+      disambr_mess_start()
+      if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
+      ## check if output set is ready
+      output_set <- disambr_get_output_set(sets)
+      if(!is.null(output_set)) return(sets)
+      output_set <- disambr_read_output_set(sets)
+      if(!is.null(output_set)) return(c(sets, list(output_sets)))
+      ## ----------------------------------------------------------------------
+      author_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
+      publication_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_publications")
+      print(names(publication_data_set))
+      input_set <- disambr_get_last_unstrong_set(sets)
+      ## ======================================================================
+      disambr_mess("- checking common keywords (Author Keywords)")
       keywords_1 <- 
-          pubs_set[author_set[input_set$author_id1, c(paper_id)], c(DE)]
+          publication_data_set[author_data_set[input_set$author_id1, c(paper_id)], c(DE)]
       keywords_1 <- stringi::stri_split_fixed(keywords_1, "; ")
       keywords_2 <- 
-          pubs_set[author_set[input_set$author_id2, c(paper_id)], c(DE)]
+          publication_data_set[author_data_set[input_set$author_id2, c(paper_id)], c(DE)]
       keywords_2 <- stringi::stri_split_fixed(keywords_2, "; ")
       keywords_matched <- 
           pbmapply(function(k1, k2) {
@@ -4046,22 +4086,15 @@ tests
           }
         , keywords_1
         , keywords_2)
-      return_set <- input_set[keywords_matched >= keywords_in_common]
-      input_set_recipe <- attr(author_set, "disambr_recipe")
-      return_set <-
-          disambr_setattr(
-              return_set
-            , disambr_entity = "person"
-            , disambr_set_type = "similar"
-            , disambr_set_coefficient = 1
-            , disambr_set_name = "common_keywords"
-            , disambr_set_collection = "dyads_table"
-            , disambr_entity_id_reference =
-                  "wos_records_tsv_export_author_table"
-            , disambr_recipe = c(list("disambr_set_common_keywords")
-                               , input_set_recipe))
-      disambr_save_set(return_set, save_set_as)
-      return(c(sets, list(return_set)))
+      output_set <- input_set[keywords_matched >= keywords_in_common]
+      ## ======================================================================
+      disambr_add_set_attr(output_set, author_data_set
+                         , strength = 1
+                         , collection = "dyad_table"
+                         , reference = "wos_tsv_authors")
+      disambr_save_set(output_set)
+      disambr_mess_finish()
+      return(c(sets, list(output_set)))
   }
 
 
@@ -4075,8 +4108,8 @@ tests
 
   ## partial
   ## dt <- readRDS(file = "my.dir.wos.rds") %>%
-      ## disambr_set_tekles_bornmann(verbose = TRUE) %>%
-      ## disambr_set_on_same_paper(verbose = TRUE)
+  ## disambr_set_tekles_bornmann(verbose = TRUE) %>%
+  ## disambr_set_on_same_paper(verbose = TRUE)
 
   ## dt_atributes <- attributes(dt[[4]])
   ## dt[[4]] <- dt[[4]][1:1000]
@@ -4090,10 +4123,10 @@ tests
   ## , 8455)]
 
   ## dt <- 
-      ## dt %>%
-      ## disambr_set_similar_last_names(verbose = TRUE) %>%
-      ## disambr_set_similar_initials(verbose = TRUE) %>% 
-      ## disambr_set_common_keywords(verbose = TRUE)
+  ## dt %>%
+  ## disambr_set_similar_last_names(verbose = TRUE) %>%
+  ## disambr_set_similar_initials(verbose = TRUE) %>% 
+  ## disambr_set_common_keywords(verbose = TRUE)
 
   ## dt[[7]]
 
@@ -4105,29 +4138,91 @@ tests
   ## dt[[3]][406]$author_email
 #+END_SRC
 
+*** disambr_set_same_researcher_ids
+:PROPERTIES:
+:ID:       org:ze7bwhk0oti0
+:END:
+
+#+BEGIN_SRC R :tangle R/disambr_eva.r
+  ##' For testing. Makes so called ground truth set based on same research IDs
+  ##' @param sets Sets
+  ##' @return Sets with new set appended
+  ##' 
+  ##' @export 
+  disambr_set_same_researcher_ids <- function(sets) {
+      disambr_mess_start()
+      if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
+      ## check if output set is ready
+      output_set <- disambr_get_output_set(sets)
+      if(!is.null(output_set)) return(sets)
+      output_set <- disambr_read_output_set(sets)
+      if(!is.null(output_set)) return(c(sets, list(output_sets)))
+      ## ----------------------------------------------------------------------
+      author_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
+      ## emails case insensitive
+      ri_data_set <- toupper(author_data_set$author_researcher_id)
+      input_set <- disambr_get_last_unstrong_set(sets)
+      ## ======================================================================
+      disambr_mess("- checking emails")
+      output_set <-
+          ri_data_set[input_set$author_id1] == 
+          ri_data_set[input_set$author_id2]
+      output_set <- input_set[sapply(output_set, isTRUE)]
+      ## ======================================================================
+      disambr_add_set_attr(output_set, author_data_set
+                         , strength = 10
+                         , collection = "dyad_table"
+                         , reference = "wos_tsv_authors")
+      disambr_save_set(output_set)
+      disambr_mess_finish()
+      return(c(sets, list(output_set)))
+  }
+#+END_SRC
+
+
 *** testing
 #+BEGIN_SRC R
   options(disambr_get_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+
   getOption("disambr_get_output_set")
 
-  ts_eva_test <- 
+  my.file2 <- "../data/new_export/savedrecs-ms-recent.txt"
+
+  ts_eva_test_1 <- 
       disambr_read(my.file2)
 
+  my.dir.small <- '../data/Journals in Mathematical Psychology'
+
   ts_eva_test <- 
-      disambr_read(my.dir.small)
+      disambr_read(my.dir.small, )
+
+
+
+  ts_eva[[]]
+
+
 
   ts_eva <- ts_eva_test
 
+  ts_eva_sabe <- ts_eva
+
   ts_eva %<>%
-      disambr_set_on_same_paper %>%
-      disambr_set_similar_initials %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
       disambr_set_similar_last_names %>%
       disambr_set_same_email %>% 
-      disambr_set_same_affiliation %>% 
-      disambr_set_cite_others_paper %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
       disambr_set_common_references %>%
       disambr_set_cite_self_citation %>%
       disambr_set_common_keywords
+
+
+  ts_eva %>% 
+      disambr_set_common_keywords %>% length
 
 
   disambr_set_same_researcher_ids
@@ -4138,11 +4233,9 @@ tests
       names
 
 
-  ts_eva[[1]] %>% names
-
   ts_eva %>% length
 
-
+  ts_eva[[10]]
 
 
   disambr_set_cite_others_paper
@@ -4194,7 +4287,22 @@ tests
 #+END_SRC
 
 
-** disambr_aev_depricated
+** analysis
+#+BEGIN_SRC R
+  ## read data sample collected
+  ds <- disambr_read("../data/wos-slow-export-subset"
+  , save_sets_as = "wos-slow-export-subset.rds"
+  , save_sets_dir = "../data")
+#+END_SRC
+
+*** 
+#+BEGIN_SRC R
+  ds <- disambr_read("../data/wos-slow-export-subset"
+                   , save_sets_as = "wos-slow-export-subset.rds"
+                   , save_sets_dir = "../data")
+#+END_SRC
+
+** Depricated
 *** disambr_set_co_authors                                     :depricated:
 :PROPERTIES:
 :ID:       org:2mo3hcq0hti0
@@ -4203,7 +4311,6 @@ tests
 ##' Returns sets of people ids that are defenetely different based on co-authorship
   ##' @param sets 
   ##' @param procedures 
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -4241,7 +4348,6 @@ tests
   ##' Returns set of people with save email addresses
   ##' @param sets 
   ##' @param procedures 
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -4286,7 +4392,6 @@ tests
   ##' Returns set of people with save email addresses
   ##' @param sets 
   ##' @param procedures 
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -4331,7 +4436,6 @@ tests
   ##' Returns set of people with save email addresses
   ##' @param sets 
   ##' @param procedures 
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -4381,7 +4485,6 @@ tests
   ##' Returns set of people with similar last names
   ##' @param sets 
   ##' @param procedures 
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -4425,7 +4528,6 @@ tests
   ##' Returns set of people with save email addresses
   ##' @param sets 
   ##' @param procedures 
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -4470,7 +4572,6 @@ tests
   ##' Returns set of people with similar initials
   ##' @param sets 
   ##' @param procedures 
-  ##' @inheritDotParams 
   ##' @return 
   ##' 
   ##' @md 
@@ -4518,14 +4619,6 @@ tests
       ## disambr_get_similar_initials
   ## dt[[5]]
 
-#+END_SRC
-
-** analysis
-#+BEGIN_SRC R
-  ## read data sample collected
-  dt <- disambr_read("../data/wos-slow-export-subset"
-                   , save_sets_as = "wos-slow-export-subset.rds"
-                   , save_sets_dir = "../data")
 #+END_SRC
 
 ** tests
