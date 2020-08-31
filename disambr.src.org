@@ -184,7 +184,7 @@ Description: file:readme.org
                      , role = "aut"))
      , Imports = paste(package.packages.man.ver
                      , collapse = ", ")
-     , Depends = "R (>=4.0)"
+     , Depends = "R (>= 4.0)"
      , Suggests = "testthat"
      , Version = "0.1"
      , Date = Sys.Date()
@@ -2982,11 +2982,12 @@ this one is not needed as doi is unique and we can add them to refs_table
   ##' @export 
   disambr_set_tekles_bornmann <-
       function(sets
-               ## , file_path = "../data/tekles-bornmann-researcher-ids.txt"
-             , file_path =
-                   system.file("testdata"
-                             , "tekles-bornmann-researcher-ids.txt"
-                             , package = "disambr")) {
+               , file_path = "../data/tekles-bornmann-researcher-ids.txt"
+             ## , file_path =
+                   ## system.file("testdata" 
+                             ## , "tekles-bornmann-researcher-ids.txt"
+             ## , package = "disambr")
+  ) {
       disambr_mess_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
@@ -4160,15 +4161,26 @@ tests
       ## ----------------------------------------------------------------------
       author_data_set <-
           disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
-      ## emails case insensitive
-      ri_data_set <- toupper(author_data_set$author_researcher_id)
-      input_set <- disambr_get_last_unstrong_set(sets)
+      ri_data_set <- author_data_set$author_researcher_id
+      ri_bank <- unique(ri_data_set)
       ## ======================================================================
-      disambr_mess("- checking emails")
+      disambr_mess("- expanding grid and cheching researcher IDs")
+      ## this is fast combn
+      combi <- function(vect)
+      {
+          l <- length(vect)
+          first <- rep(vect, (l-1):0)
+          vectR <- rev(vect)
+          second <- vectR[rev(sequence(1:(l-1)))]
+          combi <- data.table(first, second)
+          return(combi)
+      }
       output_set <-
-          ri_data_set[input_set$author_id1] == 
-          ri_data_set[input_set$author_id2]
-      output_set <- input_set[sapply(output_set, isTRUE)]
+          pblapply(ri_bank, function(ri) {
+              same_ri <- which(ri_data_set %in% ri)
+              combi(same_ri)
+          })
+      output_set <- data.table::rbindlist(output_set)
       ## ======================================================================
       disambr_add_set_attr(output_set, author_data_set
                          , strength = 10
@@ -4178,6 +4190,28 @@ tests
       disambr_mess_finish()
       return(c(sets, list(output_set)))
   }
+
+#+END_SRC
+
+
+#+BEGIN_SRC R
+data.table::CJ(id1 = c(1,2,3)
+             , id2 = c(1,2,3)
+             , sorted = FALSE
+             , unique = TRUE)
+
+combi <- function(vect)
+    {
+        l <- length(vect)
+        first <- rep(vect, (l-1):0)
+        vectR <- rev(vect)
+        second <- vectR[rev(sequence(1:(l-1)))]
+        combi <- data.table(first, second)
+        return(combi)
+    }
+
+v <- 1:100
+microbenchmark(combi(v), combn(v,2))
 #+END_SRC
 
 
@@ -4205,6 +4239,24 @@ tests
 
 
 
+  ts_eva_full <-
+      disambr_read("../data/wos-slow-export-subset"
+                 , save_sets_as = "wos-slow-export-subset.rds"
+                 , save_sets_dir = "../data") %>% 
+      disambr_set_tekles_bornmann %>% #59149  vs_1962896
+      disambr_set_on_same_paper %>%
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+
+
+
   ts_eva <- ts_eva_test
 
   ts_eva_sabe <- ts_eva
@@ -4218,14 +4270,11 @@ tests
       disambr_set_cite_others_paper %>%
       disambr_set_common_references %>%
       disambr_set_cite_self_citation %>%
-      disambr_set_common_keywords
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
 
 
-  ts_eva %>% 
-      disambr_set_common_keywords %>% length
 
-
-  disambr_set_same_researcher_ids
 
 
   ts_eva %>% 
@@ -4235,10 +4284,17 @@ tests
 
   ts_eva %>% length
 
-  ts_eva[[10]]
+  ts_eva[[14]] <-  NULL
 
 
   disambr_set_cite_others_paper
+
+  ## disambr_set_common_keywords 
+  ## ts_eva[[1]]$DE[c(ts_eva[[2]]$paper_id[c(12484, 18298
+                                        ## , 1281, 1337)])]
+
+
+
 
 
   ## disambr_set_same_affiliation

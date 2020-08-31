@@ -11,11 +11,12 @@
 ##' @export 
 disambr_set_tekles_bornmann <-
     function(sets
-             ## , file_path = "../data/tekles-bornmann-researcher-ids.txt"
-           , file_path =
-                 system.file("testdata"
-                           , "tekles-bornmann-researcher-ids.txt"
-                           , package = "disambr")) {
+             , file_path = "../data/tekles-bornmann-researcher-ids.txt"
+           ## , file_path =
+                 ## system.file("testdata" 
+                           ## , "tekles-bornmann-researcher-ids.txt"
+           ## , package = "disambr")
+) {
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
     ## check if output set is ready
@@ -912,15 +913,26 @@ disambr_set_same_researcher_ids <- function(sets) {
     ## ----------------------------------------------------------------------
     author_data_set <-
         disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
-    ## emails case insensitive
-    ri_data_set <- toupper(author_data_set$author_researcher_id)
-    input_set <- disambr_get_last_unstrong_set(sets)
+    ri_data_set <- author_data_set$author_researcher_id
+    ri_bank <- unique(ri_data_set)
     ## ======================================================================
-    disambr_mess("- checking emails")
+    disambr_mess("- expanding grid and cheching researcher IDs")
+    ## this is fast combn
+    combi <- function(vect)
+    {
+        l <- length(vect)
+        first <- rep(vect, (l-1):0)
+        vectR <- rev(vect)
+        second <- vectR[rev(sequence(1:(l-1)))]
+        combi <- data.table(first, second)
+        return(combi)
+    }
     output_set <-
-        ri_data_set[input_set$author_id1] == 
-        ri_data_set[input_set$author_id2]
-    output_set <- input_set[sapply(output_set, isTRUE)]
+        pblapply(ri_bank, function(ri) {
+            same_ri <- which(ri_data_set %in% ri)
+            combi(same_ri)
+        })
+    output_set <- data.table::rbindlist(output_set)
     ## ======================================================================
     disambr_add_set_attr(output_set, author_data_set
                        , strength = 10

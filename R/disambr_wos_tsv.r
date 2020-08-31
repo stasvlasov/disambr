@@ -508,7 +508,7 @@ disambr_wos_tsv_parse_cr <- function(references) {
                , doi = doi
                , name_year = name_year)
         })
-    suppressWarnings(rbindlist(references_list))
+    suppressWarnings(data.table::rbindlist(references_list))
 }
 ## disambr_wos_tsv_parse_cr:1 ends here
 

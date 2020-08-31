@@ -17,11 +17,12 @@ Authors@R:
              email = "sacha.epskamp@gmail.com"))
 Description: disambr - Named Entity Disambiguation in
     R
-License: LGPL (>= 2.1)
+License: `use_mit_license()`, `use_gpl3_license()` or friends to
+    pick a license
 URL: https://github.com/stasvlasov/disambr
 BugReports: https://github.com/stasvlasov/disambr/issues
 Depends: 
-    R (>= 3.4)
+    R (>= 4.0)
 Imports: 
     data.table (>= 1.12),
     magrittr (>= 1.5),
