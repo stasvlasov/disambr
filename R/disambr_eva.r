@@ -183,7 +183,7 @@ disambr_set_similar_initials <- function(sets
         input_set_l <- length(input_set)
         disambr_mess(paste("- doing combinations on", input_set_l))
         ## try cluster
-        cl <- makeCluster(20,type="SOCK")
+        ## cl <- parallel::makeCluster(20,type="SOCK")
         output_set <- 
             pblapply(1:(input_set_l-1), function(i) {
                 ## combn using is data.table method
@@ -199,8 +199,8 @@ disambr_set_similar_initials <- function(sets
                 comb <- merge(comb, initials_match
                             , by = c("author_initials_1", "author_initials_2"))
                 return(comb[,.(author_id1, author_id2)])
-            }, cl = cl)
-        stopCluster(cl = cl)
+            })
+        ##parallel::stopCluster(cl = cl)
         disambr_mess("- rbinding dyads")
         output_set <- data.table::rbindlist(output_set)
         ## other case is when follow matching last names procedure
@@ -251,11 +251,15 @@ disambr_set_similar_initials <- function(sets
 ## [[id:org:364lt1n0mti0][disambr_set_similar_last_names:1]]
 ##' Makes set of similar authors based on their last names
 ##' @param sets Sets
-##' @param maxDist see max_dist in `match_fuzzy`
+##' @param max_dist see max_dist in `match_fuzzy`
+##' @param max_dist_short max_dist for short last names, default 0
+##' @param min_length who is short names defined, default 0 which means do not condider short names
 ##' @return Sets with new appended
 ##' @export 
 disambr_set_similar_last_names <- function(sets
-                                         , maxDist = 1) {
+                                         , max_dist = 1
+                                         , max_dist_short = 0
+                                         , min_length = 0) {
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
     ## check if output set is ready
@@ -275,13 +279,21 @@ disambr_set_similar_last_names <- function(sets
     last_names_bank <- unique(last_name_data_set)
     ## lets leave NAs
     last_names_bank <- sort(last_names_bank, na.last = TRUE)
-    ## TODO: implement treshholds
-    ## nchar(last_names_bank) > limit
-
-    last_names_match <- match_fuzzy(last_names_bank
+    ## treshholds
+    last_names_bank_short <- nchar(last_names_bank) <= min_length
+    sum(!last_names_bank_short) %>% print
+    last_names_match <- match_fuzzy(last_names_bank[!last_names_bank_short]
                                   , method = "dl"
-                                  , max_dist = maxDist
+                                  , max_dist = max_dist
                                   , id_name = "author_last_name")
+    if(any(last_names_bank_short)) {
+        last_names_match <- rbind(
+            last_names_match
+          , match_fuzzy(last_names_bank[last_names_bank_short]
+                      , method = "dl"
+                      , max_dist = max_dist_short
+                      , id_name = "author_last_name"))
+    }
     ## ----------------------------------------------------------------------
     if(attr(input_set, "disambr_set_type") == "different") {
         disambr_mess(paste("- doing combinations on", input_set_l))
@@ -615,9 +627,11 @@ disambr_set_common_references <- function(sets
       , paper_ids_2 = author_data_set$paper_id[author_id2]
     )]
     paper_ids_set <- unique(input_set[,.(paper_ids_1, paper_ids_2)])
-    ## add some references
+    ## for blade
     if(.Platform$OS.type == "windows") {
-        cl <- makePSOCKcluster(20)
+        cl <-
+            parallel::makePSOCKcluster(
+                          round(parallel::detectCores() * .70))
         output_set <-
             parallel::parLapply(
                           cl, 1:nrow(paper_ids_set)
@@ -646,7 +660,7 @@ disambr_set_common_references <- function(sets
                             } else return(TRUE)
                         }
                       )
-        stopCluster(cl)
+        parallel::stopCluster(cl)
     } else {
         output_set <- 
             pbmapply(function(id1, id2) {
@@ -761,18 +775,38 @@ disambr_set_cite_self_citation <- function(sets) {
                 , incomparables = NA) > 0
         return(any(cite_self_citations))
     }
-    output_set <- 
-        pbmapply(function(id1, id2) {
-            if(check_self_citations(id1, id2)) {
-                return(TRUE)
-            } else if(check_self_citations(id2, id1)) {
-                return(TRUE)
-            } else {
-                return(FALSE)
+    ## blade option
+    if(.Platform$OS.type == "windows") {
+        cl <- parallel::makePSOCKcluster(round(parallel::detectCores() * .70))
+        output_set <-
+            parallel::parLapply(
+                          cl, 1:nrow(input_set)
+                        , function(i){
+                            id1 <- input_set$author_id1[i]
+                            id2 <- input_set$author_id2[i]
+                            if(check_self_citations(id1, id2)) {
+                                return(TRUE)
+                            } else if(check_self_citations(id2, id1)) {
+                                return(TRUE)
+                            } else {
+                                return(FALSE)
+                            }
+                        })
+        parallel::stopCluster(cl)
+    } else {
+        output_set <- 
+            pbmapply(function(id1, id2) {
+                if(check_self_citations(id1, id2)) {
+                    return(TRUE)
+                } else if(check_self_citations(id2, id1)) {
+                    return(TRUE)
+                } else {
+                    return(FALSE)
+                }
             }
-        }
-      , input_set$author_id1
-      , input_set$author_id2)
+          , input_set$author_id1
+          , input_set$author_id2)
+    }
     output_set <- input_set[output_set]
     ## ======================================================================
     disambr_add_set_attr(output_set, author_data_set
@@ -795,14 +829,14 @@ disambr_set_cite_self_citation <- function(sets) {
 ## mostattributes(dt[[4]]) <- dt_atributes
 
 ## dt.test.plus <- 
-    ## dt.test %>%
-    ## disambr_set_common_references
+## dt.test %>%
+## disambr_set_common_references
 
 
 ## dt.test.plus[[7]]
 
 ## dt.test.plus %>% 
-    ## disambr_set_cite_self_citation %>% extract2(8)
+## disambr_set_cite_self_citation %>% extract2(8)
 
 
 ## 7 out of 416 pairs matched

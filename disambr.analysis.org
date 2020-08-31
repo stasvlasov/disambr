@@ -1,0 +1,147 @@
+* Variations to EVA algorithm
+** eva-dl11
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "eva-small-1")
+
+  ds <-
+      disambr_read("../data/wos-slow-export-small"
+                 , save_sets_as = "wos-slow-export-small.rds") %>% 
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+** eva-dl11
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "eva-dl11")
+
+  ds <-
+      disambr_read("../data/wos-slow-tiny"
+                 , save_sets_as = "wos-slow-tiny.rds") %>% 
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+** eva-dl01 (dl014)
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "eva-dl01")
+
+  ds <-
+      disambr_read("../data/wos-slow-export-small"
+                 , save_sets_as = "wos-slow-export-small.rds") %>% 
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names(max_dist = 1
+                                   , max_dist_short = 0
+                                   , min_length = 4) %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+
+** eva-dl124
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "eva-dl124")
+
+  ds <-
+      disambr_read("../data/wos-slow-export-small"
+                 , save_sets_as = "wos-slow-export-small.rds") %>% 
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names(max_dist = 2
+                                   , max_dist_short = 1
+                                   , min_length = 4) %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+** eva-dl125
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "eva-dl125")
+
+  ds <-
+      disambr_read("../data/wos-slow-export-small"
+                 , save_sets_as = "wos-slow-export-small.rds") %>% 
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names(max_dist = 2
+                                   , max_dist_short = 1
+                                   , min_length = 5) %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+** eva-dl126
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "eva-dl126")
+
+  ds <-
+      disambr_read("../data/wos-slow-export-small"
+                 , save_sets_as = "wos-slow-export-small.rds") %>% 
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names(max_dist = 2
+                                   , max_dist_short = 1
+                                   , min_length = 6) %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+** eva-DL11-EIC2S
