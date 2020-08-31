@@ -1,3 +1,21 @@
+## [[id:org:qdfaf650iti0][dhms:1]]
+##' Formats time difference as X days HH:MM:SS
+##'
+##' from https://stackoverflow.com/questions/27312292
+##' @param t time diff
+##' @return formatted time diff string
+##' 
+##' @export 
+dhms <- function(t) {
+    t <-  abs(as.numeric(t, units = "secs"))
+    paste(if((t %/% (60*60*24)) > 0) paste(t %/% (60*60*24), "days") else NULL
+         ,paste(formatC(t %/% (60*60) %% 24, width = 2, format = "d", flag = "0")
+              , formatC(t %/% 60 %% 60, width = 2, format = "d", flag = "0")
+              , formatC(t %% 60, width = 2, format = "d", flag = "0")
+              , sep = ":"))
+}
+## dhms:1 ends here
+
 ## [[id:org:s6sdaz31gti0][get_file_extension:1]]
 ##' Extention extractor. Same as tools::file_ext but for NULL input returns NULL instead of logical(0).
 ##' @param f file name 
@@ -105,6 +123,12 @@ stop_unless <- function(cond
 ## parse_files_path:1 ends here
 
 ## [[id:org:wx7eaz31gti0][read_to_utf8:1]]
+##' Reads file as UTF-8, convert it if other encoding is deteted
+##' @param f file path
+##' @param bytes_to_check how long to check for encoding (save time for large files)
+##' @return file text as string
+##' 
+##' @export 
 read_to_utf8 <- function(f, bytes_to_check = 2^14) {
     ## read file as raw bytes (not to Assume any encodings)
     bin <- readBin(f, raw(), n = file.size(f))
@@ -132,16 +156,69 @@ read_to_utf8 <- function(f, bytes_to_check = 2^14) {
 ## read_to_utf8:1 ends here
 
 ## [[id:org:xbceaz31gti0][recode_return_characters:1]]
+##' Fixed end of line characters in wierd text
+##' @param s text string
+##' @param assoc.file file name where it came from
+##' @param verbose Be chatty
+##' @return fixed sting
+##' 
+##' @export 
 recode_return_characters <- function(s, assoc.file = NA, verbose = FALSE) {
     has_return_chars <- function(s, test.first.n.char = 10^4) {
         s <- stri_sub(s, to = test.first.n.char)
         any(stri_detect_regex(s, "\\r"))
     }
     if(has_return_chars(s)) {
-        if(verbose) message("'\\r' characters in the file: ", assoc.file
-                          , "\n Removing to fix 'datatable::fread'")
+        if(verbose) message("disambr: '\\r' char in the file: ", assoc.file
+                          , "\n- replacing with '\\n' to fix 'datatable::fread'")
         s <- stri_replace_all_regex(s, "\\R+", "\n")
     }
     return(s)
 }
 ## recode_return_characters:1 ends here
+
+## [[id:org:t4zk2360oti0][match_fuzzy:1]]
+##' Fuzzy match all combinations of character vector
+##' @param bank 
+##' @param method see method in stringdist
+##' @param max_dist see maxDist in stringdist
+##' @param id_name names that will be suffixed with _1 and _2
+##' @return data.table
+##' 
+##' @export 
+match_fuzzy <- function(bank, method, max_dist, id_name) {
+        id_name_1 <- paste0(id_name, "_1")
+        id_name_2 <- paste0(id_name, "_2")
+        match_fuzzy_x <- function(x) {
+            matched <- stringdist::ain(bank, x
+                                     , maxDist = max_dist
+                                     , method = method
+                                     , matchNA = FALSE)
+            if(any(matched)) {
+                matched <- bank[matched]
+                matched <- data.table::data.table(x, matched)
+                data.table::setnames(matched, c(id_name_1, id_name_2))
+            } else {
+                NULL
+            }
+        }
+        match_x <- function(x) {
+            matched <- bank %in% x
+            if(any(matched)) {
+                matched <- bank[matched]
+                matched <- data.table::data.table(x, matched)
+                data.table::setnames(matched, c(id_name_1, id_name_2))
+            } else {
+                NULL
+            }
+        }
+        if(max_dist > 0) {
+            matched_list <- lapply(bank, match_fuzzy_x)
+        } else if(max_dist == 0) {
+            matched_list <- lapply(bank, match_x)
+        } else {
+            stop()
+        }
+        return(data.table::rbindlist(matched_list))
+}
+## match_fuzzy:1 ends here

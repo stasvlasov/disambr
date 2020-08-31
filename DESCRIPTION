@@ -1,0 +1,39 @@
+Package: disambr
+Title: disambr - Named Entity Disambiguation in R
+Version: 0.1
+Date: 2020-08-31
+Authors@R: 
+    c(person(given = c("Stanislav", "A."),
+             family = "Vlasov",
+             role = c("aut", "cre"),
+             email = "stanislav.a.vlasov@gmail.com"),
+      person(given = c("Olmo", "R."),
+             family = "van den Akker",
+             role = "aut",
+             email = "ovdakker@gmail.com"),
+      person(given = "Sacha",
+             family = "Epskamp",
+             role = "aut",
+             email = "sacha.epskamp@gmail.com"))
+Description: disambr - Named Entity Disambiguation in
+    R
+License: LGPL (>= 2.1)
+URL: https://github.com/stasvlasov/disambr
+BugReports: https://github.com/stasvlasov/disambr/issues
+Depends: 
+    R (>= 3.4)
+Imports: 
+    data.table (>= 1.12),
+    magrittr (>= 1.5),
+    stringi (>= 1.4)
+Suggests: 
+    testthat
+Encoding: UTF-8
+LazyData: true
+References: This research was supported (in part) by the Fetzer
+    Franklin Fund of the John E. Fetzer Memorial Trust. The EVA
+    disambiguation algorithm is described in van den Akker, O. R.,
+    Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithm—Author name
+    disambiguation for large Web of Science datasets.
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
