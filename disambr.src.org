@@ -46,8 +46,8 @@ Description: file:readme.org
 
 
     ## some packages installations read .Rprofile loops the install
-    current_wd <- getwd()
-    setwd("~/")
+    ## current_wd <- getwd()
+    ## setwd("~/")
 
     ## --------------------------------------------------------------------------------
     ## Load or Install Packages
@@ -78,10 +78,10 @@ Description: file:readme.org
 
 
     ## restore current working directore
-    setwd(current_wd)
+    ## setwd(current_wd)
 
     ## --------------------------------------------------------------------------------
-    library(disambr)
+    ## library(disambr)
 
     ## update.packages(ask = FALSE, repos = 'http://cloud.r-project.org')
 
@@ -226,7 +226,6 @@ Description: file:readme.org
   ## --------------------------------------------------------------------------------
   detach(package:disambr, unload = TRUE)
   remove.packages("disambr")
-
 
   ## Just loadding
   ## --------------------------------------------------------------------------------
@@ -1181,6 +1180,30 @@ expect_null(disambr_get_last_weak_set(a))
   })
 #+END_SRC
 
+*** disambr_get_truth_set
+
+#+BEGIN_SRC R :tangle R/disambr_sets.r
+  ##' Get sets with strength parameter of 10 (ground thruth)
+  ##' @param sets sets
+  ##' @param ... other attributes
+  ##' @inheritDotParams disambr_in_sets
+  ##' @return set or NULL if none found
+  ##' 
+  ##' @export 
+  disambr_get_truth_set <- function(sets, ...) {
+      sets_index <- disambr_in_sets(sets, ...
+                                  , type = "similar"
+                                  , strength = 10)
+      ## if not sets return NULL
+      if(!any(sets_index)) disambr_stop("- can not find truth set!")
+      if(sum(sets_index) != 1) disambr_stop("- more than one truth set found!")
+      return(sets[[which(sets_index)]])
+  }
+
+#+END_SRC
+
+
+
 
 *** disambr_get_last_unstrong_set
 :PROPERTIES:
@@ -1351,7 +1374,7 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
       }
       ## add recipe (procedure call) and name
       recipe <- attributes(template_set)$disambr_set_recipe
-      procedure_call <- deparse(sys.calls()[[sys.nframe() - 1]])
+      procedure_call <- deparse(sys.calls()[[sys.nframe() - 1]])[[1]]
       procedure_name <-
           stringi::stri_extract_first_regex(procedure_call
                                           , c("^[^()]+"))
@@ -1434,7 +1457,7 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
       if(length(save_set_as) != 0) {
           ## make name if it is just TRUE
           if(isTRUE(save_set_as)) {
-              save_set_as <- attr(set_to_save, "disambr_set_name")
+              save_set_as <- attr(set_to_save, "disambr_set_name")[[1]]
               ## use timestamps by default
               if(isTRUE(use_time_stamp) ||
                  length(use_time_stamp) == 0) {
@@ -1447,7 +1470,7 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
                   save_set_prefix <- "disambr-set."
               }
           }
-          ## if save as provided use it, add prefix if it is provided as well
+          ## if "save as" provided use it, add prefix if it is provided as well
           if(is.character(save_set_as)) {
               if(length(save_set_prefix) != 0) {
                   save_set_as <- paste0(save_set_prefix, save_set_as)
@@ -1457,11 +1480,12 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
                   save_set_dir <- "disambr-sets-rds"
               }
               dir.create(save_set_dir, showWarnings = FALSE, recursive = TRUE)
-              save_set_as <- file.path(save_set_dir, save_set_as)
+              save_set_as <- paste0(save_set_dir,"/",save_set_as)
               ## add file attribute
               disambr_set_attr(set_to_save, file = save_set_as)
               ## save
-              saveRDS(set_to_save, file = save_set_as, compress = FALSE)
+              print(save_set_as)
+              saveRDS(set_to_save, file = save_set_as[[1]], compress = FALSE)
               disambr_mess(paste0(
                   "- set saved as '", save_set_as, "'"))
               return(save_set_as)
@@ -3020,7 +3044,7 @@ this one is not needed as doi is unique and we can add them to refs_table
       ## ======================================================================
       mostattributes(authors_data_set_new) <- attributes(authors_data_set)
       disambr_set_attr(authors_data_set_new, name = "tekles_bornmann")
-      disambr_save_set(authors_data_set_new)
+      ## disambr_save_set(authors_data_set_new)
       sets[[authors_data_set_index]] <- authors_data_set_new
       disambr_mess_finish()
       return(sets)
@@ -3297,7 +3321,6 @@ dt.test <-
       last_names_bank <- sort(last_names_bank, na.last = TRUE)
       ## treshholds
       last_names_bank_short <- nchar(last_names_bank) <= min_length
-      sum(!last_names_bank_short) %>% print
       last_names_match <- match_fuzzy(last_names_bank[!last_names_bank_short]
                                     , method = "dl"
                                     , max_dist = max_dist
@@ -3334,6 +3357,7 @@ dt.test <-
           disambr_mess("- rbinding dyads")
           output_set <- data.table::rbindlist(output_set)
       } else if(attr(input_set, "disambr_set_type") == "similar") {
+          disambr_mess(paste("- fuzzy matching authors by last name"))
           output_set <- input_set
           ## add names
           output_set[, `:=`(
@@ -3405,8 +3429,10 @@ tests
 
   disambr_read("../data/new_export/savedrecs-ms-recent.txt") %>% 
       disambr_set_on_same_paper() %>%
-      disambr_set_similar_last_names %>%
-      extract2(5)
+      disambr_set_similar_last_names(max_dist = 1
+                                   , max_dist_short = 1
+                                   , min_length = 2) %>%
+      extract2(6)
 
   ## dt_atributes <- attributes(dt[[4]])
 
@@ -4423,6 +4449,131 @@ microbenchmark(combi(v), combn(v,2))
 #+END_SRC
 
 ** analysis
+
+#+BEGIN_SRC R :tangle R/disambr_stats.r
+  ##' Make a statistics for a collection of sets (specific algorithm) and writes to the file in dir
+  ##' @param sets  collection of sets
+  ##' @param sets_dir dir with collection of sets if first arg is not provided, writes results here
+  ##' @param remove_data whether to remove first 4 sets (assumed to be a data) when sets arg is set
+  ##' @return 
+  ##' @export 
+  disambr_stats <- function(sets = NULL
+                          , sets_dir = getOption("disambr_save_set_dir")
+                          , name = sets_dir
+                          , remove_data = TRUE) {
+      if(is.null(sets)){
+      ## reads sets from directory
+      sets <- 
+          lapply(dir(sets_dir
+                   , full.names = TRUE
+                   , pattern = "\\.rds$")
+               , readRDS)
+      } else if(remove_data){
+          ## remove data from the sets
+          sets <- sets[-c(1:4)]
+      }
+
+      sets_attr <- 
+          lapply(sets, attributes)
+
+      sets_attr_duration <- 
+          sapply(sets_attr, `[[`, "disambr_set_duration")
+
+      dur_mins <- as.numeric(Reduce(`+`,sets_attr_duration))/60
+
+      strong_set <- 
+          disambr_get_strong_set(sets)
+
+      truth_set <- 
+          disambr_get_truth_set(sets)
+
+      ## mirror pairs for comparison
+      strong <-
+          unique(rbind(strong_set, strong_set[, .(author_id2
+                                                , author_id1)]))
+
+      truth <-
+          unique(rbind(truth_set
+                     , truth_set[, .(second
+                                   , first)]))
+      truth <- truth[, .(author_id1 = first
+                       , author_id2 = second)]
+
+      a <- nrow(fintersect(truth, strong))
+      b <- nrow(fsetdiff(strong, truth))
+      c <- nrow(fsetdiff(truth, strong))
+      d <- nrow(ds[[2]]) * (nrow(ds[[2]]) - 1) - nrow(funion(truth, strong))
+
+      pw_presision <- a / (a + b)
+      pw_recall <- a / (a + c)
+      pw_f1 <- (2 * pw_presision * pw_recall) / (pw_presision + pw_recall)
+      pw_accuracy <-  (a + d) / (a + b + c + d)
+
+      stats <- 
+          list(name = name
+             , true_positives = a
+              , false_positives = b
+             , false_negatives = c
+             , true_negatives = d
+            , pw_presision = pw_presision
+             , pw_recall = pw_recall
+             , pw_f1 = pw_f1
+             , dur_mins = dur_mins
+             , dur_sets = list(sets_attr_duration))
+
+      ## save on disk
+      saveRDS(stats, paste0(sets_dir,"/", "disambr_stats.rds"))
+
+      return(stats)
+  }
+
+  ##' Makes coparative table with statistics
+  ##' @param sets_dir 
+  ##' @inheritDotParams 
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @importFrom magrittr %>%
+  ##' @import magrittr data.table dplyr stringr
+  ##' @export 
+  disambr_stats_table <- function(sets_dir){
+  files <- dir(sets_dir
+             , recursive = TRUE
+             , full.names = TRUE
+             , pattern = "^disambr_stats\\.rds$")
+  stats_list <- lapply(files, readRDS)
+  data.table::rbindlist(stats_list)
+  }
+
+#+END_SRC
+
+#+BEGIN_SRC R :session 
+  disambr_stats_table("..")
+
+  ## does not save time when reading files...?
+  ## disambr_stats(ds, sets_dir = "../eva-slow-dl01")
+#+END_SRC
+
+#+BEGIN_SRC R :results replace table :session none :colnames yes
+  files <- dir(".."
+             , recursive = TRUE
+             , full.names = TRUE
+             , pattern = "^disambr_stats\\.rds$")
+  stats_list <- lapply(files, readRDS)
+  as.matrix(data.table::rbindlist(stats_list))
+#+END_SRC
+
+#+RESULTS:
+| name             | true_positives | false_positives | false_negatives | true_negatives | pw_presision | pw_recall | pw_f1 | dur_mins |
+|------------------+----------------+-----------------+-----------------+----------------+--------------+-----------+-------+----------|
+| eva-dl01         |           2976 |              38 |            2461 |       29626217 |        0.987 |     0.547 | 0.704 |    1.988 |
+| eva-dl11         |           2977 |              89 |            2460 |       29626166 |        0.970 |     0.547 | 0.700 |    1.307 |
+
+
+
+
+
+
 
 *** on blade
 
