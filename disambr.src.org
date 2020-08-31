@@ -240,6 +240,7 @@ Description: file:readme.org
   source("R/disambr_wos_tsv.r")
   source("R/disambr_read.r")
   source("R/disambr_eva.r")
+  source("R/disambr_stats.r")
 
   ## just run tests
   test_dir("tests/testthat")
@@ -1181,6 +1182,9 @@ expect_null(disambr_get_last_weak_set(a))
 #+END_SRC
 
 *** disambr_get_truth_set
+:PROPERTIES:
+:ID:       org:lg6f7w60pti0
+:END:
 
 #+BEGIN_SRC R :tangle R/disambr_sets.r
   ##' Get sets with strength parameter of 10 (ground thruth)
@@ -1484,7 +1488,6 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
               ## add file attribute
               disambr_set_attr(set_to_save, file = save_set_as)
               ## save
-              print(save_set_as)
               saveRDS(set_to_save, file = save_set_as[[1]], compress = FALSE)
               disambr_mess(paste0(
                   "- set saved as '", save_set_as, "'"))
@@ -2562,7 +2565,7 @@ test
                          , type = "similar"
                          , strength = 0.1
                          , name = "wos_tsv_authors")
-      disambr_save_set(authors_table)
+      #disambr_save_set(authors_table)
       disambr_mess_finish(mess = "-- finished -")
       return(authors_table)
   }
@@ -4449,6 +4452,9 @@ microbenchmark(combi(v), combn(v,2))
 #+END_SRC
 
 ** analysis
+:PROPERTIES:
+:ID:       org:79b38w60pti0
+:END:
 
 #+BEGIN_SRC R :tangle R/disambr_stats.r
   ##' Make a statistics for a collection of sets (specific algorithm) and writes to the file in dir
@@ -4466,7 +4472,7 @@ microbenchmark(combi(v), combn(v,2))
       sets <- 
           lapply(dir(sets_dir
                    , full.names = TRUE
-                   , pattern = "\\.rds$")
+                   , pattern = "disambr-set\\..*\\.rds$")
                , readRDS)
       } else if(remove_data){
           ## remove data from the sets
@@ -4477,9 +4483,12 @@ microbenchmark(combi(v), combn(v,2))
           lapply(sets, attributes)
 
       sets_attr_duration <- 
-          sapply(sets_attr, `[[`, "disambr_set_duration")
+          lapply(sets_attr, `[[`, "disambr_set_duration")
 
-      dur_mins <- as.numeric(Reduce(`+`,sets_attr_duration))/60
+      sets_attr_duration <-
+          unlist(sapply(sets_attr_duration, as.numeric, units = "mins"))
+
+      dur_mins <- sum(sets_attr_duration)
 
       strong_set <- 
           disambr_get_strong_set(sets)
@@ -4548,10 +4557,17 @@ microbenchmark(combi(v), combn(v,2))
 #+END_SRC
 
 #+BEGIN_SRC R :session 
-  disambr_stats_table("..")
+  stats <- disambr_stats_table("..")
+
+  stats_dur <- 
+      as.data.table(stats$dur_sets) %>%
+      setnames(stats$name) %>%
+      as.matrix %>%
+      barplot(legend.text = paste("procedure", 1:(nrow(.))))
 
   ## does not save time when reading files...?
-  ## disambr_stats(ds, sets_dir = "../eva-slow-dl01")
+
+  disambr_stats(ds)
 #+END_SRC
 
 #+BEGIN_SRC R :results replace table :session none :colnames yes

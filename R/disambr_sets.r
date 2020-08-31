@@ -157,6 +157,25 @@ disambr_get_strong_set <- function(sets, ...) {
 }
 ## disambr_get_strong_set:1 ends here
 
+## [[id:org:lg6f7w60pti0][disambr_get_truth_set:1]]
+##' Get sets with strength parameter of 10 (ground thruth)
+##' @param sets sets
+##' @param ... other attributes
+##' @inheritDotParams disambr_in_sets
+##' @return set or NULL if none found
+##' 
+##' @export 
+disambr_get_truth_set <- function(sets, ...) {
+    sets_index <- disambr_in_sets(sets, ...
+                                , type = "similar"
+                                , strength = 10)
+    ## if not sets return NULL
+    if(!any(sets_index)) disambr_stop("- can not find truth set!")
+    if(sum(sets_index) != 1) disambr_stop("- more than one truth set found!")
+    return(sets[[which(sets_index)]])
+}
+## disambr_get_truth_set:1 ends here
+
 ## [[id:org:4v89svy0mti0][disambr_get_last_unstrong_set:1]]
 ##' Gets last set from sets with strength <= 0.5 and excludes from this set all sets with strength of 1
 ##' @param sets sets
@@ -279,7 +298,7 @@ disambr_add_set_attr <- function(focal_set
     }
     ## add recipe (procedure call) and name
     recipe <- attributes(template_set)$disambr_set_recipe
-    procedure_call <- deparse(sys.calls()[[sys.nframe() - 1]])
+    procedure_call <- deparse(sys.calls()[[sys.nframe() - 1]])[[1]]
     procedure_name <-
         stringi::stri_extract_first_regex(procedure_call
                                         , c("^[^()]+"))
@@ -316,7 +335,7 @@ disambr_save_set <- function(set_to_save
     if(length(save_set_as) != 0) {
         ## make name if it is just TRUE
         if(isTRUE(save_set_as)) {
-            save_set_as <- attr(set_to_save, "disambr_set_name")
+            save_set_as <- attr(set_to_save, "disambr_set_name")[[1]]
             ## use timestamps by default
             if(isTRUE(use_time_stamp) ||
                length(use_time_stamp) == 0) {
@@ -329,7 +348,7 @@ disambr_save_set <- function(set_to_save
                 save_set_prefix <- "disambr-set."
             }
         }
-        ## if save as provided use it, add prefix if it is provided as well
+        ## if "save as" provided use it, add prefix if it is provided as well
         if(is.character(save_set_as)) {
             if(length(save_set_prefix) != 0) {
                 save_set_as <- paste0(save_set_prefix, save_set_as)
@@ -339,11 +358,11 @@ disambr_save_set <- function(set_to_save
                 save_set_dir <- "disambr-sets-rds"
             }
             dir.create(save_set_dir, showWarnings = FALSE, recursive = TRUE)
-            save_set_as <- file.path(save_set_dir, save_set_as)
+            save_set_as <- paste0(save_set_dir,"/",save_set_as)
             ## add file attribute
             disambr_set_attr(set_to_save, file = save_set_as)
             ## save
-            saveRDS(set_to_save, file = save_set_as, compress = FALSE)
+            saveRDS(set_to_save, file = save_set_as[[1]], compress = FALSE)
             disambr_mess(paste0(
                 "- set saved as '", save_set_as, "'"))
             return(save_set_as)

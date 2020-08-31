@@ -47,7 +47,7 @@ disambr_set_tekles_bornmann <-
     ## ======================================================================
     mostattributes(authors_data_set_new) <- attributes(authors_data_set)
     disambr_set_attr(authors_data_set_new, name = "tekles_bornmann")
-    disambr_save_set(authors_data_set_new)
+    ## disambr_save_set(authors_data_set_new)
     sets[[authors_data_set_index]] <- authors_data_set_new
     disambr_mess_finish()
     return(sets)
@@ -281,7 +281,6 @@ disambr_set_similar_last_names <- function(sets
     last_names_bank <- sort(last_names_bank, na.last = TRUE)
     ## treshholds
     last_names_bank_short <- nchar(last_names_bank) <= min_length
-    sum(!last_names_bank_short) %>% print
     last_names_match <- match_fuzzy(last_names_bank[!last_names_bank_short]
                                   , method = "dl"
                                   , max_dist = max_dist
@@ -318,6 +317,7 @@ disambr_set_similar_last_names <- function(sets
         disambr_mess("- rbinding dyads")
         output_set <- data.table::rbindlist(output_set)
     } else if(attr(input_set, "disambr_set_type") == "similar") {
+        disambr_mess(paste("- fuzzy matching authors by last name"))
         output_set <- input_set
         ## add names
         output_set[, `:=`(

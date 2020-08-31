@@ -467,7 +467,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
                        , type = "similar"
                        , strength = 0.1
                        , name = "wos_tsv_authors")
-    disambr_save_set(authors_table)
+    #disambr_save_set(authors_table)
     disambr_mess_finish(mess = "-- finished -")
     return(authors_table)
 }

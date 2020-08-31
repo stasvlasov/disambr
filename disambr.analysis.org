@@ -1,7 +1,7 @@
 * Variations to EVA algorithm
 
 Comparison of EVA algorithms:
-| name             | true_positives | false_positives | false_negatives | true_negatives | pw_presision | pw_recall | pw_f1 | dur_mins |
+| name             | true_positives | false_positives | false_negatives | true_negatives | pw_presision | pw_recall | pw_f1 | dur_h    |
 |------------------+----------------+-----------------+-----------------+----------------+--------------+-----------+-------+----------|
 | eva-dl01         |           2976 |              38 |            2461 |       29626217 |        0.987 |     0.547 | 0.704 |    1.988 |
 | eva-dl11         |           2977 |              89 |            2460 |       29626166 |        0.970 |     0.547 | 0.700 |    1.307 |
@@ -9,34 +9,7 @@ Comparison of EVA algorithms:
 EVA algorithms profile of procedure durations:
 [[file:./disambr.analysis.png]]
 
-** eva-dl11 small
-#+BEGIN_SRC R
-    options(disambr_get_output_set = TRUE)
-    options(disambr_read_output_set = TRUE)
-    options(disambr_mess_pretty = TRUE)
-    options(disambr_save_as = TRUE)
-    options(disambr_save_set_dir = "../eva-small-1")
-
-    ds <-
-        disambr_read("../data/wos-slow-export-small"
-                   , save_sets_as = "wos-slow-export-small.rds"
-                   , save_sets_dir = "../disambr-data") %>% 
-        disambr_set_tekles_bornmann(
-            file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
-        disambr_set_on_same_paper %>% 
-        disambr_set_similar_initials %>% 
-        disambr_set_similar_last_names %>%
-        disambr_set_same_email %>% 
-        disambr_set_same_affiliation %>%
-        disambr_set_cite_others_paper %>%
-        disambr_set_common_references %>%
-        disambr_set_cite_self_citation %>%
-        disambr_set_common_keywords %>%
-        disambr_set_same_researcher_ids
-#+END_SRC
-
-
-** eva-dl11 slow
+** eva-dl11
 #+BEGIN_SRC R
   options(disambr_get_output_set = TRUE)
   options(disambr_read_output_set = TRUE)
@@ -62,33 +35,7 @@ EVA algorithms profile of procedure durations:
       disambr_set_same_researcher_ids
 #+END_SRC
 
-** eva-dl11
-#+BEGIN_SRC R
-  options(disambr_get_output_set = TRUE)
-  options(disambr_read_output_set = TRUE)
-  options(disambr_mess_pretty = TRUE)
-  options(disambr_save_as = TRUE)
-  options(disambr_save_set_dir = "../eva-dl11")
-
-  ds <-
-      disambr_read("../data/wos-slow-tiny"
-                 , save_sets_as = "wos-slow-tiny.rds"
-                 , save_sets_dir = "../data") %>% 
-      disambr_set_tekles_bornmann(
-          file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
-      disambr_set_on_same_paper %>%
-      disambr_set_similar_last_names %>%
-      disambr_set_similar_initials %>% 
-      disambr_set_same_email %>% 
-      disambr_set_same_affiliation %>%
-      disambr_set_cite_others_paper %>%
-      disambr_set_common_references %>%
-      disambr_set_cite_self_citation %>%
-      disambr_set_common_keywords %>%
-      disambr_set_same_researcher_ids
-#+END_SRC
-
-** eva-dl01 (dl014) slow
+** eva-dl01
 #+BEGIN_SRC R
   options(disambr_get_output_set = TRUE)
   options(disambr_read_output_set = TRUE)
@@ -115,7 +62,7 @@ EVA algorithms profile of procedure durations:
       disambr_set_same_researcher_ids
 #+END_SRC
 
-** eva-dl124 slow
+** eva-dl124
 #+BEGIN_SRC R
   options(disambr_get_output_set = TRUE)
   options(disambr_read_output_set = TRUE)
@@ -148,11 +95,12 @@ EVA algorithms profile of procedure durations:
   options(disambr_read_output_set = TRUE)
   options(disambr_mess_pretty = TRUE)
   options(disambr_save_as = TRUE)
-  options(disambr_save_set_dir = "eva-dl125")
+  options(disambr_save_set_dir = "../eva-slow-dl125")
 
   ds <-
-      disambr_read("../data/wos-slow-export-small"
-                 , save_sets_as = "wos-slow-export-small.rds") %>% 
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
         disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
       disambr_set_on_same_paper %>% 
       disambr_set_similar_initials %>% 
@@ -173,11 +121,12 @@ EVA algorithms profile of procedure durations:
   options(disambr_read_output_set = TRUE)
   options(disambr_mess_pretty = TRUE)
   options(disambr_save_as = TRUE)
-  options(disambr_save_set_dir = "eva-dl126")
+  options(disambr_save_set_dir = "../eva-slow-dl126")
 
   ds <-
-      disambr_read("../data/wos-slow-export-small"
-                 , save_sets_as = "wos-slow-export-small.rds") %>% 
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
         disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
       disambr_set_on_same_paper %>% 
       disambr_set_similar_initials %>% 
@@ -192,4 +141,235 @@ EVA algorithms profile of procedure durations:
       disambr_set_common_keywords %>%
       disambr_set_same_researcher_ids
 #+END_SRC
-** eva-DL11-EIC2S
+** eva-dl11-eic2sk
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-eic2s")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names(max_dist = 1
+                                   , max_dist_short = 0
+                                   , min_length = 0) %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references(references_in_common = 2) %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+** eva-dl11-eicsk2
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-eicsk2")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names(max_dist = 1
+                                   , max_dist_short = 0
+                                   , min_length = 0) %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords(keywords_in_common = 2) %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+** eva-dl11-eic2sk2
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-eic2sk2")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names(max_dist = 1
+                                   , max_dist_short = 0
+                                   , min_length = 0) %>%
+      disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      disambr_set_common_references(references_in_common = 2) %>%
+      disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords(keywords_in_common = 2) %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+** eva-dl11-e
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-e")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      disambr_set_same_email %>% 
+      ## disambr_set_same_affiliation %>%
+      ## disambr_set_cite_others_paper %>%
+      ## disambr_set_common_references %>%
+      ## disambr_set_cite_self_citation %>%
+      ## disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+** eva-dl11-i
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-i")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      ## disambr_set_same_email %>% 
+      disambr_set_same_affiliation %>%
+      ## disambr_set_cite_others_paper %>%
+      ## disambr_set_common_references %>%
+      ## disambr_set_cite_self_citation %>%
+      ## disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+
+
+** eva-dl11-c
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-c")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      ## disambr_set_same_email %>% 
+      ## disambr_set_same_affiliation %>%
+      disambr_set_cite_others_paper %>%
+      ## disambr_set_common_references %>%
+      ## disambr_set_cite_self_citation %>%
+      ## disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+** eva-dl11-x
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-x")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      ## disambr_set_same_email %>% 
+      ## disambr_set_same_affiliation %>%
+      ## disambr_set_cite_others_paper %>%
+      disambr_set_common_references %>%
+      ## disambr_set_cite_self_citation %>%
+      ## disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+** eva-dl11-s
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-s")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      ## disambr_set_same_email %>% 
+      ## disambr_set_same_affiliation %>%
+      ## disambr_set_cite_others_paper %>%
+      ## disambr_set_common_references %>%
+      disambr_set_cite_self_citation %>%
+      ## disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
+
+
+** eva-dl11-k
+#+BEGIN_SRC R
+  options(disambr_get_output_set = TRUE)
+  options(disambr_read_output_set = TRUE)
+  options(disambr_mess_pretty = TRUE)
+  options(disambr_save_as = TRUE)
+  options(disambr_save_set_dir = "../eva-slow-dl11-k")
+
+  ds <-
+      disambr_read("../data/wos-slow"
+                 , save_sets_as = "wos-slow.rds"
+                 , save_sets_dir = "../disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+      disambr_set_on_same_paper %>% 
+      disambr_set_similar_initials %>% 
+      disambr_set_similar_last_names %>%
+      ## disambr_set_same_email %>% 
+      ## disambr_set_same_affiliation %>%
+      ## disambr_set_cite_others_paper %>%
+      ## disambr_set_common_references %>%
+      ## disambr_set_cite_self_citation %>%
+      disambr_set_common_keywords %>%
+      disambr_set_same_researcher_ids
+#+END_SRC
