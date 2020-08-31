@@ -1,13 +1,32 @@
-* Variations to EVA algorithm
+* Variations on EVA algorithm
 
-Comparison of EVA algorithms:
-| name             | true_positives | false_positives | false_negatives | true_negatives | pw_presision | pw_recall | pw_f1 | dur_h    |
-|------------------+----------------+-----------------+-----------------+----------------+--------------+-----------+-------+----------|
-| eva-dl01         |           2976 |              38 |            2461 |       29626217 |        0.987 |     0.547 | 0.704 |    1.988 |
-| eva-dl11         |           2977 |              89 |            2460 |       29626166 |        0.970 |     0.547 | 0.700 |    1.307 |
+The EVA algorithms described in van den Akker et al. (2020) justifies and proposes a number of general disambiguation procedures and the sequence of their execution. This general algorithm can be tuned in many ways for specific needs at hand. Below we demonstrate a comparison between different versions of the algorithm and discuss some implications.
 
-EVA algorithms profile of procedure durations:
+The sample test data is based on the data used to test another disambiguation algorithm described by in Tekles & Bornmann (2019). The test data is a bibliographic records from Web of Science. We reproduced the smaller random sample of the Tekles & Bornmann (2019) by using the same Researcher IDs provided to us courtesy by the authors. We use these Researcher IDs and the same query parameters to export the sample data from Web of Science.
+
+The table below presents comparison of EVA algorithms. The motivation for these versions is described in van den Akker et al. (2020). We used several common metrics to assess the efficiency and performance of each version.
+
+| name                   | true_positives | false_positives | false_negatives | true_negatives | pw_presision pw_recall pw_f1  pw_accuracy dur_mins | w_presision | pw_recall | pw_f1 | pw_accuracy dur_mins |
+|------------------------+----------------+-----------------+-----------------+----------------+----------------------------------------------------+-------------+-----------+-------+----------------------|
+| eva-slow-dl01"         |           2976 |              38 |            2461 |          -5473 |                                              0.987 |       0.547 |     0.704 | -1248 |                 16.3 |
+| eva-slow-dl11"         |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                   35 |
+| eva-slow-dl11-c"       |             83 |               4 |            5354 |             NA |                                              0.954 |      0.0153 |    0.0301 |    NA |                 0.73 |
+| eva-slow-dl11-e"       |           1294 |               0 |            4143 |        1667705 |                                                  1 |       0.238 |     0.384 | 0.998 |                0.741 |
+| eva-slow-dl11-eic2s"   |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
+| eva-slow-dl11-eic2sk2" |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                   34 |
+| eva-slow-dl11-eicsk2"  |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                 33.9 |
+| eva-slow-dl11-i"       |           2362 |              77 |            3075 |        5940768 |                                              0.968 |       0.434 |       0.6 | 0.999 |                0.757 |
+| eva-slow-dl11-k"       |            503 |               6 |            4934 |             NA |                                              0.988 |      0.0925 |     0.169 |    NA |                 3.98 |
+| eva-slow-dl11-x"       |            233 |               0 |            5204 |             NA |                                                  1 |      0.0429 |    0.0822 |    NA |                 14.4 |
+| eva-slow-dl124"        |           2977 |             102 |            2460 |          -5537 |                                              0.967 |       0.548 |     0.699 | -1280 |                 37.6 |
+| eva-slow-dl125"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 34.2 |
+| eva-slow-dl126"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
+
+
+The barchart below shows duration profiles of procedure for different EVA algorithms.
 [[file:./disambr.analysis.png]]
+
+The reproducible code snippets for each variations to EVA algorithm that we considered for the analysis are below. More in depth investigation will follow.
 
 ** eva-dl11
 #+BEGIN_SRC R
@@ -324,6 +343,7 @@ EVA algorithms profile of procedure durations:
 #+END_SRC
 
 ** eva-dl11-s
+This one is skipped as the procedure requires prior matched (strong sets) authors to identify self citations.
 #+BEGIN_SRC R
   options(disambr_get_output_set = TRUE)
   options(disambr_read_output_set = TRUE)
@@ -373,3 +393,8 @@ EVA algorithms profile of procedure durations:
       disambr_set_common_keywords %>%
       disambr_set_same_researcher_ids
 #+END_SRC
+
+* References
+van den Akker, O. R., Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithm—Author name disambiguation for large Web of Science datasets.
+
+Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746 [Cs]. http://arxiv.org/abs/1904.12746

@@ -1203,7 +1203,6 @@ expect_null(disambr_get_last_weak_set(a))
       if(sum(sets_index) != 1) disambr_stop("- more than one truth set found!")
       return(sets[[which(sets_index)]])
   }
-
 #+END_SRC
 
 
@@ -4466,7 +4465,8 @@ microbenchmark(combi(v), combn(v,2))
   disambr_stats <- function(sets = NULL
                           , sets_dir = getOption("disambr_save_set_dir")
                           , name = sets_dir
-                          , remove_data = TRUE) {
+                          , remove_data = TRUE
+                          , save_rds = TRUE) {
       if(is.null(sets)){
       ## reads sets from directory
       sets <- 
@@ -4511,7 +4511,7 @@ microbenchmark(combi(v), combn(v,2))
       a <- nrow(fintersect(truth, strong))
       b <- nrow(fsetdiff(strong, truth))
       c <- nrow(fsetdiff(truth, strong))
-      d <- nrow(ds[[2]]) * (nrow(ds[[2]]) - 1) - nrow(funion(truth, strong))
+      d <- nrow(sets[[2]]) * (nrow(sets[[2]]) - 1) - nrow(funion(truth, strong))
 
       pw_presision <- a / (a + b)
       pw_recall <- a / (a + c)
@@ -4526,13 +4526,15 @@ microbenchmark(combi(v), combn(v,2))
              , true_negatives = d
             , pw_presision = pw_presision
              , pw_recall = pw_recall
-             , pw_f1 = pw_f1
+            , pw_f1 = pw_f1
+              , pw_accuracy = pw_accuracy
              , dur_mins = dur_mins
              , dur_sets = list(sets_attr_duration))
 
       ## save on disk
-      saveRDS(stats, paste0(sets_dir,"/", "disambr_stats.rds"))
-
+      if(save_rds){
+          saveRDS(stats, paste0(sets_dir,"/", "disambr_stats.rds"))
+      }
       return(stats)
   }
 
@@ -4570,26 +4572,52 @@ microbenchmark(combi(v), combn(v,2))
   disambr_stats(ds)
 #+END_SRC
 
-#+BEGIN_SRC R :results replace table :session none :colnames yes
-  files <- dir(".."
-             , recursive = TRUE
-             , full.names = TRUE
-             , pattern = "^disambr_stats\\.rds$")
-  stats_list <- lapply(files, readRDS)
-  as.matrix(data.table::rbindlist(stats_list))
+#+BEGIN_SRC R :results replace output :session none :colnames yes :
+library(magrittr)
+library(data.table)
+  source("R/disambr_sets.r")
+  source("R/disambr_stats.r")
+options("digits" = 3)
+c("../eva-slow-dl01"
+  , "../eva-slow-dl11"
+  , "../eva-slow-dl11-c"
+  , "../eva-slow-dl11-e"
+  , "../eva-slow-dl11-eic2s"
+  , "../eva-slow-dl11-eic2sk2"
+  , "../eva-slow-dl11-eicsk2"
+  , "../eva-slow-dl11-i"
+  , "../eva-slow-dl11-k"
+  , "../eva-slow-dl11-x"
+  , "../eva-slow-dl124"
+  , "../eva-slow-dl125"
+  , "../eva-slow-dl126") %>%
+      lapply(function(d) {
+          print(d)
+          disambr_stats(sets_dir = d, save_rds = FALSE)
+      }) %>%
+      rbindlist %>%
+      as.matrix
 #+END_SRC
 
 #+RESULTS:
-| name             | true_positives | false_positives | false_negatives | true_negatives | pw_presision | pw_recall | pw_f1 | dur_mins |
-|------------------+----------------+-----------------+-----------------+----------------+--------------+-----------+-------+----------|
-| eva-dl01         |           2976 |              38 |            2461 |       29626217 |        0.987 |     0.547 | 0.704 |    1.988 |
-| eva-dl11         |           2977 |              89 |            2460 |       29626166 |        0.970 |     0.547 | 0.700 |    1.307 |
 
 
 
-
-
-
+| name                   | true_positives | false_positives | false_negatives | true_negatives | pw_presision pw_recall pw_f1  pw_accuracy dur_mins | w_presision | pw_recall | pw_f1 | pw_accuracy dur_mins |
+|------------------------+----------------+-----------------+-----------------+----------------+----------------------------------------------------+-------------+-----------+-------+----------------------|
+| eva-slow-dl01"         |           2976 |              38 |            2461 |          -5473 |                                              0.987 |       0.547 |     0.704 | -1248 |                 16.3 |
+| eva-slow-dl11"         |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                   35 |
+| eva-slow-dl11-c"       |             83 |               4 |            5354 |             NA |                                              0.954 |      0.0153 |    0.0301 |    NA |                 0.73 |
+| eva-slow-dl11-e"       |           1294 |               0 |            4143 |        1667705 |                                                  1 |       0.238 |     0.384 | 0.998 |                0.741 |
+| eva-slow-dl11-eic2s"   |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
+| eva-slow-dl11-eic2sk2" |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                   34 |
+| eva-slow-dl11-eicsk2"  |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                 33.9 |
+| eva-slow-dl11-i"       |           2362 |              77 |            3075 |        5940768 |                                              0.968 |       0.434 |       0.6 | 0.999 |                0.757 |
+| eva-slow-dl11-k"       |            503 |               6 |            4934 |             NA |                                              0.988 |      0.0925 |     0.169 |    NA |                 3.98 |
+| eva-slow-dl11-x"       |            233 |               0 |            5204 |             NA |                                                  1 |      0.0429 |    0.0822 |    NA |                 14.4 |
+| eva-slow-dl124"        |           2977 |             102 |            2460 |          -5537 |                                              0.967 |       0.548 |     0.699 | -1280 |                 37.6 |
+| eva-slow-dl125"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 34.2 |
+| eva-slow-dl126"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
 
 *** on blade
 

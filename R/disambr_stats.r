@@ -8,7 +8,8 @@
 disambr_stats <- function(sets = NULL
                         , sets_dir = getOption("disambr_save_set_dir")
                         , name = sets_dir
-                        , remove_data = TRUE) {
+                        , remove_data = TRUE
+                        , save_rds = TRUE) {
     if(is.null(sets)){
     ## reads sets from directory
     sets <- 
@@ -53,7 +54,7 @@ disambr_stats <- function(sets = NULL
     a <- nrow(fintersect(truth, strong))
     b <- nrow(fsetdiff(strong, truth))
     c <- nrow(fsetdiff(truth, strong))
-    d <- nrow(ds[[2]]) * (nrow(ds[[2]]) - 1) - nrow(funion(truth, strong))
+    d <- nrow(sets[[2]]) * (nrow(sets[[2]]) - 1) - nrow(funion(truth, strong))
 
     pw_presision <- a / (a + b)
     pw_recall <- a / (a + c)
@@ -68,13 +69,15 @@ disambr_stats <- function(sets = NULL
            , true_negatives = d
           , pw_presision = pw_presision
            , pw_recall = pw_recall
-           , pw_f1 = pw_f1
+          , pw_f1 = pw_f1
+            , pw_accuracy = pw_accuracy
            , dur_mins = dur_mins
            , dur_sets = list(sets_attr_duration))
 
     ## save on disk
-    saveRDS(stats, paste0(sets_dir,"/", "disambr_stats.rds"))
-
+    if(save_rds){
+        saveRDS(stats, paste0(sets_dir,"/", "disambr_stats.rds"))
+    }
     return(stats)
 }
 
