@@ -6,27 +6,30 @@ The sample test data is based on the data used to test another disambiguation al
 
 The table below presents comparison of EVA algorithms. The motivation for these versions is described in van den Akker et al. (2020). We used several common metrics to assess the efficiency and performance of each version.
 
-| name                   | true_positives | false_positives | false_negatives | true_negatives | pw_presision pw_recall pw_f1  pw_accuracy dur_mins | w_presision | pw_recall | pw_f1 | pw_accuracy dur_mins |
-|------------------------+----------------+-----------------+-----------------+----------------+----------------------------------------------------+-------------+-----------+-------+----------------------|
-| eva-slow-dl01"         |           2976 |              38 |            2461 |          -5473 |                                              0.987 |       0.547 |     0.704 | -1248 |                 16.3 |
-| eva-slow-dl11"         |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                   35 |
-| eva-slow-dl11-c"       |             83 |               4 |            5354 |             NA |                                              0.954 |      0.0153 |    0.0301 |    NA |                 0.73 |
-| eva-slow-dl11-e"       |           1294 |               0 |            4143 |        1667705 |                                                  1 |       0.238 |     0.384 | 0.998 |                0.741 |
-| eva-slow-dl11-eic2s"   |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
-| eva-slow-dl11-eic2sk2" |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                   34 |
-| eva-slow-dl11-eicsk2"  |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                 33.9 |
-| eva-slow-dl11-i"       |           2362 |              77 |            3075 |        5940768 |                                              0.968 |       0.434 |       0.6 | 0.999 |                0.757 |
-| eva-slow-dl11-k"       |            503 |               6 |            4934 |             NA |                                              0.988 |      0.0925 |     0.169 |    NA |                 3.98 |
-| eva-slow-dl11-x"       |            233 |               0 |            5204 |             NA |                                                  1 |      0.0429 |    0.0822 |    NA |                 14.4 |
-| eva-slow-dl124"        |           2977 |             102 |            2460 |          -5537 |                                              0.967 |       0.548 |     0.699 | -1280 |                 37.6 |
-| eva-slow-dl125"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 34.2 |
-| eva-slow-dl126"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
+| name                  | true_positives | false_positives | false_negatives | true_negatives | pw_presision | pw_recall |  pw_f1 | pw_accuracy | dur_mins |
+|-----------------------+----------------+-----------------+-----------------+----------------+--------------+-----------+--------+-------------+----------|
+| eva-slow-dl11         |           2977 |              89 |            2460 |          -5524 |        0.971 |     0.548 |    0.7 |       -1274 |       35 |
+| eva-slow-dl01         |           2976 |              38 |            2461 |          -5473 |        0.987 |     0.547 |  0.704 |       -1248 |     36.3 |
+| eva-slow-dl124        |           2977 |             102 |            2460 |          -5537 |        0.967 |     0.548 |  0.699 |       -1280 |     37.6 |
+| eva-slow-dl125        |           2977 |              89 |            2460 |          -5524 |        0.971 |     0.548 |    0.7 |       -1274 |     34.2 |
+| eva-slow-dl126        |           2977 |              89 |            2460 |          -5524 |        0.971 |     0.548 |    0.7 |       -1274 |     33.9 |
+| eva-slow-dl11-c       |             83 |               4 |            5354 |             NA |        0.954 |    0.0153 | 0.0301 |          NA |     0.73 |
+| eva-slow-dl11-e       |           1294 |               0 |            4143 |        1667705 |            1 |     0.238 |  0.384 |       0.998 |    0.741 |
+| eva-slow-dl11-k       |            503 |               6 |            4934 |             NA |        0.988 |    0.0925 |  0.169 |          NA |     3.98 |
+| eva-slow-dl11-x       |            233 |               0 |            5204 |             NA |            1 |    0.0429 | 0.0822 |          NA |     14.4 |
+| eva-slow-dl11-eic2s   |           2977 |              89 |            2460 |          -5524 |        0.971 |     0.548 |    0.7 |       -1274 |     33.9 |
+| eva-slow-dl11-eic2sk2 |           2981 |              92 |            2456 |          -5527 |         0.97 |     0.548 |  0.701 |       -1273 |       34 |
+| eva-slow-dl11-eicsk2  |           2981 |              92 |            2456 |          -5527 |         0.97 |     0.548 |  0.701 |       -1273 |     33.9 |
+| eva-slow-dl11-i       |           2362 |              77 |            3075 |        5940768 |        0.968 |     0.434 |    0.6 |       0.999 |    0.757 |
 
 
 The barchart below shows duration profiles of procedure for different EVA algorithms.
 [[file:./disambr.analysis.png]]
 
+The tentative results shows that the baseline version of the algorithm eva-slow-dl01 has relatively better performance (based on F1 index) but it is also one of the most time consuming.
+
 The reproducible code snippets for each variations to EVA algorithm that we considered for the analysis are below. More in depth investigation will follow.
+
 
 ** eva-dl11
 #+BEGIN_SRC R
