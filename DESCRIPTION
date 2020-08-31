@@ -17,8 +17,7 @@ Authors@R:
              email = "sacha.epskamp@gmail.com"))
 Description: disambr - Named Entity Disambiguation in
     R
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+License: LGPL (>= 2.1)
 URL: https://github.com/stasvlasov/disambr
 BugReports: https://github.com/stasvlasov/disambr/issues
 Depends: 
@@ -27,6 +26,7 @@ Depends:
 Imports: 
     data.table (>= 1.12),
     magrittr (>= 1.5),
+    parallel,
     stringi (>= 1.4)
 Suggests: 
     testthat

@@ -409,7 +409,7 @@ disambr_get_output_set <- function(sets
 disambr_read_output_set <- function(read_output_set = getOption("disambr_read_output_set")
                                   , save_set_prefix = getOption("disambr_save_set_prefix")
                                   , save_set_dir = getOption("disambr_save_set_dir")
-                                    , attr_names_prefix = "disambr_set_") {
+                                  , attr_names_prefix = "disambr_set_") {
     if(isTRUE(read_output_set)){
         ## make defaults if not provided
         if(length(save_set_prefix) == 0) {

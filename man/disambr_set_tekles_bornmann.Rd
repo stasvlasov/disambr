@@ -6,7 +6,8 @@
 \usage{
 disambr_set_tekles_bornmann(
   sets,
-  file_path = "../data/tekles-bornmann-researcher-ids.txt"
+  file_path = system.file("testdata", "tekles-bornmann-researcher-ids.txt", package =
+    "disambr")
 )
 }
 \arguments{

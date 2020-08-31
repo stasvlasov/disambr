@@ -53,6 +53,11 @@ disambr_read_file <- function(f) {
 ## disambr_read_file:1 ends here
 
 ## [[id:org:vqqgnb60jti0][disambr_read_tsv:1]]
+##' Read tsv file
+##' @param f path
+##' @return data
+##' 
+##' @export 
 disambr_read_tsv <- function(f) {
       ## check tsv file type base on first line
       first_line <- readLines(f, n = 1
