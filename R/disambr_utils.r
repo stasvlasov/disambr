@@ -1,4 +1,4 @@
-## [[id:org:qdfaf650iti0][dhms:1]]
+## -------->>  [[file:../disambr.src.org::*dhms][dhms:1]]
 ##' Formats time difference as X days HH:MM:SS
 ##'
 ##' from https://stackoverflow.com/questions/27312292
@@ -14,9 +14,11 @@ dhms <- function(t) {
               , formatC(t %% 60, width = 2, format = "d", flag = "0")
               , sep = ":"))
 }
-## dhms:1 ends here
+## --------<<  dhms:1 ends here
 
-## [[id:org:s6sdaz31gti0][get_file_extension:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*get_file_extension][get_file_extension:1]]
 ##' Extention extractor. Same as tools::file_ext but for NULL input returns NULL instead of logical(0).
 ##' @param f file name 
 ##' @return extention
@@ -64,9 +66,11 @@ get_file_extension <- function(f) {
 ## tools::file_ext("...sdf...sdf.df...sd.")
 ## tools::file_ext(".")
 ## tools::file_ext(".....")
-## get_file_extension:1 ends here
+## --------<<  get_file_extension:1 ends here
 
-## [[id:org:ptydaz31gti0][stop_unless:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*stop_unless][stop_unless:1]]
 ##' Stops process unless cond is true
 ##' @param cond condition to test
 ##' @param message_if_false message_if_false
@@ -90,9 +94,11 @@ stop_unless <- function(cond
         return(return_if_false)
     }
 }
-## stop_unless:1 ends here
+## --------<<  stop_unless:1 ends here
 
-## [[id:org:kb3eaz31gti0][parse_files_path:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*parse_files_path][parse_files_path:1]]
 ##' Returns vector of file paths from path(s) recursively
   ##' @param files_path Path(s) where the files are
   ##' @param recursive Whether to look in subfolders recursively
@@ -120,9 +126,11 @@ stop_unless <- function(cond
       })
       return(unique(normalizePath(unlist(files_path))))
   }
-## parse_files_path:1 ends here
+## --------<<  parse_files_path:1 ends here
 
-## [[id:org:wx7eaz31gti0][read_to_utf8:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*read_to_utf8][read_to_utf8:1]]
 ##' Reads file as UTF-8, convert it if other encoding is deteted
 ##' @param f file path
 ##' @param bytes_to_check how long to check for encoding (save time for large files)
@@ -153,9 +161,11 @@ read_to_utf8 <- function(f, bytes_to_check = 2^14) {
 ## stringi::stri_enc_detect2(123)[[1]][[1]][1]
 ## stringi::stri_enc_detect2("")[[1]][[1]][1]
 ## stringi::stri_enc_detect2("sadf")[[1]][[1]][1]
-## read_to_utf8:1 ends here
+## --------<<  read_to_utf8:1 ends here
 
-## [[id:org:xbceaz31gti0][recode_return_characters:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*recode_return_characters][recode_return_characters:1]]
 ##' Fixed end of line characters in wierd text
 ##' @param s text string
 ##' @param assoc.file file name where it came from
@@ -165,21 +175,23 @@ read_to_utf8 <- function(f, bytes_to_check = 2^14) {
 ##' @export 
 recode_return_characters <- function(s, assoc.file = NA, verbose = FALSE) {
     has_return_chars <- function(s, test.first.n.char = 10^4) {
-        s <- stri_sub(s, to = test.first.n.char)
-        any(stri_detect_regex(s, "\\r"))
+        s <- stringi::stri_sub(s, to = test.first.n.char)
+        any(stringi::stri_detect_regex(s, "\\r"))
     }
     if(has_return_chars(s)) {
         if(verbose) message("disambr: '\\r' char in the file: ", assoc.file
                           , "\n- replacing with '\\n' to fix 'datatable::fread'")
-        s <- stri_replace_all_regex(s, "\\R+", "\n")
+        s <- stringi::stri_replace_all_regex(s, "\\R+", "\n")
     }
     return(s)
 }
-## recode_return_characters:1 ends here
+## --------<<  recode_return_characters:1 ends here
 
-## [[id:org:t4zk2360oti0][match_fuzzy:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*match_fuzzy][match_fuzzy:1]]
 ##' Fuzzy match all combinations of character vector
-##' @param bank 
+##' @param bank bank
 ##' @param method see method in stringdist
 ##' @param max_dist see maxDist in stringdist
 ##' @param id_name names that will be suffixed with _1 and _2
@@ -221,4 +233,6 @@ match_fuzzy <- function(bank, method, max_dist, id_name) {
         }
         return(data.table::rbindlist(matched_list))
 }
-## match_fuzzy:1 ends here
+## --------<<  match_fuzzy:1 ends here
+
+

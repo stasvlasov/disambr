@@ -7,7 +7,9 @@
 disambr_wos_tsv_parse_ri(authors, table_af = NULL)
 }
 \arguments{
-\item{record_ri}{a record string from RI column}
+\item{authors}{a record string from RI column}
+
+\item{table_af}{Table}
 }
 \value{
 data.table

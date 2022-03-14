@@ -10,13 +10,30 @@ disambr_read(
   save_sets_dir = "disambr-data",
   use_time_stamp = FALSE
 )
+
+disambr_read(
+  files_path,
+  save_sets_as = NULL,
+  save_sets_dir = "disambr-data",
+  use_time_stamp = FALSE
+)
 }
 \arguments{
 \item{files_path}{Path to data. You can specify almost everything}
+
+\item{save_sets_as}{How save sets}
+
+\item{save_sets_dir}{where to save sets}
+
+\item{use_time_stamp}{wheather to use timestamp}
 }
 \value{
 
+
+
 }
 \description{
+Reads the data for disambiguation
+
 Reads the data for disambiguation
 }

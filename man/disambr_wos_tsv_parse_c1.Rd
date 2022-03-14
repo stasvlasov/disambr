@@ -8,6 +8,8 @@ disambr_wos_tsv_parse_c1(record_c1, table_af = NULL)
 }
 \arguments{
 \item{record_c1}{a record string from RP column}
+
+\item{table_af}{Table}
 }
 \value{
 Data.table with two columns -  author_name and affiliations

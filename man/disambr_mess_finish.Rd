@@ -11,14 +11,15 @@ disambr_mess_finish(
 )
 }
 \arguments{
+\item{mess}{Prefix for staring message}
+
+\item{append_running_procedure_name}{Whether to append running procedure name}
+
 \item{...}{
   Arguments passed on to \code{\link[=disambr_mess]{disambr_mess}}
   \describe{
-    \item{\code{mess}}{Message to report. If prefixed by h \code{h_marks} it will be ouline of level \code{h}}
     \item{\code{h_prefix}}{Character vector of prefixes for each outline level}
   }}
-
-\item{start_mess_prefix}{Prefix for staring message}
 }
 \value{
 time started

@@ -7,7 +7,9 @@
 disambr_wos_tsv_parse_oi(authors, table_af = NULL)
 }
 \arguments{
-\item{record_oi}{a record string from OI column}
+\item{authors}{a record string from OI column}
+
+\item{table_af}{Table}
 }
 \value{
 data.table

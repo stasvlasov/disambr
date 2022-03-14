@@ -1,4 +1,4 @@
-## [[id:org:g01ja7119ri0][Package documentation:1]]
+## -------->>  [[file:../disambr.src.org::*Package documentation][Package documentation:1]]
 #' @details
 #' This package provides a framework for disambiguating named entities (e.g., authors in large bibliometric databases)
 #' 
@@ -9,4 +9,6 @@
 #' This is work in progress. Please, file an issues or suggestion if you have any.
 #' @keywords internal
 "_PACKAGE"
-## Package documentation:1 ends here
+## --------<<  Package documentation:1 ends here
+
+

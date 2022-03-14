@@ -7,11 +7,11 @@
 disambr_wos_tsv_parse_em(emails, record_au_table, record_rp_table)
 }
 \arguments{
+\item{emails}{a record string from EM column}
+
 \item{record_au_table}{a data_tabe after parsing AU column with disambr_wos_tsv_parse_au}
 
 \item{record_rp_table}{a data_tabe after parsing RP column with disambr_wos_tsv_parse_rp}
-
-\item{record_em}{a record string from EM column}
 }
 \value{
 Data.table with columns - author_name, affiliations and email

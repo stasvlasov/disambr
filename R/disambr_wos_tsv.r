@@ -1,4 +1,4 @@
-## [[id:org:l7egnb60jti0][disambr_make_wos_tsv_publications:1]]
+## -------->>  [[file:../disambr.src.org::*disambr_make_wos_tsv_publications][disambr_make_wos_tsv_publications:1]]
 disambr_make_wos_tsv_publications <- function(tables_list, recipes) {
     publication_table <-
         data.table::rbindlist(tables_list, fill=TRUE)
@@ -28,11 +28,13 @@ disambr_make_wos_tsv_publications <- function(tables_list, recipes) {
                               , recipes))
     return(publication_table)
 }
-## disambr_make_wos_tsv_publications:1 ends here
+## --------<<  disambr_make_wos_tsv_publications:1 ends here
 
-## [[id:org:3q0cnb60jti0][disambr_wos_tsv_parse_au:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_wos_tsv_parse_au][disambr_wos_tsv_parse_au:1]]
 ##' Parses AU column of WoS saved records export
-##' @param record.au a record string from AU column
+##' @param author_name a record string from AU column
 ##' @return data.table
 ##' 
 ##' @md 
@@ -51,11 +53,13 @@ disambr_wos_tsv_parse_au <- function(author_name) {
 
 ## "Tilly, TB; Nelson, MT; Chakravarthy, KB; Shira, EA; Debrose, MC; Grabinski, CM; Salisbury, RL; Mattie, DR; Hussain, SM" %>% stri_split_fixed("; ") %>% 
 ## disambr_wos_tsv_parse_au
-## disambr_wos_tsv_parse_au:1 ends here
+## --------<<  disambr_wos_tsv_parse_au:1 ends here
 
-## [[id:org:vy2cnb60jti0][disambr_wos_tsv_parse_af:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_wos_tsv_parse_af][disambr_wos_tsv_parse_af:1]]
 ##' Parses AF (author full name) column of WoS saved records export
-##' @param record.au a record string from AF column
+##' @param name (a record string from AF column)?
 ##' @return Data.table
 disambr_wos_tsv_parse_af <- function(name) {
     last_name <- stringi::stri_extract_first_regex(name, "^[^,]+")
@@ -79,9 +83,11 @@ disambr_wos_tsv_parse_af <- function(name) {
 ## test
 ## "Tilly, Trevor B.; Nelson, M. Tyler; Chakravarthy, Karthik B.; Shira, Emily A.; Debrose, Madeline C.; Grabinski, Christin M.; Salisbury, Richard L.; Mattie, David R.; Hussain, Saber M." %>%
 ## disambr_wos_tsv_parse_af
-## disambr_wos_tsv_parse_af:1 ends here
+## --------<<  disambr_wos_tsv_parse_af:1 ends here
 
-## [[id:org:1t5cnb60jti0][disambr_wos_tsv_parse_rp:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_wos_tsv_parse_rp][disambr_wos_tsv_parse_rp:1]]
 ##' Parses RP (reprint author) column of WoS saved records export
 ##' @param record_rp a record string from RP column
 ##' @return Data.table with two columns -  author_name and affiliations
@@ -135,17 +141,19 @@ disambr_wos_tsv_parse_rp <- function(record_rp) {
 
 ## "" %>%
 ## disambr_wos_tsv_parse_rp %>% nrow
-## disambr_wos_tsv_parse_rp:1 ends here
+## --------<<  disambr_wos_tsv_parse_rp:1 ends here
 
-## [[id:org:wl8cnb60jti0][disambr_wos_tsv_parse_em:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_wos_tsv_parse_em][disambr_wos_tsv_parse_em:1]]
 ##' Parses EM (email) column of WoS saved records export
-##' @param record_em  a record string from EM column
+##' @param emails a record string from EM column
 ##' @param record_au_table a data_tabe after parsing AU column with disambr_wos_tsv_parse_au
 ##' @param record_rp_table a data_tabe after parsing RP column with disambr_wos_tsv_parse_rp
 ##' @return Data.table with columns - author_name, affiliations and email
 disambr_wos_tsv_parse_em <- function(emails
-                                         , record_au_table
-                                         , record_rp_table) {
+                                   , record_au_table
+                                   , record_rp_table) {
     if (isTRUE(length(emails) == 1 && emails == "")) {
         ## in case there are no emails
         record_au_table[, author_email := NA]
@@ -175,14 +183,17 @@ disambr_wos_tsv_parse_em <- function(emails
 ## , record_au_table = data.table(author_name = c(1,2,3,4))
 ## , record_rp_table = data.table(author_name = c(3))
 ## ) %>% print
-## disambr_wos_tsv_parse_em:1 ends here
+## --------<<  disambr_wos_tsv_parse_em:1 ends here
 
-## [[id:org:qrdfnb60jti0][disambr_wos_tsv_parse_c1:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_wos_tsv_parse_c1][disambr_wos_tsv_parse_c1:1]]
 ##' Parses C1 (author adress/affiliation) column of WoS saved records export
-##' @param record_c1 a record string from RP column
+##' @param record_c1 a record string from RP column 
+##' @param table_af Table
 ##' @return Data.table with two columns -  author_name and affiliations
 disambr_wos_tsv_parse_c1 <- function(record_c1
-                                         , table_af = NULL) {
+                                   , table_af = NULL) {
     record_c1_init <- ""
     authors_table <-
         data.table::data.table(author_full_name = character()
@@ -235,16 +246,19 @@ disambr_wos_tsv_parse_c1 <- function(record_c1
 
 ## "[Wang, Menglei; Li, Shunyi; Zhu, Rencheng; Zhang, Ruiqin] Zhengzhou Univ, Sch Ecol & Environm, Zhengzhou 450001, Peoples R China; [Wang, Menglei] Zhengzhou Univ, Sch Chem Engn, Zhengzhou 450001, Peoples R China; [Zu, Lei; Wang, Yunjing; Bao, Xiaofeng] Chinese Res Inst Environm Sci, State Environm Protect Key Lab Vehicle Emiss Cont, Beijing 100012, Peoples R China" %>%
 ## disambr_wos_tsv_parse_c1(disambr_wos_tsv_parse_af("Wang, Menglei; Zu, Lei; Wang, Yunjing; Bao, Xiaofeng"))
-## disambr_wos_tsv_parse_c1:1 ends here
+## --------<<  disambr_wos_tsv_parse_c1:1 ends here
 
-## [[id:org:jygfnb60jti0][disambr_wos_tsv_parse_oi:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_wos_tsv_parse_oi][disambr_wos_tsv_parse_oi:1]]
 ##' Parses OI column of WoS saved records export
-##' @param record_oi a record string from OI column
+##' @param authors a record string from OI column
+##' @param table_af Table
 ##' @return data.table
 ##' 
 ##' @md 
 disambr_wos_tsv_parse_oi <- function(authors
-                                          , table_af = NULL) {
+                                   , table_af = NULL) {
     author_full_name <-
         stringi::stri_extract_first_regex(authors, "^[^/]+")
     author_orcid <-
@@ -287,45 +301,51 @@ disambr_wos_tsv_parse_oi <- function(authors
            ## table_af = data.table(author_full_name = c("Rainbow, Joshua")))
 
 ## NA %>% disambr_make_wos_tsv_authors__parse_oi
-## disambr_wos_tsv_parse_oi:1 ends here
+## --------<<  disambr_wos_tsv_parse_oi:1 ends here
 
-## [[id:org:5ljfnb60jti0][disambr_wos_tsv_parse_ri:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_wos_tsv_parse_ri][disambr_wos_tsv_parse_ri:1]]
 ##' Parses RI column of WoS saved records export
-  ##' @param record_ri a record string from RI column
-  ##' @return data.table
-  ##' 
-  ##' @md 
-  disambr_wos_tsv_parse_ri <- function(authors
-                                            , table_af = NULL) {
-      author_full_name <-
-          stringi::stri_extract_first_regex(authors, "^[^/]+")
-      author_researcher_id <-
-          stringi::stri_extract_first_regex(authors, "(?<=/).+")
-      authors_table <- 
-          data.table::data.table(author_full_name = author_full_name
-                               , author_researcher_id = author_researcher_id)
-      ## take care of propable case of multiple ID for one person
-      author_full_name_unique <- unique(authors_table$author_full_name)
-      author_researcher_id_list <-
-          lapply(author_full_name_unique
-               , function(x) {
-                   authors_table$author_researcher_id[
-                                     authors_table$author_full_name %in% x]
-               })
-      authors_table <-
-          data.table::data.table(author_full_name = author_full_name_unique
-                               , author_researcher_id = author_researcher_id_list)
-      if(length(table_af) != 0) {
-          return(authors_table[table_af
-                             , on = "author_full_name"
-                             , .(author_researcher_id)])
-      } else {
-          return(authors_table)
-      }
-  }
-## disambr_wos_tsv_parse_ri:1 ends here
+##' @param authors a record string from RI column
+##' @param table_af Table
+##' @return data.table
+##' 
+##' @md 
+##' @export 
+disambr_wos_tsv_parse_ri <- function(authors
+                                   , table_af = NULL) {
+    author_full_name <-
+        stringi::stri_extract_first_regex(authors, "^[^/]+")
+    author_researcher_id <-
+        stringi::stri_extract_first_regex(authors, "(?<=/).+")
+    authors_table <- 
+        data.table::data.table(author_full_name = author_full_name
+                             , author_researcher_id = author_researcher_id)
+    ## take care of propable case of multiple ID for one person
+    author_full_name_unique <- unique(authors_table$author_full_name)
+    author_researcher_id_list <-
+        lapply(author_full_name_unique
+             , function(x) {
+                 authors_table$author_researcher_id[
+                                   authors_table$author_full_name %in% x]
+             })
+    authors_table <-
+        data.table::data.table(author_full_name = author_full_name_unique
+                             , author_researcher_id = author_researcher_id_list)
+    if(length(table_af) != 0) {
+        return(authors_table[table_af
+                           , on = "author_full_name"
+                           , .(author_researcher_id)])
+    } else {
+        return(authors_table)
+    }
+}
+## --------<<  disambr_wos_tsv_parse_ri:1 ends here
 
-## [[id:org:7cofnb60jti0][disambr_make_wos_tsv_authors:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_make_wos_tsv_authors][disambr_make_wos_tsv_authors:1]]
 ##' Parses all WoS field related to authors and makes author table
 ##'
 ##' Relevant fields that are parsed (as in Web of Science Field Tags 2018-06-27):
@@ -408,7 +428,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
         disambr_mess("-- parsing EM field", ...)
         ## disambr_wos_tsv_parse_em updates authors_tables$au
         ## so no need to save it
-        pbmapply(disambr_wos_tsv_parse_em
+        pbapply::pbmapply(disambr_wos_tsv_parse_em
              , stringi::stri_split_fixed(wos_data_table$EM, "; ")
              , authors_tables$au
              , rp
@@ -420,7 +440,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
        all(c("C1", "AF") %in% names(wos_data_table))) {
         disambr_mess("-- parsing C1 field", ...)
         authors_tables$c1 <-
-            pbmapply(disambr_wos_tsv_parse_c1
+            pbapply::pbmapply(disambr_wos_tsv_parse_c1
                  , wos_data_table$C1
                  , authors_tables$af
                  , SIMPLIFY = FALSE)
@@ -430,7 +450,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
        all(c("RI", "AF") %in% names(wos_data_table))) {
         disambr_mess("-- parsing RI field", ...)
         authors_tables$ri <-
-            pbmapply(disambr_wos_tsv_parse_ri
+            pbapply::pbmapply(disambr_wos_tsv_parse_ri
                  , stringi::stri_split_fixed(wos_data_table$RI, "; ")
                  , authors_tables$af
                  , SIMPLIFY = FALSE
@@ -441,7 +461,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
        all(c("OI", "AF") %in% names(wos_data_table))) {
         disambr_mess("-- parsing OI field", ...)
         authors_tables$oi <-
-            pbmapply(disambr_wos_tsv_parse_oi
+            pbapply::pbmapply(disambr_wos_tsv_parse_oi
                  , stringi::stri_split_fixed(wos_data_table$OI, "; ")
                  , authors_tables$af
                  , SIMPLIFY = FALSE
@@ -471,9 +491,11 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
     disambr_mess_finish(mess = "-- finished -")
     return(authors_table)
 }
-## disambr_make_wos_tsv_authors:1 ends here
+## --------<<  disambr_make_wos_tsv_authors:1 ends here
 
-## [[id:org:35sfnb60jti0][disambr_wos_tsv_parse_cr:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_wos_tsv_parse_cr][disambr_wos_tsv_parse_cr:1]]
 ##' Parses WoS CR (Cited References) record into separate talbe
 ##' @param references CR (Cited References) record, i.e., just one row
 ##' @return references table
@@ -510,9 +532,11 @@ disambr_wos_tsv_parse_cr <- function(references) {
         })
     suppressWarnings(data.table::rbindlist(references_list))
 }
-## disambr_wos_tsv_parse_cr:1 ends here
+## --------<<  disambr_wos_tsv_parse_cr:1 ends here
 
-## [[id:org:jxufnb60jti0][disambr_make_wos_tsv_references:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_make_wos_tsv_references][disambr_make_wos_tsv_references:1]]
 ##' Make references table from WoS tsv data
 ##' @param wos_data_table WoS data
 ##' @param ... set verbose here if neededj
@@ -525,7 +549,7 @@ disambr_make_wos_tsv_references <- function(wos_data_table
     if("CR" %in% names(wos_data_table)) {
         disambr_mess("-- parsing references", ...)
         references_list <-
-            pblapply(stringi::stri_split_fixed(wos_data_table$CR, "; ")
+            pbapply::pblapply(stringi::stri_split_fixed(wos_data_table$CR, "; ")
                    , disambr_wos_tsv_parse_cr)
         disambr_mess("-- stacking references", ...)
         references_table <-
@@ -554,9 +578,11 @@ disambr_make_wos_tsv_references <- function(wos_data_table
         disambr_stop("THERE IS NOT 'CR' FIELD WITH REFERENCES!")
     }
 }
-## disambr_make_wos_tsv_references:1 ends here
+## --------<<  disambr_make_wos_tsv_references:1 ends here
 
-## [[id:org:to0gnb60jti0][disambr_make_wos_tsv_author_year_citations:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_make_wos_tsv_author_year_citations][disambr_make_wos_tsv_author_year_citations:1]]
 ##' Makes citations table by matching first author - year keys. This, of course, can produce false positives matched
 ##' @param pub_table WoS publications data table
 ##' @param ref_table WoS references data table
@@ -596,4 +622,6 @@ disambr_make_wos_tsv_author_year_citations <- function(pub_table, ref_table) {
                        , reference = "wos_tsv_publications")
     return(cit_table)
 }
-## disambr_make_wos_tsv_author_year_citations:1 ends here
+## --------<<  disambr_make_wos_tsv_author_year_citations:1 ends here
+
+

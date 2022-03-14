@@ -1,9 +1,9 @@
-## [[id:org:nroit1n0mti0][disambr_set_tekles_bornmann:1]]
+## -------->>  [[file:../disambr.src.org::*disambr_set_tekles_bornmann][disambr_set_tekles_bornmann:1]]
 ##' Subsets WoS authors table with Researcher IDs used in Tekles & Bornmann (2019). Meant for reproducability.
 ##'
 ##' This procedure does not alter sets attributes. Just filters WoS author table.
 ##'
-##' Reference: Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746 [Cs]. http://arxiv.org/abs/1904.12746
+##' Reference: Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746. http://arxiv.org/abs/1904.12746
 ##' @param sets WoS data
 ##' @param file_path path to Researcher IDs
 ##' @return updated WoS data
@@ -52,9 +52,11 @@ disambr_set_tekles_bornmann <-
     disambr_mess_finish()
     return(sets)
  }
-## disambr_set_tekles_bornmann:1 ends here
+## --------<<  disambr_set_tekles_bornmann:1 ends here
 
-## [[id:org:b2sit1n0mti0][disambr_set_on_same_paper:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_on_same_paper][disambr_set_on_same_paper:1]]
 ##' Makes sets of co-authors assuming that all authors on paper are different person.
 ##' @param sets Sests
 ##' @return Updated sets
@@ -84,9 +86,11 @@ disambr_set_on_same_paper <- function(sets) {
     disambr_mess_finish()
     return(c(sets, list(output_set)))
 }
-## disambr_set_on_same_paper:1 ends here
+## --------<<  disambr_set_on_same_paper:1 ends here
 
-## [[id:org:v4zkt1n0mti0][disambr_set_not_on_same_paper:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_not_on_same_paper][disambr_set_not_on_same_paper:1]]
 ## too slow... and eats all ram
 disambr_set_not_on_same_paper <- function(sets
                                         , verbose = FALSE
@@ -131,9 +135,11 @@ disambr_set_not_on_same_paper <- function(sets
      if(length(save_set_as) != 0)
      return(c(sets, list(return_sets)))
  }
-## disambr_set_not_on_same_paper:1 ends here
+## --------<<  disambr_set_not_on_same_paper:1 ends here
 
-## [[id:org:n8blt1n0mti0][disambr_set_similar_initials:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_similar_initials][disambr_set_similar_initials:1]]
 ##' Makes set of similar authors based on their initials
 ##' @param sets Sets
 ##' @param maxDist see max_dist in `match_fuzzy`
@@ -246,9 +252,11 @@ disambr_set_similar_initials <- function(sets
 ## dt %>%
     ## disambr_set_similar_last_names(verbose = TRUE) %>% 
     ## disambr_set_similar_initials_bank(verbose = TRUE)
-## disambr_set_similar_initials:1 ends here
+## --------<<  disambr_set_similar_initials:1 ends here
 
-## [[id:org:364lt1n0mti0][disambr_set_similar_last_names:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_similar_last_names][disambr_set_similar_last_names:1]]
 ##' Makes set of similar authors based on their last names
 ##' @param sets Sets
 ##' @param max_dist see max_dist in `match_fuzzy`
@@ -338,9 +346,11 @@ disambr_set_similar_last_names <- function(sets
     disambr_mess_finish()
     return(c(sets, list(output_set)))
 }
-## disambr_set_similar_last_names:1 ends here
+## --------<<  disambr_set_similar_last_names:1 ends here
 
-## [[id:org:qjflt1n0mti0][disambr_set_same_emails:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_same_emails][disambr_set_same_emails:1]]
 ##' Makes set of matched authors bases on same email addresses
 ##' @param sets Sets
 ##' @return Sets with new attached
@@ -405,9 +415,11 @@ disambr_set_same_email <- function(sets) {
 ## dt[[3]][2]$author_email
 ## dt[[3]][264]$author_email
 ## dt[[3]][406]$author_email
-## disambr_set_same_emails:1 ends here
+## --------<<  disambr_set_same_emails:1 ends here
 
-## [[id:org:o540u1n0mti0][disambr_set_same_affiliation:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_same_affiliation][disambr_set_same_affiliation:1]]
 ##' Makes set of matched authors based on same affiliation
 ##' @param sets Sets
 ##' @return Sets with new attached
@@ -477,9 +489,11 @@ disambr_set_same_affiliation <- function(sets) {
 ## dt[[3]][2]$author_email
 ## dt[[3]][264]$author_email
 ## dt[[3]][406]$author_email
-## disambr_set_same_affiliation:1 ends here
+## --------<<  disambr_set_same_affiliation:1 ends here
 
-## [[id:org:bqe0u1n0mti0][disambr_set_cite_others_paper:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_cite_others_paper][disambr_set_cite_others_paper:1]]
 ##' Make a set of matched authors bases on the cases when one author cites the others paper.
 ##' @param sets Sets
 ##' @param match_refrerences_by_name_year Whether to check citations based on first author name and year pair in addition to machich citations based on DOI
@@ -594,9 +608,11 @@ disambr_set_cite_others_paper <- function(sets
 ## p[r
 ## , on = .(y, n)
 ## , .(DI, doi, , paper_id, b, y, n)]
-## disambr_set_cite_others_paper:1 ends here
+## --------<<  disambr_set_cite_others_paper:1 ends here
 
-## [[id:org:lwj0u1n0mti0][disambr_set_common_references:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_common_references][disambr_set_common_references:1]]
 ##' Make set of authors that have number of references in common
 ##' @param sets Sets
 ##' @param references_in_common number of references in common
@@ -730,9 +746,11 @@ disambr_set_common_references <- function(sets
 ## a[a %in% c(2,3), c(b)]
 
 ## c(NA,NA,1) %in% c(32,3,1,3, NA)
-## disambr_set_common_references:1 ends here
+## --------<<  disambr_set_common_references:1 ends here
 
-## [[id:org:4np0u1n0mti0][disambr_set_cite_self_citation:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_cite_self_citation][disambr_set_cite_self_citation:1]]
 ##' Make a set of matched authors based on cases when one author cites others self citation. Self-citations here are detected based on DOI.
 ##' @param sets Sets
 ##' @return Sets with new appended
@@ -878,9 +896,11 @@ disambr_set_cite_self_citation <- function(sets) {
 ## a[a %in% c(2,3), c(b)]
 
 ## c(NA,NA,1) %in% c(32,3,1,3, NA)
-## disambr_set_cite_self_citation:1 ends here
+## --------<<  disambr_set_cite_self_citation:1 ends here
 
-## [[id:org:8wu0u1n0mti0][disambr_set_common_keywords:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_common_keywords][disambr_set_common_keywords:1]]
 ##' Makes set of authors with number of keywords in their papers in common
 ##' @param sets Sets
 ##' @param keywords_in_common number of keywords in common
@@ -966,9 +986,11 @@ disambr_set_common_keywords <- function(sets
 ## dt[[3]][2]$author_email
 ## dt[[3]][264]$author_email
 ## dt[[3]][406]$author_email
-## disambr_set_common_keywords:1 ends here
+## --------<<  disambr_set_common_keywords:1 ends here
 
-## [[id:org:ze7bwhk0oti0][disambr_set_same_researcher_ids:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_same_researcher_ids][disambr_set_same_researcher_ids:1]]
 ##' For testing. Makes so called ground truth set based on same research IDs
 ##' @param sets Sets
 ##' @return Sets with new set appended
@@ -1017,4 +1039,6 @@ disambr_set_same_researcher_ids <- function(sets) {
     disambr_mess_finish()
     return(c(sets, list(output_set)))
 }
-## disambr_set_same_researcher_ids:1 ends here
+## --------<<  disambr_set_same_researcher_ids:1 ends here
+
+

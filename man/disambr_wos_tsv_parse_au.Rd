@@ -7,7 +7,7 @@
 disambr_wos_tsv_parse_au(author_name)
 }
 \arguments{
-\item{record.au}{a record string from AU column}
+\item{author_name}{a record string from AU column}
 }
 \value{
 data.table

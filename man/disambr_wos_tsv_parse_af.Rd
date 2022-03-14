@@ -7,7 +7,7 @@
 disambr_wos_tsv_parse_af(name)
 }
 \arguments{
-\item{record.au}{a record string from AF column}
+\item{name}{(a record string from AF column)?}
 }
 \value{
 Data.table

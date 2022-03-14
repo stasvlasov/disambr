@@ -6,8 +6,7 @@
 \alias{disambr-package}
 \title{disambr: disambr - Named Entity Disambiguation in R}
 \description{
-disambr - Named Entity Disambiguation in
-    R
+disambr - Named Entity Disambiguation in R
 }
 \details{
 This package provides a framework for disambiguating named entities (e.g., authors in large bibliometric databases)

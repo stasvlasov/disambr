@@ -18,13 +18,12 @@ disambr_stop(mess, call. = FALSE, ...)
     \item{\code{indent}}{Forse indentation}
     \item{\code{prefix}}{Add overal prefix}
     \item{\code{h_marks}}{Marks that sets outline. Default is "-". Can be many characters, e.g. "-*#".}
+    \item{\code{h_prefix}}{Character vector of prefixes for each outline level}
     \item{\code{h_prefix_sep}}{Separator between \code{h_prefix} and \code{mess}}
     \item{\code{pretty}}{Whether to use "crayon" package for pretty printing}
     \item{\code{mess_color}}{Color of message}
     \item{\code{h_prefix_color}}{Color of ouline prefix}
   }}
-
-\item{h_prefix}{Character vector of prefixes for each outline level}
 }
 \value{
 Same as \code{stop} returns

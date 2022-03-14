@@ -23,7 +23,7 @@
 ** Usage
 
 The idea of basic usage is simply piping the disambiguation procedures. Each procedure takes list of sets as input and returns list of sets either by adding a new set or modifying input list of sets.
-#+BEGIN_SRC R :results none :session :tangle :eval no-export
+#+BEGIN_SRC R :results none :session :eval no-export
       data %>% 
           disambr.get.different.authors %>% 
           disambr.get.similar.initials %>%
@@ -32,7 +32,7 @@ The idea of basic usage is simply piping the disambiguation procedures. Each pro
 #+END_SRC
 
 Sequence (piped functions) of disambiguation procedures defines a disambiguation algorithm.
-#+BEGIN_SRC R :results none :session :tangle :eval no-export
+#+BEGIN_SRC R :results none :session :eval no-export
   disambr.eva <- function(data) {
       data %>% 
           disambr.get.different.authors %>% 
@@ -44,7 +44,7 @@ Sequence (piped functions) of disambiguation procedures defines a disambiguation
 
 A procedure can be defined as follows (not implemented). Just an idea.
 #+name: 
-#+BEGIN_SRC R :results none :session :tangle :eval no-export
+#+BEGIN_SRC R :results none :session :eval no-export
 disambr.get.different.authors <- disambr.define.procedure(data %>% 
                                                             get(publication) %>%
                                                             for.each %>%
@@ -231,7 +231,7 @@ Site: https://bibliometrix.org/index.html
   git clone https://github.com/massimoaria/bibliometrix
 #+END_SRC
 
-#+BEGIN_SRC R :results none :session :tangle :eval no-export
+#+BEGIN_SRC R :results none :session :eval no-export
   install.packages("bibliometrix")
   library("bibliometrix")
   library("magrittr")
@@ -262,7 +262,7 @@ GitHub: https://github.com/cran/metagear/
 #+END_SRC
 
 
-#+BEGIN_SRC R :results none :session :tangle :eval no-export
+#+BEGIN_SRC R :results none :session :eval no-export
   scrape_bibliography
 #+END_SRC
 
@@ -283,7 +283,7 @@ CRAN docs:  https://cran.r-project.org/web/packages/hindexcalculator/hindexcalcu
 #+END_SRC
 
 
-#+BEGIN_SRC R :results none :session :tangle :eval no-export
+#+BEGIN_SRC R :results none :session :eval no-export
   install.packages("refsplitr")
   library("refsplitr")
 #+END_SRC
@@ -306,7 +306,7 @@ GitHub: https://github.com/vt-arc/wosr
 #+END_SRC
 
 
-#+BEGIN_SRC R :results none :session :tangle :eval no-export
+#+BEGIN_SRC R :results none :session :eval no-export
   install.packages("wosr")
   library(wosr)
 
@@ -331,7 +331,7 @@ GitHub: https://github.com/alberto-martin/read.wos.R
  git clone https://github.com/alberto-martin/read.wos.R
 #+END_SRC
 
-#+BEGIN_SRC R :results none :session :tangle :eval no-export
+#+BEGIN_SRC R :results none :session :eval no-export
   ## load functions
   ## --------------------------------------------------------------------------------
   source("../lib/read.wos.R/read.wos.functions.R")
@@ -423,12 +423,13 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   #' @keywords internal
   "_PACKAGE"
 #+END_SRC
+
 ** Set .Rprofile (developer enviroment)
 *** CRAN Packages
 :PROPERTIES:
 :ID:       org:ihcia7119ri0
 :END:
-#+BEGIN_SRC R :tangle .Rprofile
+#+BEGIN_SRC R
     ## --------------------------------------------------------------------------------
     ## First load default packages getOption("defaultPackages")
     ## Otherwise it will add it at the end which can mask some funcitons
@@ -499,68 +500,40 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   ## --------------------------------------------------------------------------------
 #+END_SRC
 ** Set up package
-#+name: document
+
+#+name: suggests
+| packages  | link                                                                |
+|-----------+---------------------------------------------------------------------|
+| tinytest  | https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md |
+| fastmatch | [[https://cran.r-project.org/web/packages/fastmatch/index.html][CRAN - Package fastmatch]]                                            |
+| crayon    |                                                                     |
+
+#+name: dependencies
+| packages   | current_version | ensure_version | link |
+|------------+-----------------+----------------+------|
+| data.table |          1.14.2 |         1.13.0 |      |
+| stringi    |           1.7.6 |          1.6.0 |      |
+| parallel   |           4.1.2 |          4.0.0 |      |
+| magrittr   |           2.0.1 |          1.4.0 |      |
+| pbapply    |           1.5.0 |          1.5.0 |      |
+| stringdist |           0.9.8 |          0.9.0 |      |
+#+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
+
+#+name: get-package-vesion
+#+header: :var pkg = "base"
+#+BEGIN_SRC R :results value replace
+  packageVersion(pkg)
+#+END_SRC
+
+
+
+
+#+name: generate-package-docs
+#+header: :var suggests = suggests
+#+header: :var dependencies = dependencies
 #+BEGIN_SRC R :results none :tangle no
-
-  .First.sys()
-
+  ## Generate package description
   ## --------------------------------------------------------------------------------
-  ## Load or Install Packages
-  ## --------------------------------------------------------------------------------
-  for(pkg in c('devtools'
-             , 'roxygen2'
-             , 'xml2'
-             , 'tibble'
-             , 'stringi'
-             , 'stringr'
-             , 'stringdist'
-             , 'digest'
-             , 'magrittr'
-             , 'lubridate'
-             , 'plyr'
-             , 'pipeR'
-             , 'ggplot2'
-             , 'microbenchmark'
-             , 'data.table'
-             , 'dplyr'))
-    if(!require(pkg, character.only = TRUE)) {
-      install.packages(pkg, repos = 'http://cloud.r-project.org')
-      require(pkg, character.only = TRUE)
-    }
-  ## --------------------------------------------------------------------------------
-
-  ## Describint package
-  ## --------------------------------------------------------------------------------
-
-  ## Include packages:
-  package.packages <- c(
-      "data.table"
-    , "magrittr"
-    , "stringi"
-    , "stringr"
-    , "tibble"
-    , "xml2"
-    , "dplyr")
-
-  ## Print current packages verstions
-  ## package.packages %>%
-  ##     sapply(function(pkg)
-  ##     paste0(pkg, " (>= ", packageVersion(pkg), ")"), USE.NAMES = FALSE) %>%
-  ##     cat(sep = "\n")
-
-  ## Adjust verstions manually
-  package.packages.man.ver  <- c(
-      "data.table (>= 1.12)"
-    , "magrittr (>= 1.5)"
-    , "stringi (>= 1.4)"
-    , "parallel"
-    ## , "stringr (>= 1.4)"
-    ## , "dplyr (>= 0.8)"
-    ## , "tibble (>= 2.0)"
-    ## , "xml2 (>= 1.0)"
-  )
-
-  ## make description
   list(Package = "disambr"
      , Title  = "disambr - Named Entity Disambiguation in R"
      , Description = "disambr - Named Entity Disambiguation in R"
@@ -573,32 +546,28 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
               , person(given = "Sacha", family = "Epskamp"
                      , email = "sacha.epskamp@gmail.com"
                      , role = "aut"))
-     , Imports = paste(package.packages.man.ver
-                     , collapse = ", ")
-     , Depends = "R (>= 4.0), data.table (>= 1.12)"
-     , Suggests = "testthat"
-     , Version = "0.1"
+     , Imports = paste(
+           paste0(dependencies$packages, " (>= ", dependencies$ensure_version, ")")
+         , collapse = ", ")
+     , Depends = "R (>= 4.0), data.table(>= 1.13.0)"
+     , Suggests = paste(suggests$packages, collapse = ", ")
+     , Version = "0.0.0.9000"
      , Date = Sys.Date()
      , URL = "https://github.com/stasvlasov/disambr"
      , BugReports = "https://github.com/stasvlasov/disambr/issues"
      , References = "This research was supported (in part) by the Fetzer Franklin Fund of the John E. Fetzer Memorial Trust. The EVA disambiguation algorithm is described in van den Akker, O. R., Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithm—Author name disambiguation for large Web of Science datasets."
-           ) %>% use_description()
+       ) |> usethis::use_description(check_name = TRUE
+                                   , roxygen = TRUE)
 
-  use_lgpl_license(name = "Stanislav Vlasov")
+  usethis::use_lgpl_license()
 
-  use_tidy_description()
-
+  ## use_tidy_description()
   ## ----------------------------------------------------------------------------
   ## Update name spaces and documentation for functions
-  roxygenise()
+  roxygen2::roxygenise()
 
 
-  ## This function is a wrapper for the ‘roxygen2::roxygenize()’ but also load the package
-  ## document()
 
-  ## ----------------------------------------------------------------------------
-  ## Set up TestThat
-  usethis::use_testthat()
 #+END_SRC
 ** Deploy package
 #+BEGIN_SRC R :tangle no
@@ -631,9 +600,6 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   source("R/disambr_read.r")
   source("R/disambr_eva.r")
   source("R/disambr_stats.r")
-
-  ## just run tests
-  test_dir("tests/testthat")
 #+END_SRC
 ** disambr_options
 | option                      | behaviour when not set |
@@ -766,7 +732,6 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 #+END_SRC
 
-
 **** disambr_mess
 :PROPERTIES:
 :ID:       org:nqfdt1n0mti0
@@ -825,15 +790,15 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_mess.r
-  test_that("disambr_mess_start", {
-      foo <- function() {
-          disambr_mess_start()
-          return(disambr_start_time)
-      }
-      expect_is(foo(), c("POSIXt", "POSIXct"))
-      expect_message(foo(), )
-  })
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
+
+  foo <- function() {
+      disambr_mess_start()
+      return(disambr_start_time)
+  }
+  expect_inherits(foo(), c("POSIXt", "POSIXct"))
+  expect_message(foo())
+
 #+END_SRC
 
 **** disambr_mess_finish
@@ -843,7 +808,8 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 #+BEGIN_SRC R :tangle R/disambr_mess.r
   ##' Post a starting message for disambr procedure. Records time started in `disambr_start_time` variable in its `parent.frame()`
-  ##' @param start_mess_prefix Prefix for staring message
+  ##' @param mess Prefix for staring message
+  ##' @param append_running_procedure_name Whether to append running procedure name
   ##' @inheritDotParams disambr_mess
   ##' @return time started
   ##' 
@@ -872,14 +838,14 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_mess.r
-  test_that("disambr_mess_finish", {
-      foo <- function() {
-          disambr_start_time <- Sys.time() - 1000
-          disambr_mess_finish()
-      }
-      expect_message(foo(), "foo.*in")
-  })
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
+  foo <- function() {
+      disambr_start_time <- Sys.time() - 1000
+      disambr_mess_finish()
+  }
+
+  expect_message(foo(), "foo.*in")
+
 #+END_SRC
 
 **** disambr_warn
@@ -908,10 +874,9 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
     }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_mess.r
-  test_that("disambr_warn", {
-      expect_warning(disambr_warn("Ahtung!"))
-  })
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
+   expect_warning(disambr_warn("Ahtung!"))
+
 #+END_SRC
 
 **** disambr_stop
@@ -919,34 +884,31 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 :ID:       org:qlegt1n0mti0
 :END:
 
-    #+BEGIN_SRC R :tangle R/disambr_mess.r
-    ##' Report a message with stop()
-    ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
-    ##' @param h_prefix Character vector of prefixes for each outline level
-    ##' @param call. See `stop`
-    ##' @inheritDotParams create_mess
-    ##' @return Same as `stop` returns
-    ##' 
-    ##' @md 
-    ##' @export
-    disambr_stop <- function(mess
-                           , call. = FALSE
-                           , ...) {
-        parent.call <- deparse(sys.calls()[[sys.nframe() - 1]])
-        parent.call <- as.character(parent.call)
-        mess <-
-            create_mess(mess
-                      , h_prefix = paste0(parent.call, ":")
-                      , ...)
-        ## post message
-        stop(mess, call. = call.)
-    }
+#+BEGIN_SRC R :tangle R/disambr_mess.r
+  ##' Report a message with stop()
+  ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
+  ##' @param call. See `stop`
+  ##' @inheritDotParams create_mess
+  ##' @return Same as `stop` returns
+  ##' 
+  ##' @md 
+  ##' @export
+  disambr_stop <- function(mess
+                         , call. = FALSE
+                         , ...) {
+      parent.call <- deparse(sys.calls()[[sys.nframe() - 1]])
+      parent.call <- as.character(parent.call)
+      mess <-
+          create_mess(mess
+                    , h_prefix = paste0(parent.call, ":")
+                    , ...)
+      ## post message
+      stop(mess, call. = call.)
+  }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_mess.r
-  test_that("disambr_stop", {
-      expect_error(disambr_stop())
-  })
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
+  expect_error(disambr_stop())
 #+END_SRC
 
 *** get_file_extension
@@ -1032,14 +994,14 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.utils.r 
-  test_that("stop.unless", {
-        expect_warning(stop.unless(FALSE, "Lala", FALSE))
-        expect_error(stop.unless(FALSE))
-        expect_true(stop.unless(TRUE))
-        expect_warning(stop.unless("sdfasdf", stop.if.false = FALSE))
-        expect_warning(stop.unless("sdfasdf", stop.if.false = FALSE, return.if.true = FALSE))
-    })
+#+BEGIN_SRC R :tangle inst/tinytest/test_utils.r 
+
+  expect_warning(stop_unless(FALSE, "Lala", FALSE))
+  expect_error(stop_unless(FALSE))
+  expect_true(stop_unless(TRUE))
+  expect_warning(stop_unless("sdfasdf", stop_if_false = FALSE))
+  expect_warning(stop_unless("sdfasdf", stop_if_false = FALSE, return_if_true = FALSE))
+
 #+END_SRC
 
 *** parse_files_path
@@ -1047,46 +1009,47 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 :ID:       org:kb3eaz31gti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_utils.r
-##' Returns vector of file paths from path(s) recursively
-  ##' @param files_path Path(s) where the files are
-  ##' @param recursive Whether to look in subfolders recursively
-  ##' @return Vector of file paths from path(s) recursively
-  ##' 
-  ##' @md
-  ##' @importFrom magrittr %>%
-  ##' @export 
-  parse_files_path <- function(files_path, recursive = TRUE) {
-      stop_unless(is.character(files_path), "Files path shoud be a character string!")
-      files_path <- 
-      lapply(files_path, function(file.path) {
-          if(stop_unless(file.exists(file.path)
-                       , paste(file.path, " - does not exist!")
-                       , stop_if_false = FALSE
-                       , return_if_true = FALSE)) {
-              NULL
-          } else if(dir.exists(file.path)) {
-              dir(file.path
-                , full.names = TRUE
-                , recursive = recursive)
-          } else {
-              file.path
-          }
-      })
-      return(unique(normalizePath(unlist(files_path))))
-  }
+  ##' Returns vector of file paths from path(s) recursively
+    ##' @param files_path Path(s) where the files are
+    ##' @param recursive Whether to look in subfolders recursively
+    ##' @return Vector of file paths from path(s) recursively
+    ##' 
+    ##' @md
+    ##' @importFrom magrittr %>%
+    ##' @export 
+    parse_files_path <- function(files_path, recursive = TRUE) {
+        stop_unless(is.character(files_path), "Files path shoud be a character string!")
+        files_path <- 
+        lapply(files_path, function(file.path) {
+            if(stop_unless(file.exists(file.path)
+                         , paste(file.path, " - does not exist!")
+                         , stop_if_false = FALSE
+                         , return_if_true = FALSE)) {
+                NULL
+            } else if(dir.exists(file.path)) {
+                dir(file.path
+                  , full.names = TRUE
+                  , recursive = recursive)
+            } else {
+                file.path
+            }
+        })
+        return(unique(normalizePath(unlist(files_path))))
+    }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.utils.r
-    test_that("parse.files.path", {
-          expect_error(parse.files.path(3423))
-          expect_warning(parse.files.path(c(".", "gibirish file")))
-          expect_is(parse.files.path("."), "character")
-          ## empty dirs
-          tmp.dir <- "test_dir_for_parse.files.path"
-          dir.create(tmp.dir, showWarnings = FALSE)
-          expect_equal(parse.files.path(tmp.dir), character(0))
-          file.remove(tmp.dir)
-      })
+#+BEGIN_SRC R :tangle inst/tinytest/test_utils.r
+
+  expect_error(parse_files_path(3423))
+  expect_warning(parse_files_path(c(".", "gibirish file")))
+  expect_inherits(parse_files_path("."), "character")
+
+  ## empty dirs
+  tmp.dir <- "test_dir_for_parse_files_path"
+  dir.create(tmp.dir, showWarnings = FALSE)
+  expect_equal(parse_files_path(tmp.dir), character(0))
+  file.remove(tmp.dir)
+
 #+END_SRC
 
 
@@ -1125,7 +1088,6 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   ## stringi::stri_enc_detect2(123)[[1]][[1]][1]
   ## stringi::stri_enc_detect2("")[[1]][[1]][1]
   ## stringi::stri_enc_detect2("sadf")[[1]][[1]][1]
-
 #+END_SRC
 
 
@@ -1143,13 +1105,13 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   ##' @export 
   recode_return_characters <- function(s, assoc.file = NA, verbose = FALSE) {
       has_return_chars <- function(s, test.first.n.char = 10^4) {
-          s <- stri_sub(s, to = test.first.n.char)
-          any(stri_detect_regex(s, "\\r"))
+          s <- stringi::stri_sub(s, to = test.first.n.char)
+          any(stringi::stri_detect_regex(s, "\\r"))
       }
       if(has_return_chars(s)) {
           if(verbose) message("disambr: '\\r' char in the file: ", assoc.file
                             , "\n- replacing with '\\n' to fix 'datatable::fread'")
-          s <- stri_replace_all_regex(s, "\\R+", "\n")
+          s <- stringi::stri_replace_all_regex(s, "\\R+", "\n")
       }
       return(s)
   }
@@ -1201,64 +1163,68 @@ disambr_cbind_lists <- function(...) {
 :ID:       org:t4zk2360oti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_utils.r
-##' Fuzzy match all combinations of character vector
-##' @param bank 
-##' @param method see method in stringdist
-##' @param max_dist see maxDist in stringdist
-##' @param id_name names that will be suffixed with _1 and _2
-##' @return data.table
-##' 
-##' @export 
-match_fuzzy <- function(bank, method, max_dist, id_name) {
-        id_name_1 <- paste0(id_name, "_1")
-        id_name_2 <- paste0(id_name, "_2")
-        match_fuzzy_x <- function(x) {
-            matched <- stringdist::ain(bank, x
-                                     , maxDist = max_dist
-                                     , method = method
-                                     , matchNA = FALSE)
-            if(any(matched)) {
-                matched <- bank[matched]
-                matched <- data.table::data.table(x, matched)
-                data.table::setnames(matched, c(id_name_1, id_name_2))
-            } else {
-                NULL
-            }
-        }
-        match_x <- function(x) {
-            matched <- bank %in% x
-            if(any(matched)) {
-                matched <- bank[matched]
-                matched <- data.table::data.table(x, matched)
-                data.table::setnames(matched, c(id_name_1, id_name_2))
-            } else {
-                NULL
-            }
-        }
-        if(max_dist > 0) {
-            matched_list <- lapply(bank, match_fuzzy_x)
-        } else if(max_dist == 0) {
-            matched_list <- lapply(bank, match_x)
-        } else {
-            stop()
-        }
-        return(data.table::rbindlist(matched_list))
-}
-
+  ##' Fuzzy match all combinations of character vector
+  ##' @param bank bank
+  ##' @param method see method in stringdist
+  ##' @param max_dist see maxDist in stringdist
+  ##' @param id_name names that will be suffixed with _1 and _2
+  ##' @return data.table
+  ##' 
+  ##' @export 
+  match_fuzzy <- function(bank, method, max_dist, id_name) {
+          id_name_1 <- paste0(id_name, "_1")
+          id_name_2 <- paste0(id_name, "_2")
+          match_fuzzy_x <- function(x) {
+              matched <- stringdist::ain(bank, x
+                                       , maxDist = max_dist
+                                       , method = method
+                                       , matchNA = FALSE)
+              if(any(matched)) {
+                  matched <- bank[matched]
+                  matched <- data.table::data.table(x, matched)
+                  data.table::setnames(matched, c(id_name_1, id_name_2))
+              } else {
+                  NULL
+              }
+          }
+          match_x <- function(x) {
+              matched <- bank %in% x
+              if(any(matched)) {
+                  matched <- bank[matched]
+                  matched <- data.table::data.table(x, matched)
+                  data.table::setnames(matched, c(id_name_1, id_name_2))
+              } else {
+                  NULL
+              }
+          }
+          if(max_dist > 0) {
+              matched_list <- lapply(bank, match_fuzzy_x)
+          } else if(max_dist == 0) {
+              matched_list <- lapply(bank, match_x)
+          } else {
+              stop()
+          }
+          return(data.table::rbindlist(matched_list))
+  }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_utils.r
-test_that("match_fuzzy", {
-expect_length(match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "asdfwaf")
-          , method = "lv"
-          , max_dist = 3
-          , id_name = "id"), 2)
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_utils.r
 
-expect_equal(nrow(match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "asdfwaf")
-          , method = "lv"
-          , max_dist = 39
-          , id_name = "id")), 9)
-})
+  expect_equal(
+      match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "asdfwaf")
+                , method = "lv"
+                , max_dist = 3
+                , id_name = "id")
+  , structure(list(id_1 = c("sdfsdf", "sdfsdf", "sfawefwsd", "sdfwefad", 
+  ";sldwaf", ";sldwaf", "asdfwaf", "asdfwaf", "asdfwaf"), id_2 = c("sdfsdf", 
+  "asdfwaf", "sfawefwsd", "sdfwefad", ";sldwaf", "asdfwaf", "sdfsdf", 
+  ";sldwaf", "asdfwaf")), row.names = c(NA, -9L), class = c("data.table", 
+  "data.frame")))
+
+  expect_equal(nrow(match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "asdfwaf")
+            , method = "lv"
+            , max_dist = 39
+            , id_name = "id")), 25)
 #+END_SRC
 
 
@@ -1342,8 +1308,7 @@ expect_equal(nrow(match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "a
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-  test_that("disambr_in_sets", {
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
 
   a <- list(disambr_set_attr(c(1,2,3), a = 1)
           , disambr_set_attr(c(1,2,3), b = 2, a = 1)
@@ -1351,12 +1316,16 @@ expect_equal(nrow(match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "a
           , disambr_set_attr(c(1,2,3), d = 4, a = 212))
 
   expect_true(all(disambr_in_sets(a)))
+
   expect_false(any(disambr_in_sets(a, b= 2, a = 2)))
+
   expect_true(any(disambr_in_sets(a, b= 2, a = 1)))
+
   expect_true(any(disambr_in_sets(a, a = 1)))
+
   expect_true(any(disambr_in_sets(a, disambr_set_a = 1)))
+
   expect_equal(sum(disambr_in_sets(a, a = 1, match_attr_value_parcially = TRUE)), 3)
-  })
 #+END_SRC
 
 *** disambr_get_first_data_set
@@ -1389,17 +1358,25 @@ expect_equal(nrow(match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "a
 #+END_SRC
 
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-  test_that("disambr_get_first_data_set", {
-    a <- list(disambr_set_attr(c(1,2,3), recipe = "my_function_123")
-              , disambr_set_attr(c(1,2,3,4), recipe = "my_function_23")
-              , disambr_set_attr(c(1,2,3,4,5), recipe = "my_function_3a")
-              , disambr_set_attr(c(1,2,3,4,5,6), recipe = "my_function_1"))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
+  a <- list(disambr_set_attr(c(1,2,3), recipe = "my_function_123")
+          , disambr_set_attr(c(1,2,3,4), recipe = "my_function_23")
+          , disambr_set_attr(c(1,2,3,4,5), recipe = "my_function_3a")
+          , disambr_set_attr(c(1,2,3,4,5,6), recipe = "my_function_1"))
 
-    expect_length(disambr_get_first_data_set(a, "3"), 3)
-    expect_length(disambr_get_first_data_set(a, "3a"), 5)
-    expect_null(disambr_get_first_data_set(a, "aaaaa"))
-  })
+  expect_equal(
+      disambr_get_first_data_set(a, "3")
+    , structure(c(1, 2, 3), disambr_set_recipe = "my_function_123")
+  )
+
+
+  expect_equal(
+      disambr_get_first_data_set(a, "3a")
+    , structure(c(1, 2, 3, 4, 5), disambr_set_recipe = "my_function_3a")
+  )
+
+  expect_null(disambr_get_first_data_set(a, "aaaaa"))
+
 #+END_SRC
 
 *** disambr_get_last_set
@@ -1426,21 +1403,26 @@ expect_equal(nrow(match_fuzzy(c("sdfsdf", "sfawefwsd", "sdfwefad", ";sldwaf", "a
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-test_that("disambr_get_last_set", {
-a <- list(disambr_set_attr(c(1,2,3), strength = 0.1)
-        , disambr_set_attr(c(1,2,3,4), strength = 0.6)
-        , disambr_set_attr(c(1,2,3,4,5), strength = 0.5)
-        , disambr_set_attr(c(1,2,3,4,5,6), strength = 1))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
 
-expect_length(disambr_get_last_set(a), 5)
+  a <- list(disambr_set_attr(c(1,2,3), strength = 0.1)
+          , disambr_set_attr(c(1,2,3,4), strength = 0.6)
+          , disambr_set_attr(c(1,2,3,4,5), strength = 0.5)
+          , disambr_set_attr(c(1,2,3,4,5,6), strength = 1))
 
-a <- list(disambr_set_attr(c(1,2,3,4), strength = 0.6)
-        , disambr_set_attr(c(1,2), strength = 1))
+  expect_equal(
+      disambr_get_last_set(a)
+    , structure(c(1, 2, 3, 4, 5, 6), disambr_set_strength = 1)
+  )
 
-expect_length(disambr_get_last_set(a), 2)
+  a <- list(disambr_set_attr(c(1,2,3,4), strength = 0.6)
+          , disambr_set_attr(c(1,2), strength = 1))
 
-})
+  expect_equal(
+      disambr_get_last_set(a)
+    , structure(c(1, 2), disambr_set_strength = 1)
+  )
+
 #+END_SRC
 
 *** disambr_get_last_weak_set
@@ -1470,21 +1452,25 @@ expect_length(disambr_get_last_set(a), 2)
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-test_that("disambr_get_last_weak_set", {
-a <- list(disambr_set_attr(c(1,2,3), strength = 0.1)
-        , disambr_set_attr(c(1,2,3,4), strength = 0.6)
-        , disambr_set_attr(c(1,2,3,4,5), strength = 0.5)
-        , disambr_set_attr(c(1,2,3,4,5,6), strength = 1))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
+  a <- list(disambr_set_attr(c(1,2,3), strength = 0.1)
+          , disambr_set_attr(c(1,2,3,4), strength = 0.6)
+          , disambr_set_attr(c(1,2,3,4,5), strength = 0.5)
+          , disambr_set_attr(c(1,2,3,4,5,6), strength = 1))
 
-expect_length(disambr_get_last_weak_set(a), 5)
+  expect_equal(
+      disambr_get_last_weak_set(a)
+    , structure(c(1, 2, 3, 4, 5), disambr_set_strength = 0.5)
+  )
 
-a <- list(disambr_set_attr(c(1,2,3,4), strength = 0.6)
-        , disambr_set_attr(c(1,2,3,4,5,6), strength = 1))
 
-expect_null(disambr_get_last_weak_set(a))
 
-})
+  a <- list(disambr_set_attr(c(1,2,3,4), strength = 0.6)
+          , disambr_set_attr(c(1,2,3,4,5,6), strength = 1))
+
+  expect_error(
+      disambr_get_last_weak_set(a)
+  )
 #+END_SRC
 
 
@@ -1519,54 +1505,58 @@ expect_null(disambr_get_last_weak_set(a))
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-  test_that("disambr_get_strong_set", {
-      a <- list(disambr_set_attr(list(1,2,3)
-                               , type = "similar"
-                               , strength = 1)
-              , disambr_set_attr(list(1,2,3,4)
-                               , type = "similar"
-                               , strength = 0.6)
-              , disambr_set_attr(list(1,2,3,4,5)
-                               , type = "similar"
-                               , strength = 0.4)
-              , disambr_set_attr(list(1,2,3,4,5,6)
-                               , type = "similar"
-                               , strength = 1))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
 
-      expect_length(disambr_get_strong_set(a), 9)
+  a <- list(disambr_set_attr(list(1,2,3)
+                           , type = "similar"
+                           , strength = 1)
+          , disambr_set_attr(list(1,2,3,4)
+                           , type = "similar"
+                           , strength = 0.6)
+          , disambr_set_attr(list(1,2,3,4,5)
+                           , type = "similar"
+                           , strength = 0.4)
+          , disambr_set_attr(list(1,2,3,4,5,6)
+                           , type = "similar"
+                           , strength = 1))
 
-      a <- list(disambr_set_attr(data.table::data.table(c(1,2,3))
-                               , type = "similar"
-                               , strength = 1)
-              , disambr_set_attr(data.table::data.table(c(1,2,3,4))
-                               , type = "similar"
-                               , strength = 0.6)
-              , disambr_set_attr(data.table::data.table(c(1,2,3,4,5))
-                               , type = "similar"
-                               , strength = 0.4)
-              , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6))
-                               , type = "similar"
-                               , strength = 1))
+  expect_equal(
+      disambr_get_strong_set(a)
+    , list(1, 2, 3, 1, 2, 3, 4, 5, 6)
+  )
 
-      expect_is(disambr_get_strong_set(a), "data.table")
 
-      a <- list(disambr_set_attr(data.table::data.table(c(1,2,3))
-                               , type = "similar"
-                               , strength = 0.1)
-              , disambr_set_attr(data.table::data.table(c(1,2,3,4))
-                               , type = "similar"
-                               , strength = 0.6)
-              , disambr_set_attr(data.table::data.table(c(1,2,3,4,5))
-                               , type = "similar"
-                               , strength = 0.4)
-              , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6))
-                               , type = "similar"
-                               , strength = 0.1))
 
-      expect_null(disambr_get_strong_set(a))
+  a <- list(disambr_set_attr(data.table::data.table(c(1,2,3))
+                           , type = "similar"
+                           , strength = 1)
+          , disambr_set_attr(data.table::data.table(c(1,2,3,4))
+                           , type = "similar"
+                           , strength = 0.6)
+          , disambr_set_attr(data.table::data.table(c(1,2,3,4,5))
+                           , type = "similar"
+                           , strength = 0.4)
+          , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6))
+                           , type = "similar"
+                           , strength = 1))
 
-  })
+  expect_inherits(disambr_get_strong_set(a), "data.table")
+
+  a <- list(disambr_set_attr(data.table::data.table(c(1,2,3))
+                           , type = "similar"
+                           , strength = 0.1)
+          , disambr_set_attr(data.table::data.table(c(1,2,3,4))
+                           , type = "similar"
+                           , strength = 0.6)
+          , disambr_set_attr(data.table::data.table(c(1,2,3,4,5))
+                           , type = "similar"
+                           , strength = 0.4)
+          , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6))
+                           , type = "similar"
+                           , strength = 0.1))
+
+  expect_null(disambr_get_strong_set(a))
+
 #+END_SRC
 
 *** disambr_get_truth_set
@@ -1627,15 +1617,15 @@ expect_null(disambr_get_last_weak_set(a))
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-test_that("disambr_get_last_unstrong_set", {
-a <- list(disambr_set_attr(data.table::data.table(c(1,2,3), c(1,2,8)), strength = 1)
-        , disambr_set_attr(data.table::data.table(c(1,2,3,4), c(1,2,3,4)), strength = 0.6)
-        , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6,7,8), c(1,2,3,4,5,6,7,8)), strength = 0.4)
-        , disambr_set_attr(data.table::data.table(c(1,2,7,5), c(1,2,7,5)), strength = 1))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
 
-expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
-})
+  a <- list(disambr_set_attr(data.table::data.table(c(1,2,3), c(1,2,8)), strength = 1)
+          , disambr_set_attr(data.table::data.table(c(1,2,3,4), c(1,2,3,4)), strength = 0.6)
+          , disambr_set_attr(data.table::data.table(c(1,2,3,4,5,6,7,8), c(1,2,3,4,5,6,7,8)), strength = 0.4)
+          , disambr_set_attr(data.table::data.table(c(1,2,7,5), c(1,2,7,5)), strength = 1))
+
+  expect_equal(nrow(disambr_get_last_unstrong_set(a)), 8)
+
 #+END_SRC
 
 
@@ -1694,24 +1684,14 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
 #+END_SRC
 
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-  test_that("disambr_set_attr", {
-      expect_named(
-          attributes(
-              disambr_set_attr(c(1,2,3)
-                             , lalala = "la"
-                             , disambr_set_important_attr = "Hi there")))
-      expect_match(names(attributes(
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
+  expect_equal(
+      attributes(
           disambr_set_attr(c(1,2,3)
                          , lalala = "la"
-                         , disambr_set_important_attr = "Hi there")))[1]
-        , "^disambr_set_")
-      expect_length(
-          attributes(
-              disambr_set_attr(c(1,2,3)
-                             , lalala = "la"
-                             , disambr_set_important_attr = "Hi there")), 2)
-  })
+                         , disambr_set_important_attr = "Hi there"))
+    , list(disambr_set_lalala = "la", disambr_set_important_attr = "Hi there")
+  )
 
 #+END_SRC
 
@@ -1787,9 +1767,7 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
 #+END_SRC
 
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-  test_that("disambr_add_set_attr", {
-
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
   a <- data.table(a = c(1,2,3,4)
                  ,b = c(11,22,33,44))
 
@@ -1810,7 +1788,12 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
       return(attributes(b))
   }
 
-  expect_length(foo(b, a)$disambr_set_recipe, 3)
+  expect_message(foo(b, a))
+
+  expect_equal(
+      foo(b, a)$disambr_set_recipe
+    , list(list(func = "foo", call = "foo(b, a)"), "second_procedure", "first_procedure")
+  )
 
   expect_equal(foo(b,a, name = "new.name")$disambr_set_name, "new.name")
   expect_equal(foo(b,a, strength = 1)$disambr_set_strength, 1)
@@ -1819,9 +1802,10 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
   expect_equal(foo(a)$disambr_set_name, "foo")
   expect_null(foo(NULL, a))
 
-  expect_length(foo(b, NULL)$disambr_set_recipe, 1)
-
-  })
+  expect_equal(
+      foo(b, NULL)$disambr_set_recipe
+    , list(list(func = "foo", call = "foo(b, NULL)"))
+  )
 
 #+END_SRC
 
@@ -1891,22 +1875,22 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-  test_that("disambr_save_set", {
-      ## check files manually
-      expect_null(disambr_save_set(disambr_set_attr(c(1,2,3)
-                                                  , name = "bar")
-                                 , save_set_as = NULL
-                                 , save_set_dir = "../disambr-sets-rds"))
-      ## readRDS("../disambr-sets-rds/disambr-set.bar.2020-08-30T10-25.rds")
-      ## with making files
-      expect_match(disambr_save_set(disambr_set_attr(c(1,2,3)
-                                                   , name = "bar")
-                                  , save_set_as = TRUE
-                                  , save_set_dir = "disambr-save-set-test")
-                 , "disambr-save-set-test/disambr-set\\.bar\\.")
-      unlink("disambr-save-set-test", recursive = TRUE)
-  })
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
+  ## check files manually
+  expect_null(disambr_save_set(disambr_set_attr(c(1,2,3)
+                                              , name = "bar")
+                             , save_set_as = NULL
+                             , save_set_dir = "../disambr-sets-rds"))
+
+  ## with making files
+  expect_inherits(disambr_save_set(disambr_set_attr(c(1,2,3)
+                                               , name = "bar")
+                              , save_set_as = TRUE
+                              , save_set_dir = "disambr-save-set-test")
+                , "character")
+  ## readRDS("../disambr-sets-rds/disambr-set.bar.2020-08-30T10-25.rds")
+  unlink("disambr-save-set-test", recursive = TRUE)
+
 #+END_SRC
 
 
@@ -1954,21 +1938,26 @@ expect_equal(nrow(disambr_get_last_unstrong_set(a)), 4)
 #+END_SRC
 
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-test_that("disambr_get_output_set", {
-a <- list(disambr_set_attr(c(1), name = "foo1")
-        , disambr_set_attr(c(1,2), name = "foo", a = 1)
-        , disambr_set_attr(c(1,2,3), name = "foo0", a = 2)
-        , disambr_set_attr(c(1,2,3,4), name = "bar", a = 212))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
+
+  a <- list(disambr_set_attr(c(1), name = "foo1")
+          , disambr_set_attr(c(1,2), name = "foo", a = 1)
+          , disambr_set_attr(c(1,2,3), name = "foo0", a = 2)
+          , disambr_set_attr(c(1,2,3,4), name = "bar", a = 212))
 
 
-foo <- function(sets, ...) {
-    return(disambr_get_output_set(sets, ...))
-}
+  foo <- function(sets, ...) {
+      return(disambr_get_output_set(sets, ...))
+  }
 
-expect_length(foo(a, get_output_set = TRUE), 2)
-expect_null(foo(a))
-})
+  expect_message(foo(a, get_output_set = TRUE))
+
+  expect_equal(foo(a, get_output_set = TRUE)
+             , structure(c(1, 2), disambr_set_name = "foo", disambr_set_a = 1)
+               )
+
+  expect_null(foo(a))
+
 #+END_SRC
 
 *** disambr_read_output_set
@@ -2026,41 +2015,39 @@ expect_null(foo(a))
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_sets.r
-test_that("disambr_read_output_set", {
-a <- list(disambr_set_attr(c(1), name = "foo1")
-        , disambr_set_attr(c(1,2), name = "foo", a = 1)
-        , disambr_set_attr(c(1,2,3), name = "foo0", a = 2)
-        , disambr_set_attr(c(1,2,3,4), name = "bar", a = 212))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
+
+  a <- list(disambr_set_attr(c(1), name = "foo1")
+          , disambr_set_attr(c(1,2), name = "foo", a = 1)
+          , disambr_set_attr(c(1,2,3), name = "foo0", a = 2)
+          , disambr_set_attr(c(1,2,3,4), name = "bar", a = 212))
 
 
-foo <- function(sets) {
-    disambr_save_set(sets[[2]]
-                   , save_set_as = TRUE
-                   , save_set_dir = "disambr_read_output_set_test")
-    disambr_read_output_set(read_output_set = TRUE
-                          , save_set_dir = "disambr_read_output_set_test")
-}
+  foo <- function(sets) {
+      disambr_save_set(sets[[2]]
+                     , save_set_as = TRUE
+                     , save_set_dir = "disambr_read_output_set_test")
+      disambr_read_output_set(read_output_set = TRUE
+                            , save_set_dir = "disambr_read_output_set_test")
+  }
 
-expect_length(foo(a), 2)
+  expect_equal(length(foo(a)), 2)
 
-unlink("disambr_read_output_set_test", recursive = TRUE)
+  expect_equal(length(attributes(foo(a))), 3)
 
-foo <- function(sets) {
-    disambr_save_set(sets[[2]]
-                   , save_set_as = "tra-la-la.rds"
-                   , save_set_dir = "disambr_read_output_set_test")
-    disambr_read_output_set(read_output_set = TRUE
-                          , save_set_dir = "disambr_read_output_set_test")
-}
+  unlink("disambr_read_output_set_test", recursive = TRUE)
 
-expect_null(foo(a))
+  foo <- function(sets) {
+      disambr_save_set(sets[[2]]
+                     , save_set_as = "tra-la-la.rds"
+                     , save_set_dir = "disambr_read_output_set_test")
+      disambr_read_output_set(read_output_set = TRUE
+                            , save_set_dir = "disambr_read_output_set_test")
+  }
 
-unlink("disambr_read_output_set_test", recursive = TRUE)
+  expect_null(foo(a))
 
-})
-
-
+  unlink("disambr_read_output_set_test", recursive = TRUE)
 
 #+END_SRC
 
@@ -2160,7 +2147,39 @@ unlink("disambr_read_output_set_test", recursive = TRUE)
 :ID:       org:blbgnb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_read.r
-
+  ##' Reads the data for disambiguation
+  ##' @param files_path Path to data. You can specify almost everything
+  ##' @param save_sets_as How save sets
+  ##' @param save_sets_dir where to save sets 
+  ##' @param use_time_stamp wheather to use timestamp 
+  ##' @return 
+  ##' 
+  ##' @md 
+  ##' @export 
+  disambr_read <- function(files_path
+                         , save_sets_as = NULL
+                         , save_sets_dir = "disambr-data"
+                         , use_time_stamp = FALSE) {
+      disambr_mess_start()
+      ## see if the data is available already
+      if(is.character(save_sets_as) &&
+         file.exists(file.path(save_sets_dir, save_sets_as))) {
+          disambr_mess(paste("- reusing saved sets:", save_sets_as))
+          return(readRDS(file.path(save_sets_dir, save_sets_as)))
+      }
+      files_path <- parse_files_path(files_path)
+      files_data_list <- lapply(files_path, disambr_read_file)
+      sets <- disambr_make_data(files_data_list)
+      ## save just in case
+      if(is.character(save_sets_as)) {
+          disambr_save_set(sets
+                         , save_set_as =  save_sets_as
+                         , save_set_dir = save_sets_dir
+                         , use_time_stamp = use_time_stamp)
+      }
+      disambr_mess_finish()
+      return(sets)
+  }
 #+END_SRC
 
 
@@ -2201,14 +2220,15 @@ unlink("disambr_read_output_set_test", recursive = TRUE)
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_read.r
-  test_that("disambr_read", {
-      my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
-      skip_if_not(file.exists(my.file))
-      expect_length(disambr_read(my.file), 4)
-  })
-#+END_SRC
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_read.r
+  my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
+  if(file.exists(my.file)) {
+      expect_equal(
+          length(disambr_read(my.file)), 4
+      )
+  }
 
+#+END_SRC
 
 test
 #+BEGIN_SRC R
@@ -2290,12 +2310,12 @@ test
 :END:
 #+BEGIN_SRC R :tangle R/disambr_read.r
   parse_tsv_wos_header <- function(first_line) {
-      header <- stri_split_fixed(first_line, "\t")[[1]]
+      header <- stringi::stri_split_fixed(first_line, "\t")[[1]]
       if( ## check if at least 10 fields two big letters
-          sum(stri_detect_regex(header, "^[A-Z0-9]{2}$")) > 10 &&
+          sum(stringi::stri_detect_regex(header, "^[A-Z0-9]{2}$")) > 10 &&
           ## check if main fields are present
           all(c('AU', 'TI') %in% header)) {
-          stri_extract_first_regex(header, "[A-Z0-9]{2}")
+          stringi::stri_extract_first_regex(header, "[A-Z0-9]{2}")
       } else {FALSE}
   }
 #+END_SRC
@@ -2306,8 +2326,8 @@ test
 :END:
 #+BEGIN_SRC R :tangle R/disambr_read.r
   ##' Reads WoS tsv export file and makes disambr set out of it (just adding some attributes to the data.table)
-  ##' @param f 
-  ##' @param header 
+  ##' @param f path
+  ##' @param header header 
   ##' @return 
   ##' 
   ##' @md 
@@ -2459,14 +2479,22 @@ test
 #+END_SRC
 
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_wos_tsv.r
-  test_that("disambr_make_wos_tsv_publications", {
-      my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
-      skip_if_not(file.exists(my.file))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_wos_tsv.r
+  disambr_make_wos_tsv_publications <- disambr:::disambr_make_wos_tsv_publications
+
+  my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
+
+  if(file.exists(my.file)) {
       dt <- list(disambr_read_file(my.file))
-      expect_equal(disambr_make_wos_tsv_publications(dt, "recipe-lalala")$disambr_set_recipe, "recipe-lalala")
-      expect_length(disambr_make_wos_tsv_publications(dt, "recipe-lalala"), 72)
-  })
+
+      expect_equal(
+          attributes(disambr_make_wos_tsv_publications(dt, "recipe-lalala"))$disambr_set_recipe[[2]]
+        , "recipe-lalala")
+      expect_equal(
+          length(disambr_make_wos_tsv_publications(dt, "recipe-lalala"))
+        , 72
+      )
+  }
 
 #+END_SRC
 
@@ -2490,7 +2518,7 @@ test
 :END:
 #+BEGIN_SRC R :tangle R/disambr_wos_tsv.r
   ##' Parses AU column of WoS saved records export
-  ##' @param record.au a record string from AU column
+  ##' @param author_name a record string from AU column
   ##' @return data.table
   ##' 
   ##' @md 
@@ -2517,7 +2545,7 @@ test
 :END:
 #+BEGIN_SRC R :tangle R/disambr_wos_tsv.r
   ##' Parses AF (author full name) column of WoS saved records export
-  ##' @param record.au a record string from AF column
+  ##' @param name (a record string from AF column)?
   ##' @return Data.table
   disambr_wos_tsv_parse_af <- function(name) {
       last_name <- stringi::stri_extract_first_regex(name, "^[^,]+")
@@ -2609,13 +2637,13 @@ test
 :END:
 #+BEGIN_SRC R :tangle R/disambr_wos_tsv.r
   ##' Parses EM (email) column of WoS saved records export
-  ##' @param record_em  a record string from EM column
+  ##' @param emails a record string from EM column
   ##' @param record_au_table a data_tabe after parsing AU column with disambr_wos_tsv_parse_au
   ##' @param record_rp_table a data_tabe after parsing RP column with disambr_wos_tsv_parse_rp
   ##' @return Data.table with columns - author_name, affiliations and email
   disambr_wos_tsv_parse_em <- function(emails
-                                           , record_au_table
-                                           , record_rp_table) {
+                                     , record_au_table
+                                     , record_rp_table) {
       if (isTRUE(length(emails) == 1 && emails == "")) {
           ## in case there are no emails
           record_au_table[, author_email := NA]
@@ -2652,10 +2680,11 @@ test
 :END:
 #+BEGIN_SRC R :tangle R/disambr_wos_tsv.r
   ##' Parses C1 (author adress/affiliation) column of WoS saved records export
-  ##' @param record_c1 a record string from RP column
+  ##' @param record_c1 a record string from RP column 
+  ##' @param table_af Table
   ##' @return Data.table with two columns -  author_name and affiliations
   disambr_wos_tsv_parse_c1 <- function(record_c1
-                                           , table_af = NULL) {
+                                     , table_af = NULL) {
       record_c1_init <- ""
       authors_table <-
           data.table::data.table(author_full_name = character()
@@ -2715,12 +2744,13 @@ test
 :END:
 #+BEGIN_SRC R :tangle R/disambr_wos_tsv.r
   ##' Parses OI column of WoS saved records export
-  ##' @param record_oi a record string from OI column
+  ##' @param authors a record string from OI column
+  ##' @param table_af Table
   ##' @return data.table
   ##' 
   ##' @md 
   disambr_wos_tsv_parse_oi <- function(authors
-                                            , table_af = NULL) {
+                                     , table_af = NULL) {
       author_full_name <-
           stringi::stri_extract_first_regex(authors, "^[^/]+")
       author_orcid <-
@@ -2770,13 +2800,15 @@ test
 :ID:       org:5ljfnb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_wos_tsv.r
-##' Parses RI column of WoS saved records export
-  ##' @param record_ri a record string from RI column
+  ##' Parses RI column of WoS saved records export
+  ##' @param authors a record string from RI column
+  ##' @param table_af Table
   ##' @return data.table
   ##' 
   ##' @md 
+  ##' @export 
   disambr_wos_tsv_parse_ri <- function(authors
-                                            , table_af = NULL) {
+                                     , table_af = NULL) {
       author_full_name <-
           stringi::stri_extract_first_regex(authors, "^[^/]+")
       author_researcher_id <-
@@ -2803,8 +2835,6 @@ test
           return(authors_table)
       }
   }
-
-
 #+END_SRC
 *** disambr_make_wos_tsv_authors
 :PROPERTIES:
@@ -2893,7 +2923,7 @@ test
           disambr_mess("-- parsing EM field", ...)
           ## disambr_wos_tsv_parse_em updates authors_tables$au
           ## so no need to save it
-          pbmapply(disambr_wos_tsv_parse_em
+          pbapply::pbmapply(disambr_wos_tsv_parse_em
                , stringi::stri_split_fixed(wos_data_table$EM, "; ")
                , authors_tables$au
                , rp
@@ -2905,7 +2935,7 @@ test
          all(c("C1", "AF") %in% names(wos_data_table))) {
           disambr_mess("-- parsing C1 field", ...)
           authors_tables$c1 <-
-              pbmapply(disambr_wos_tsv_parse_c1
+              pbapply::pbmapply(disambr_wos_tsv_parse_c1
                    , wos_data_table$C1
                    , authors_tables$af
                    , SIMPLIFY = FALSE)
@@ -2915,7 +2945,7 @@ test
          all(c("RI", "AF") %in% names(wos_data_table))) {
           disambr_mess("-- parsing RI field", ...)
           authors_tables$ri <-
-              pbmapply(disambr_wos_tsv_parse_ri
+              pbapply::pbmapply(disambr_wos_tsv_parse_ri
                    , stringi::stri_split_fixed(wos_data_table$RI, "; ")
                    , authors_tables$af
                    , SIMPLIFY = FALSE
@@ -2926,7 +2956,7 @@ test
          all(c("OI", "AF") %in% names(wos_data_table))) {
           disambr_mess("-- parsing OI field", ...)
           authors_tables$oi <-
-              pbmapply(disambr_wos_tsv_parse_oi
+              pbapply::pbmapply(disambr_wos_tsv_parse_oi
                    , stringi::stri_split_fixed(wos_data_table$OI, "; ")
                    , authors_tables$af
                    , SIMPLIFY = FALSE
@@ -2958,13 +2988,18 @@ test
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_wos_tsv.r
-test_that("disambr_make_wos_tsv_authors", {
-    my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
-    skip_if_not(file.exists(my.file))
-    dt <- disambr_read_file(my.file)
-    expect_length(attributes(disambr_make_wos_tsv_authors(dt))$disambr_set_recipe, 2)
-})
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_wos_tsv.r
+
+  my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
+
+  if(file.exists(my.file)) {
+
+      dt <- disambr_read_file(my.file)
+
+      expect_equal(
+          length(attributes(disambr_make_wos_tsv_authors(dt))$disambr_set_recipe)
+        , 5)
+  }
 #+END_SRC
 
 
@@ -3029,15 +3064,14 @@ test_that("disambr_make_wos_tsv_authors", {
           })
       suppressWarnings(data.table::rbindlist(references_list))
   }
-
 #+END_SRC
 
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_wos_tsv.r
-  test_that("disambr_wos_tsv_parse_cr", {
-    d <- "Allen C, 2017, ENVIRON SCI-NANO, V4, P741, DOI 10.1039/c7en90014g; Baek YW, 2011, SCI TOTAL ENVIRON, V409, P1603, DOI 10.1016/j.scitotenv.2011.01.014; Baker GL, 2008, TOXICOL SCI, V101, P122, DOI 10.1093/toxsci/kfm243; Bergstrom U, 2015, J TOXICOL ENV HEAL A, V78, P645, DOI 10.1080/15287394.2015.1017682; Bhushan B, 2011, PROG MATER SCI, V56, P1, DOI 10.1016/j.pmatsci.2010.04.003; Biswas P, 2005, J AIR WASTE MANAGE, V55, P708, DOI 10.1080/10473289.2005.10464656; Bitterle E, 2006, CHEMOSPHERE, V65, P1784, DOI 10.1016/j.chemosphere.2006.04.035; Bondarenko O, 2013, ARCH TOXICOL, V87, P1181, DOI 10.1007/s00204-013-1079-4; Bonner J. C., 2003, ENV HLTH PERSPECT, V111, P1289; Brossell D, 2013, J AEROSOL SCI, V63, P75, DOI 10.1016/j.jaerosci.2013.04.012; Clift MJD, 2011, ARCH TOXICOL, V85, P723, DOI 10.1007/s00204-010-0560-6; Cohen J, 2013, NANOTOXICOLOGY, V7, P417, DOI 10.3109/17435390.2012.666576; Cohen JM, 2014, PART FIBRE TOXICOL, V11, DOI 10.1186/1743-8977-11-20; Comouth A, 2013, J AEROSOL SCI, V63, P103, DOI 10.1016/j.jaerosci.2013.04.009"
-    expect_equal(nrow(disambr_wos_tsv_parse_cr(stri_split_fixed(d, "; ")[[1]])), 14)
-    })
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_wos_tsv.r
+  d <- "Allen C, 2017, ENVIRON SCI-NANO, V4, P741, DOI 10.1039/c7en90014g; Baek YW, 2011, SCI TOTAL ENVIRON, V409, P1603, DOI 10.1016/j.scitotenv.2011.01.014; Baker GL, 2008, TOXICOL SCI, V101, P122, DOI 10.1093/toxsci/kfm243; Bergstrom U, 2015, J TOXICOL ENV HEAL A, V78, P645, DOI 10.1080/15287394.2015.1017682; Bhushan B, 2011, PROG MATER SCI, V56, P1, DOI 10.1016/j.pmatsci.2010.04.003; Biswas P, 2005, J AIR WASTE MANAGE, V55, P708, DOI 10.1080/10473289.2005.10464656; Bitterle E, 2006, CHEMOSPHERE, V65, P1784, DOI 10.1016/j.chemosphere.2006.04.035; Bondarenko O, 2013, ARCH TOXICOL, V87, P1181, DOI 10.1007/s00204-013-1079-4; Bonner J. C., 2003, ENV HLTH PERSPECT, V111, P1289; Brossell D, 2013, J AEROSOL SCI, V63, P75, DOI 10.1016/j.jaerosci.2013.04.012; Clift MJD, 2011, ARCH TOXICOL, V85, P723, DOI 10.1007/s00204-010-0560-6; Cohen J, 2013, NANOTOXICOLOGY, V7, P417, DOI 10.3109/17435390.2012.666576; Cohen JM, 2014, PART FIBRE TOXICOL, V11, DOI 10.1186/1743-8977-11-20; Comouth A, 2013, J AEROSOL SCI, V63, P103, DOI 10.1016/j.jaerosci.2013.04.009"
+
+  expect_equal(nrow(disambr_wos_tsv_parse_cr(stringi::stri_split_fixed(d, "; ")[[1]])), 14)
+
 #+END_SRC
 
 #+BEGIN_SRC R
@@ -3075,7 +3109,7 @@ test_that("disambr_make_wos_tsv_authors", {
       if("CR" %in% names(wos_data_table)) {
           disambr_mess("-- parsing references", ...)
           references_list <-
-              pblapply(stringi::stri_split_fixed(wos_data_table$CR, "; ")
+              pbapply::pblapply(stringi::stri_split_fixed(wos_data_table$CR, "; ")
                      , disambr_wos_tsv_parse_cr)
           disambr_mess("-- stacking references", ...)
           references_table <-
@@ -3104,17 +3138,18 @@ test_that("disambr_make_wos_tsv_authors", {
           disambr_stop("THERE IS NOT 'CR' FIELD WITH REFERENCES!")
       }
   }
-
-
 #+END_SRC
 
-#+BEGIN_SRC R :tangle tests/testthat/test.disambr_wos_tsv.r
-test_that("disambr_make_wos_tsv_references", {
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_wos_tsv.r
   my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
-    skip_if_not(file.exists(my.file))
-    dt <- disambr_read_file(my.file)
-    expect_length(nrow(disambr_make_wos_tsv_references(dt)), 3760)
-})
+
+  if(file.exists(my.file)) {
+    
+      dt <- disambr_read_file(my.file)
+
+      expect_equal(nrow(disambr_make_wos_tsv_references(dt)), 3760)
+
+  }
 
 #+END_SRC
 
@@ -3179,7 +3214,6 @@ dt[[3]]$name_cited_id %>% is.na %>% not %>% sum
                          , reference = "wos_tsv_publications")
       return(cit_table)
   }
-
 #+END_SRC
 
 #+BEGIN_SRC R
@@ -3286,7 +3320,7 @@ this one is not needed as doi is unique and we can add them to refs_table
 
 #+END_SRC
 *** DEPRICATED
-#+BEGIN_SRC R :tangle no
+#+BEGIN_SRC R
 
   ## ##' Parses RI (researcher_id) column of WoS saved records export
   ## ##' @param record_ri a record string from RP column
@@ -3390,7 +3424,7 @@ this one is not needed as doi is unique and we can add them to refs_table
   ##'
   ##' This procedure does not alter sets attributes. Just filters WoS author table.
   ##'
-  ##' Reference: Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746 [Cs]. http://arxiv.org/abs/1904.12746
+  ##' Reference: Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746. http://arxiv.org/abs/1904.12746
   ##' @param sets WoS data
   ##' @param file_path path to Researcher IDs
   ##' @return updated WoS data
@@ -4845,9 +4879,11 @@ microbenchmark(combi(v), combn(v,2))
 
 #+BEGIN_SRC R :tangle R/disambr_stats.r
   ##' Make a statistics for a collection of sets (specific algorithm) and writes to the file in dir
-  ##' @param sets  collection of sets
+  ##' @param sets collection of sets
   ##' @param sets_dir dir with collection of sets if first arg is not provided, writes results here
+  ##' @param name name
   ##' @param remove_data whether to remove first 4 sets (assumed to be a data) when sets arg is set
+  ##' @param save_rds save_rds 
   ##' @return 
   ##' @export 
   disambr_stats <- function(sets = NULL
@@ -4927,13 +4963,10 @@ microbenchmark(combi(v), combn(v,2))
   }
 
   ##' Makes comparative table with statistics
-  ##' @param sets_dir 
-  ##' @inheritDotParams 
+  ##' @param sets_dir dir 
   ##' @return 
   ##' 
   ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
   ##' @export 
   disambr_stats_table <- function(sets_dir){
   files <- dir(sets_dir

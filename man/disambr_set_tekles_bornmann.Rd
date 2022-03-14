@@ -22,5 +22,5 @@ updated WoS data
 This procedure does not alter sets attributes. Just filters WoS author table.
 }
 \details{
-Reference: Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746 \link{Cs}. http://arxiv.org/abs/1904.12746
+Reference: Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746. http://arxiv.org/abs/1904.12746
 }

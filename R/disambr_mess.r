@@ -1,4 +1,4 @@
-## [[id:org:dpadt1n0mti0][create_mess:1]]
+## -------->>  [[file:../disambr.src.org::*create_mess][create_mess:1]]
 ##' Creates message string for reporting during procedures
     ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
     ##' @param h Forse specific ouline level of message
@@ -85,9 +85,11 @@
         }
         return(mess)
     }
-## create_mess:1 ends here
+## --------<<  create_mess:1 ends here
 
-## [[id:org:nqfdt1n0mti0][disambr_mess:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_mess][disambr_mess:1]]
 ##' Report a message with message()
 ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
 ##' @param h_prefix Character vector of prefixes for each outline level
@@ -105,9 +107,11 @@ disambr_mess <- function(mess
     ## post message
     message(mess)
 }
-## disambr_mess:1 ends here
+## --------<<  disambr_mess:1 ends here
 
-## [[id:org:9rmdt1n0mti0][disambr_mess_start:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_mess_start][disambr_mess_start:1]]
 ##' Post a starting message for disambr procedure. Records time started in `disambr_start_time` variable in its `parent.frame()`
 ##' @param start_mess_prefix Prefix for staring message
 ##' @inheritDotParams disambr_mess
@@ -128,11 +132,14 @@ disambr_mess_start <- function(start_mess_prefix = "Making set -"
     ## record the time started
     assign("disambr_start_time", Sys.time(), pos = parent.frame())
 }
-## disambr_mess_start:1 ends here
+## --------<<  disambr_mess_start:1 ends here
 
-## [[id:org:m6vdt1n0mti0][disambr_mess_finish:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_mess_finish][disambr_mess_finish:1]]
 ##' Post a starting message for disambr procedure. Records time started in `disambr_start_time` variable in its `parent.frame()`
-##' @param start_mess_prefix Prefix for staring message
+##' @param mess Prefix for staring message
+##' @param append_running_procedure_name Whether to append running procedure name
 ##' @inheritDotParams disambr_mess
 ##' @return time started
 ##' 
@@ -158,9 +165,11 @@ disambr_mess_finish <- function(mess = "Finished -"
     }   
     disambr_mess(mess, ...)
 }
-## disambr_mess_finish:1 ends here
+## --------<<  disambr_mess_finish:1 ends here
 
-## [[id:org:0xagt1n0mti0][disambr_warn:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_warn][disambr_warn:1]]
 ##' Report a message with warning()
 ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
 ##' @param h_prefix Character vector of prefixes for each outline level
@@ -180,12 +189,13 @@ disambr_warn <- function(mess
     ## post message
     warning(mess, call. = call. , immediate. = immediate.)
 }
-## disambr_warn:1 ends here
+## --------<<  disambr_warn:1 ends here
 
-## [[id:org:qlegt1n0mti0][disambr_stop:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_stop][disambr_stop:1]]
 ##' Report a message with stop()
 ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
-##' @param h_prefix Character vector of prefixes for each outline level
 ##' @param call. See `stop`
 ##' @inheritDotParams create_mess
 ##' @return Same as `stop` returns
@@ -204,4 +214,6 @@ disambr_stop <- function(mess
     ## post message
     stop(mess, call. = call.)
 }
-## disambr_stop:1 ends here
+## --------<<  disambr_stop:1 ends here
+
+

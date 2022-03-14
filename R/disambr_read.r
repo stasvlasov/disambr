@@ -1,8 +1,42 @@
-## [[id:org:blbgnb60jti0][TEMPLATE:1]]
+## -------->>  [[file:../disambr.src.org::*TEMPLATE][TEMPLATE:1]]
+##' Reads the data for disambiguation
+##' @param files_path Path to data. You can specify almost everything
+##' @param save_sets_as How save sets
+##' @param save_sets_dir where to save sets 
+##' @param use_time_stamp wheather to use timestamp 
+##' @return 
+##' 
+##' @md 
+##' @export 
+disambr_read <- function(files_path
+                       , save_sets_as = NULL
+                       , save_sets_dir = "disambr-data"
+                       , use_time_stamp = FALSE) {
+    disambr_mess_start()
+    ## see if the data is available already
+    if(is.character(save_sets_as) &&
+       file.exists(file.path(save_sets_dir, save_sets_as))) {
+        disambr_mess(paste("- reusing saved sets:", save_sets_as))
+        return(readRDS(file.path(save_sets_dir, save_sets_as)))
+    }
+    files_path <- parse_files_path(files_path)
+    files_data_list <- lapply(files_path, disambr_read_file)
+    sets <- disambr_make_data(files_data_list)
+    ## save just in case
+    if(is.character(save_sets_as)) {
+        disambr_save_set(sets
+                       , save_set_as =  save_sets_as
+                       , save_set_dir = save_sets_dir
+                       , use_time_stamp = use_time_stamp)
+    }
+    disambr_mess_finish()
+    return(sets)
+}
+## --------<<  TEMPLATE:1 ends here
 
-## TEMPLATE:1 ends here
 
-## [[id:org:c7wgnb60jti0][disambr_read:1]]
+
+## -------->>  [[file:../disambr.src.org::*disambr_read][disambr_read:1]]
 ##' Reads the data for disambiguation
 ##' @param files_path Path to data. You can specify almost everything
 ##' @return 
@@ -33,9 +67,11 @@ disambr_read <- function(files_path
     disambr_mess_finish()
     return(sets)
 }
-## disambr_read:1 ends here
+## --------<<  disambr_read:1 ends here
 
-## [[id:org:zbtgnb60jti0][disambr_read_file:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_read_file][disambr_read_file:1]]
 ##' Reads file based on file extention
 ##' @param f full file path name
 ##' @return data
@@ -50,9 +86,11 @@ disambr_read_file <- function(f) {
          , message("Disambr: can not read file extention: ", f_extention
                  , "\n  - skipping file: ", f))
 }
-## disambr_read_file:1 ends here
+## --------<<  disambr_read_file:1 ends here
 
-## [[id:org:vqqgnb60jti0][disambr_read_tsv:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_read_tsv][disambr_read_tsv:1]]
 ##' Read tsv file
 ##' @param f path
 ##' @return data
@@ -73,24 +111,28 @@ disambr_read_tsv <- function(f) {
           NULL
       }
   }
-## disambr_read_tsv:1 ends here
+## --------<<  disambr_read_tsv:1 ends here
 
-## [[id:org:o5lgnb60jti0][parse_tsv_wos_header:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*parse_tsv_wos_header][parse_tsv_wos_header:1]]
 parse_tsv_wos_header <- function(first_line) {
-    header <- stri_split_fixed(first_line, "\t")[[1]]
+    header <- stringi::stri_split_fixed(first_line, "\t")[[1]]
     if( ## check if at least 10 fields two big letters
-        sum(stri_detect_regex(header, "^[A-Z0-9]{2}$")) > 10 &&
+        sum(stringi::stri_detect_regex(header, "^[A-Z0-9]{2}$")) > 10 &&
         ## check if main fields are present
         all(c('AU', 'TI') %in% header)) {
-        stri_extract_first_regex(header, "[A-Z0-9]{2}")
+        stringi::stri_extract_first_regex(header, "[A-Z0-9]{2}")
     } else {FALSE}
 }
-## parse_tsv_wos_header:1 ends here
+## --------<<  parse_tsv_wos_header:1 ends here
 
-## [[id:org:o1ognb60jti0][disambr_read_tsv_wos:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_read_tsv_wos][disambr_read_tsv_wos:1]]
 ##' Reads WoS tsv export file and makes disambr set out of it (just adding some attributes to the data.table)
-##' @param f 
-##' @param header 
+##' @param f path
+##' @param header header 
 ##' @return 
 ##' 
 ##' @md 
@@ -125,9 +167,11 @@ disambr_read_tsv_wos <- function(f, header) {
                                    , file_header = header))
       return(f_data)
   }
-## disambr_read_tsv_wos:1 ends here
+## --------<<  disambr_read_tsv_wos:1 ends here
 
-## [[id:org:33ignb60jti0][disambr_make_data:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_make_data][disambr_make_data:1]]
 disambr_make_data <- function(files_data_list
                             , drop_ejected = FALSE) {
     ## TODO: add other data processing here
@@ -199,4 +243,6 @@ disambr_make_data <- function(files_data_list
         return(files_data_list)
     }
 }
-## disambr_make_data:1 ends here
+## --------<<  disambr_make_data:1 ends here
+
+

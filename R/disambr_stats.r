@@ -1,8 +1,10 @@
-## [[id:org:79b38w60pti0][analysis:1]]
+## -------->>  [[file:../disambr.src.org::*analysis][analysis:1]]
 ##' Make a statistics for a collection of sets (specific algorithm) and writes to the file in dir
-##' @param sets  collection of sets
+##' @param sets collection of sets
 ##' @param sets_dir dir with collection of sets if first arg is not provided, writes results here
+##' @param name name
 ##' @param remove_data whether to remove first 4 sets (assumed to be a data) when sets arg is set
+##' @param save_rds save_rds 
 ##' @return 
 ##' @export 
 disambr_stats <- function(sets = NULL
@@ -81,14 +83,11 @@ disambr_stats <- function(sets = NULL
     return(stats)
 }
 
-##' Makes coparative table with statistics
-##' @param sets_dir 
-##' @inheritDotParams 
+##' Makes comparative table with statistics
+##' @param sets_dir dir 
 ##' @return 
 ##' 
 ##' @md 
-##' @importFrom magrittr %>%
-##' @import magrittr data.table dplyr stringr
 ##' @export 
 disambr_stats_table <- function(sets_dir){
 files <- dir(sets_dir
@@ -98,4 +97,6 @@ files <- dir(sets_dir
 stats_list <- lapply(files, readRDS)
 data.table::rbindlist(stats_list)
 }
-## analysis:1 ends here
+## --------<<  analysis:1 ends here
+
+

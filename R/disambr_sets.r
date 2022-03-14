@@ -1,8 +1,10 @@
-## [[id:org:3ylht1n0mti0][TEMPLATE:1]]
+## -------->>  [[file:../disambr.src.org::*TEMPLATE][TEMPLATE:1]]
 
-## TEMPLATE:1 ends here
+## --------<<  TEMPLATE:1 ends here
 
-## [[id:org:84rht1n0mti0][disambr_in_sets:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_in_sets][disambr_in_sets:1]]
 ##' Checks if sets with certain attribures are present
 ##' @param sets Sets to filter on sets attributes
 ##' @param match_attr_value_parcially whether attribute values can be matched partially
@@ -62,9 +64,11 @@ disambr_in_sets <- function(sets
     ## return overlap of sets_filters
     return(Reduce(`&`, sets_filters))
 }
-## disambr_in_sets:1 ends here
+## --------<<  disambr_in_sets:1 ends here
 
-## [[id:org:13h9svy0mti0][disambr_get_first_data_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_get_first_data_set][disambr_get_first_data_set:1]]
 ##' Get first data set in list sets
 ##' @param sets list of sets
 ##' @param recipe function that produced the data set (parcial match allowed)
@@ -87,9 +91,11 @@ disambr_get_first_data_set <- function(sets, recipe, ...
         disambr_stop(paste("Data set should be available in sets:", recipe))
     }
 }
-## disambr_get_first_data_set:1 ends here
+## --------<<  disambr_get_first_data_set:1 ends here
 
-## [[id:org:3ra9svy0mti0][disambr_get_last_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_get_last_set][disambr_get_last_set:1]]
 ##' Gets last set in sets which strength less or equal than 0.5
 ##' @param sets sets
 ##' @param ... other attributes
@@ -107,9 +113,11 @@ disambr_get_last_set <- function(sets, ...) {
         return()
     }
 }
-## disambr_get_last_set:1 ends here
+## --------<<  disambr_get_last_set:1 ends here
 
-## [[id:org:tb303360oti0][disambr_get_last_weak_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_get_last_weak_set][disambr_get_last_weak_set:1]]
 ##' Gets last set in sets which strength less or equal than 0.5
 ##' @param sets sets
 ##' @param ... other attributes
@@ -129,9 +137,11 @@ disambr_get_last_weak_set <- function(sets, ...) {
         return()
     }
 }
-## disambr_get_last_weak_set:1 ends here
+## --------<<  disambr_get_last_weak_set:1 ends here
 
-## [[id:org:xz69svy0mti0][disambr_get_strong_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_get_strong_set][disambr_get_strong_set:1]]
 ##' Get sets with strength parameter of 1 and rbind them into sincle set
 ##' @param sets sets
 ##' @param ... other attributes
@@ -155,9 +165,11 @@ disambr_get_strong_set <- function(sets, ...) {
     }
     return(sets)
 }
-## disambr_get_strong_set:1 ends here
+## --------<<  disambr_get_strong_set:1 ends here
 
-## [[id:org:lg6f7w60pti0][disambr_get_truth_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_get_truth_set][disambr_get_truth_set:1]]
 ##' Get sets with strength parameter of 10 (ground thruth)
 ##' @param sets sets
 ##' @param ... other attributes
@@ -174,9 +186,11 @@ disambr_get_truth_set <- function(sets, ...) {
     if(sum(sets_index) != 1) disambr_stop("- more than one truth set found!")
     return(sets[[which(sets_index)]])
 }
-## disambr_get_truth_set:1 ends here
+## --------<<  disambr_get_truth_set:1 ends here
 
-## [[id:org:4v89svy0mti0][disambr_get_last_unstrong_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_get_last_unstrong_set][disambr_get_last_unstrong_set:1]]
 ##' Gets last set from sets with strength <= 0.5 and excludes from this set all sets with strength of 1
 ##' @param sets sets
 ##' @return set or NULL
@@ -200,9 +214,11 @@ disambr_get_last_unstrong_set <- function(sets) {
         disambr_stop("Weak and strong sets should be data.tables!")
     }
 }
-## disambr_get_last_unstrong_set:1 ends here
+## --------<<  disambr_get_last_unstrong_set:1 ends here
 
-## [[id:org:kvv4zio0mti0][disambr_set_attr:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_set_attr][disambr_set_attr:1]]
 ## disambr_entity
 ## disambr_set_type
 ## disambr_set_coefficient
@@ -250,9 +266,11 @@ disambr_set_attr <- function(focal_set
     }
     return(focal_set)
 }
-## disambr_set_attr:1 ends here
+## --------<<  disambr_set_attr:1 ends here
 
-## [[id:org:2z9bmie0nti0][disambr_add_set_attr:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_add_set_attr][disambr_add_set_attr:1]]
 ##' Add disambr attribures to focal set from template set and update some of them
 ##'
 ##' It updates:
@@ -314,9 +332,11 @@ disambr_add_set_attr <- function(focal_set
     disambr_set_attr(focal_set, ...)
     return(focal_set)
 }
-## disambr_add_set_attr:1 ends here
+## --------<<  disambr_add_set_attr:1 ends here
 
-## [[id:org:7m03hcq0hti0][disambr_save_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_save_set][disambr_save_set:1]]
 ##' Save set and adds file attribute
 ##' @param set_to_save set
 ##' @param save_set_as if TRUE the the file name is made from disambr_set_name attribute
@@ -376,9 +396,11 @@ disambr_save_set <- function(set_to_save
         return()
     }
 }
-## disambr_save_set:1 ends here
+## --------<<  disambr_save_set:1 ends here
 
-## [[id:org:mxuc18v0nti0][disambr_get_output_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_get_output_set][disambr_get_output_set:1]]
 ##' Gets output set from sets (in case we already made it)
 ##' @param sets sets
 ##' @param get_output_set Whether to search for output set. Default is not.
@@ -414,9 +436,11 @@ disambr_get_output_set <- function(sets
         return()
     }
  }
-## disambr_get_output_set:1 ends here
+## --------<<  disambr_get_output_set:1 ends here
 
-## [[id:org:rb0d18v0nti0][disambr_read_output_set:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_read_output_set][disambr_read_output_set:1]]
 ##' Reads last output set saved on disk
 ##' @param read_output_set toggle. default is no
 ##' @param save_set_prefix file prefix
@@ -464,9 +488,11 @@ disambr_read_output_set <- function(read_output_set = getOption("disambr_read_ou
         return()
     }
 }
-## disambr_read_output_set:1 ends here
+## --------<<  disambr_read_output_set:1 ends here
 
-## [[id:org:vd6faz31gti0][disambr_subsets:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_subsets][disambr_subsets:1]]
 ##' Filters list of sets
 ##' @param sets_list list of sets
 ##' @param attribute_value_list list of attribute values where list elements name correspond attribute names used for filtering sets
@@ -523,9 +549,11 @@ disambr_subsets <- function(sets_list, attribute_value_list
 
 ## disambr_subsets(list(a,b,c), list(name = "ccc"
 ##                                 , kind = "bad"))
-## disambr_subsets:1 ends here
+## --------<<  disambr_subsets:1 ends here
 
-## [[id:org:oak78r30hti0][disambr_setattr:1]]
+
+
+## -------->>  [[file:../disambr.src.org::*disambr_setattr][disambr_setattr:1]]
 ## disambr_entity
 ## disambr_set_type
 ## disambr_set_coefficient
@@ -541,4 +569,6 @@ disambr_setattr <- function(focal_set, ...) {
     }
     return(focal_set)
 }
-## disambr_setattr:1 ends here
+## --------<<  disambr_setattr:1 ends here
+
+

@@ -4,12 +4,21 @@
 \alias{disambr_set_similar_last_names}
 \title{Makes set of similar authors based on their last names}
 \usage{
-disambr_set_similar_last_names(sets, maxDist = 1)
+disambr_set_similar_last_names(
+  sets,
+  max_dist = 1,
+  max_dist_short = 0,
+  min_length = 0
+)
 }
 \arguments{
 \item{sets}{Sets}
 
-\item{maxDist}{see max_dist in \code{match_fuzzy}}
+\item{max_dist}{see max_dist in \code{match_fuzzy}}
+
+\item{max_dist_short}{max_dist for short last names, default 0}
+
+\item{min_length}{who is short names defined, default 0 which means do not condider short names}
 }
 \value{
 Sets with new appended

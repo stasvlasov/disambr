@@ -7,7 +7,7 @@
 match_fuzzy(bank, method, max_dist, id_name)
 }
 \arguments{
-\item{bank}{}
+\item{bank}{bank}
 
 \item{method}{see method in stringdist}
 

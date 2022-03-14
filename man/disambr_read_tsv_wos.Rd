@@ -7,9 +7,9 @@
 disambr_read_tsv_wos(f, header)
 }
 \arguments{
-\item{f}{}
+\item{f}{path}
 
-\item{header}{}
+\item{header}{header}
 }
 \value{
 
