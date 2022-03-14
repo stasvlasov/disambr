@@ -96,8 +96,9 @@
                                                             <span class="fu">person</span><span class="op">(</span><span class="va">author</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level1">
-<h1 id="implementation-of-eva-algorithm-van-den-akker-et-al-2020">Implementation of EVA algorithm (van den Akker et al., 2020)<a class="anchor" aria-label="anchor" href="#implementation-of-eva-algorithm-van-den-akker-et-al-2020"></a>
+<h1 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h1>
+<p><strong>The EVA-algorithm: An open-source solution for the disambiguation of author names in Web of Science data</strong> Olmo R. van den Akker Sacha Epskamp Stanislav Vlasov</p>
 <p>The creation of co-authorship networks is a valuable way to depict the social structure of scientific fields. However, these co-authorship networks often get distorted because of the problems of author name synonymy (the same author is split into two nodes because his name is spelled differently in different publications) and author name homonymy (different authors are compounded into one node because they share the same name). The practice of author name disambiguation (AND) tries to solve these problems by correctly identifying the authors of scientific articles.</p>
 <p>Several algorithms have been put forward in the context of AND, but none of them are suitable for large datasets of the Web of Science database. Therefore, in an earlier part of this project we proposed a new unsupervised learning algorithm based on the most recent AND literature. This so-called AEV-algorithm involves two phases: a blocking phase, in which pairs of authors are selected that are sufficiently similar, and a disambiguation phase, in which similar author names are either split or combined into one node based on information retrieved from the Web of Science database. In the disambiguation phase, the algorithm uses information about co-authorship, e-mail addresses, institutional affiliations, cited references, and article keywords (van den Akker et al., 2020).</p>
 </div>
@@ -126,64 +127,67 @@
 </h1>
 <p>All disambiguation procedures used in <code class="verbatim">disambr</code> package work with sets. A set is basically any R object that can represent <a href="https://en.wikipedia.org/wiki/Set_(mathematics)" class="external-link">mathematical sets</a> (e.g., set of authors, set of companies) with special attributes that are used by <code class="verbatim">disabmr</code> functions to identify the kind of set it is working with or produce (e.g., a set of authors that are likely to be the same person, a set of companies that are definitely different companies, etc.).</p>
 <p>The attributes that are currently used to define/describe set as well as their values are listed below:</p>
-<dl>
-<dt>disambr<sub>entity</sub>
-</dt>
-<dd><ul>
+<ul>
 <li>
-<em>person</em>, <em>organization</em>, <em>publication</em>
-</li>
-</ul></dd>
-<dt>disambr<sub>settype</sub>
-</dt>
-<dd><ul>
+<code class="verbatim">disambr_entity</code>
+<ul>
 <li>
-<em>similar<sub>entities</sub></em>, <em>different<sub>entities</sub></em>
+<code class="verbatim">person</code>, <code class="verbatim">organization</code>, <code class="verbatim">publication</code>
 </li>
-</ul></dd>
-<dt>disambr<sub>setcoefficient</sub>
-</dt>
-<dd><ul>
+</ul>
+</li>
+<li>
+<code class="verbatim">disambr_set_type</code>
+<ul>
+<li>
+<code class="verbatim">similar_entities</code>, <code class="verbatim">different_entities</code>
+</li>
+</ul>
+</li>
+<li>
+<code class="verbatim">disambr_set_coefficient</code>
+<ul>
 <li>number between 0 and 1 indicating how strongly entities are similar or different from each other. It is use only for establishing order of sets processing (e.g., start with sets of least similar entities)</li>
-</ul></dd>
-<dt>disambr<sub>setname</sub>
-</dt>
-<dd><ul>
+</ul>
+</li>
+<li>
+<code class="verbatim">disambr_set_name</code>
+<ul>
 <li>string name of the set</li>
-</ul></dd>
-<dt>disambr<sub>setcollection</sub>
-</dt>
-<dd><ul>
+</ul>
+</li>
 <li>
-<em>single<sub>settable</sub></em> (first column assumed to store entity id or entity id is just row number if <code class="verbatim">entity_id_reference</code> attribute is set to <em>self</em>, see below), <em>list<sub>ofsetsaslists</sub></em> (each set is a list of entity ids), <em>dyads<sub>table</sub></em> (first and second columns assumed to be ids for the pair of entities)</li>
-</ul></dd>
-<dt>disambr<sub>entityidreference</sub>
-</dt>
-<dd><ul>
+<code class="verbatim">disambr_set_collection =  - =single_set_table</code> (first column assumed to store entity id or entity id is just row number if <code class="verbatim">entity_id_reference</code> attribute is set to <code class="verbatim">self</code>, see below), <code class="verbatim">list_of_sets_as_lists</code> (each set is a list of entity ids), <code class="verbatim">dyads_table</code> (first and second columns assumed to be ids for the pair of entities)</li>
 <li>
-<em>self</em>, name of other set as in its <code class="verbatim">set_name</code> attribute</li>
-</ul></dd>
-<dt>disambr<sub>entityidreferencemd5sum</sub>
-</dt>
-<dd><ul>
+<code class="verbatim">disambr_entity_id_reference</code>
+<ul>
+<li>
+<code class="verbatim">self</code>, name of other set as in its <code class="verbatim">set_name</code> attribute</li>
+</ul>
+</li>
+<li>
+<code class="verbatim">disambr_entity_id_reference_md5_sum</code>
+<ul>
 <li>md5 cache sum of the object where entities ids are referring to ensure that we will get to correct data for entities in the set.</li>
-</ul></dd>
-<dt>disambr<sub>recipe</sub>
-</dt>
-<dd><ul>
+</ul>
+</li>
+<li>
+<code class="verbatim">disambr_recipe</code>
+<ul>
 <li>list of <code class="verbatim">disambr</code> procedures that were applied to produce given set(s)</li>
 <li>if it is a named list then first item is procedure name and the rest are properties:
 <ul>
-<li><em>procedure</em></li>
-<li><em>file<sub>name</sub></em></li>
+<li><code class="verbatim">procedure</code></li>
+<li><code class="verbatim">file_name</code></li>
 <li>
-<em>file<sub>md5sum</sub></em> (to check file identity later)</li>
+<code class="verbatim">file_md5sum</code> (to check file identity later)</li>
 <li>
-<em>file<sub>header</sub></em> (to check for consistency between read files)</li>
+<code class="verbatim">file_header</code> (to check for consistency between read files)</li>
 </ul>
 </li>
-</ul></dd>
-</dl>
+</ul>
+</li>
+</ul>
 </div>
 <div class="section level1">
 <h1 id="overall-design-principles">Overall design principles<a class="anchor" aria-label="anchor" href="#overall-design-principles"></a>
