@@ -65,7 +65,7 @@
   <div class="contents col-md-9">
 
 
-<p><code class="verbatim">disambr</code> is an R <span class="emoji" data-emoji="package">📦</span> that provides a flexible framework for disambiguation of named entities. Currently this package implements the <a href="id:org:dux2eyd1gti0">AEV algorithm</a> (van den Akker et al., 2020) for Web of Science author disambiguation.</p>
+<p><code>disambr</code> is an R <span class="emoji" data-emoji="package">📦</span> that provides a flexible framework for disambiguation of named entities. Currently this package implements the <a href="id:org:dux2eyd1gti0">AEV algorithm</a> (van den Akker et al., 2020) for Web of Science author disambiguation.</p>
 <div class="section level1">
 <div class="page-header"><h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h1></div>
@@ -125,64 +125,69 @@
 <div class="section level1">
 <h1 id="sets-attributes">Sets attributes<a class="anchor" aria-label="anchor" href="#sets-attributes"></a>
 </h1>
-<p>All disambiguation procedures used in <code class="verbatim">disambr</code> package work with sets. A set is basically any R object that can represent <a href="https://en.wikipedia.org/wiki/Set_(mathematics)" class="external-link">mathematical sets</a> (e.g., set of authors, set of companies) with special attributes that are used by <code class="verbatim">disabmr</code> functions to identify the kind of set it is working with or produce (e.g., a set of authors that are likely to be the same person, a set of companies that are definitely different companies, etc.).</p>
+<p>All disambiguation procedures used in <code>disambr</code> package work with sets. A set is basically any R object that can represent <a href="https://en.wikipedia.org/wiki/Set_(mathematics)" class="external-link">mathematical sets</a> (e.g., set of authors, set of companies) with special attributes that are used by <code>disabmr</code> functions to identify the kind of set it is working with or produce (e.g., a set of authors that are likely to be the same person, a set of companies that are definitely different companies, etc.).</p>
 <p>The attributes that are currently used to define/describe set as well as their values are listed below:</p>
 <ul>
 <li>
-<code class="verbatim">disambr_entity</code>
+<code>disambr_entity</code>
 <ul>
 <li>
-<code class="verbatim">person</code>, <code class="verbatim">organization</code>, <code class="verbatim">publication</code>
+<code>person</code>, <code>organization</code>, <code>publication</code>
 </li>
 </ul>
 </li>
 <li>
-<code class="verbatim">disambr_set_type</code>
+<code>disambr_set_type</code>
 <ul>
 <li>
-<code class="verbatim">similar_entities</code>, <code class="verbatim">different_entities</code>
+<code>similar_entities</code>, <code>different_entities</code>
 </li>
 </ul>
 </li>
 <li>
-<code class="verbatim">disambr_set_coefficient</code>
+<code>disambr_set_coefficient</code>
 <ul>
 <li>number between 0 and 1 indicating how strongly entities are similar or different from each other. It is use only for establishing order of sets processing (e.g., start with sets of least similar entities)</li>
 </ul>
 </li>
 <li>
-<code class="verbatim">disambr_set_name</code>
+<code>disambr_set_name</code>
 <ul>
 <li>string name of the set</li>
 </ul>
 </li>
 <li>
-<code class="verbatim">disambr_set_collection =  - =single_set_table</code> (first column assumed to store entity id or entity id is just row number if <code class="verbatim">entity_id_reference</code> attribute is set to <code class="verbatim">self</code>, see below), <code class="verbatim">list_of_sets_as_lists</code> (each set is a list of entity ids), <code class="verbatim">dyads_table</code> (first and second columns assumed to be ids for the pair of entities)</li>
-<li>
-<code class="verbatim">disambr_entity_id_reference</code>
+<code>disambr_set_collection</code>
 <ul>
 <li>
-<code class="verbatim">self</code>, name of other set as in its <code class="verbatim">set_name</code> attribute</li>
+<code>single_set_table</code> (first column assumed to store entity id or entity id is just row number if <code>entity_id_reference</code> attribute is set to <code>self</code>, see below), <code>list_of_sets_as_lists</code> (each set is a list of entity ids), <code>dyads_table</code> (first and second columns assumed to be ids for the pair of entities)</li>
 </ul>
 </li>
 <li>
-<code class="verbatim">disambr_entity_id_reference_md5_sum</code>
+<code>disambr_entity_id_reference</code>
+<ul>
+<li>
+<code>self</code>, name of other set as in its <code>set_name</code> attribute</li>
+</ul>
+</li>
+<li>
+<code>disambr_entity_id_reference_md5_sum</code>
 <ul>
 <li>md5 cache sum of the object where entities ids are referring to ensure that we will get to correct data for entities in the set.</li>
 </ul>
 </li>
 <li>
-<code class="verbatim">disambr_recipe</code>
+<code>disambr_recipe</code>
 <ul>
-<li>list of <code class="verbatim">disambr</code> procedures that were applied to produce given set(s)</li>
+<li>list of <code>disambr</code> procedures that were applied to produce given set(s)</li>
 <li>if it is a named list then first item is procedure name and the rest are properties:
 <ul>
-<li><code class="verbatim">procedure</code></li>
-<li><code class="verbatim">file_name</code></li>
+<li><code>procedure</code></li>
+<li><code>file_name</code></li>
 <li>
-<code class="verbatim">file_md5sum</code> (to check file identity later)</li>
+<code>file_md5sum</code> (to check file identity later)</li>
 <li>
-<code class="verbatim">file_header</code> (to check for consistency between read files)</li>
+<code>file_header</code> (to check for consistency between read files)</li>
 </ul>
 </li>
 </ul>
