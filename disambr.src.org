@@ -380,8 +380,9 @@ van den Akker, O. R., Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithmâ
   (require 'org-goto)
   (save-excursion
     (org-goto--local-search-headings "Description" nil t)
-    ;; (org-pandoc-export-to-markdown nil 'subtreep)
-    (org-md-export-to-markdown nil 'subtreep))
+    (org-pandoc-export-to-markdown nil 'subtreep)
+    ;; (org-md-export-to-markdown nil 'subtreep)
+    )
 #+end_src
 
 ** Add github workflows and badges
