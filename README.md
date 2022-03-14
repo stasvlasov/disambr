@@ -1,10 +1,10 @@
 [![R-CMD-check](https://github.com/stasvlasov/disambr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/disabmr/actions)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/disambr)
 
-`disambr`{.verbatim} is an R :package: that provides a flexible
-framework for disambiguation of named entities. Currently this package
-implements the [AEV algorithm](id:org:dux2eyd1gti0) (van den Akker et
-al., 2020) for Web of Science author disambiguation.
+`disambr` is an R :package: that provides a flexible framework for
+disambiguation of named entities. Currently this package implements the
+[AEV algorithm](id:org:dux2eyd1gti0) (van den Akker et al., 2020) for
+Web of Science author disambiguation.
 
 # Usage
 
@@ -96,53 +96,48 @@ library("disambr")
 
 # Sets attributes
 
-All disambiguation procedures used in `disambr`{.verbatim} package work
-with sets. A set is basically any R object that can represent
-[mathematical sets](https://en.wikipedia.org/wiki/Set_(mathematics))
-(e.g., set of authors, set of companies) with special attributes that
-are used by `disabmr`{.verbatim} functions to identify the kind of set
-it is working with or produce (e.g., a set of authors that are likely to
-be the same person, a set of companies that are definitely different
-companies, etc.).
+All disambiguation procedures used in `disambr` package work with sets.
+A set is basically any R object that can represent [mathematical
+sets](https://en.wikipedia.org/wiki/Set_(mathematics)) (e.g., set of
+authors, set of companies) with special attributes that are used by
+`disabmr` functions to identify the kind of set it is working with or
+produce (e.g., a set of authors that are likely to be the same person, a
+set of companies that are definitely different companies, etc.).
 
 The attributes that are currently used to define/describe set as well as
 their values are listed below:
 
--   `disambr_entity`{.verbatim}
-    -   `person`{.verbatim}, `organization`{.verbatim},
-        `publication`{.verbatim}
--   `disambr_set_type`{.verbatim}
-    -   `similar_entities`{.verbatim}, `different_entities`{.verbatim}
--   `disambr_set_coefficient`{.verbatim}
+-   `disambr_entity`
+    -   `person`, `organization`, `publication`
+-   `disambr_set_type`
+    -   `similar_entities`, `different_entities`
+-   `disambr_set_coefficient`
     -   number between 0 and 1 indicating how strongly entities are
         similar or different from each other. It is use only for
         establishing order of sets processing (e.g., start with sets of
         least similar entities)
--   `disambr_set_name`{.verbatim}
+-   `disambr_set_name`
     -   string name of the set
--   `disambr_set_collection =
-     - =single_set_table`{.verbatim} (first column assumed to store
-    entity id or entity id is just row number if
-    `entity_id_reference`{.verbatim} attribute is set to
-    `self`{.verbatim}, see below), `list_of_sets_as_lists`{.verbatim}
-    (each set is a list of entity ids), `dyads_table`{.verbatim} (first
-    and second columns assumed to be ids for the pair of entities)
--   `disambr_entity_id_reference`{.verbatim}
-    -   `self`{.verbatim}, name of other set as in its
-        `set_name`{.verbatim} attribute
--   `disambr_entity_id_reference_md5_sum`{.verbatim}
+-   `disambr_set_collection`
+    -   `single_set_table` (first column assumed to store entity id or
+        entity id is just row number if `entity_id_reference` attribute
+        is set to `self`, see below), `list_of_sets_as_lists` (each set
+        is a list of entity ids), `dyads_table` (first and second
+        columns assumed to be ids for the pair of entities)
+-   `disambr_entity_id_reference`
+    -   `self`, name of other set as in its `set_name` attribute
+-   `disambr_entity_id_reference_md5_sum`
     -   md5 cache sum of the object where entities ids are referring to
         ensure that we will get to correct data for entities in the set.
--   `disambr_recipe`{.verbatim}
-    -   list of `disambr`{.verbatim} procedures that were applied to
-        produce given set(s)
+-   `disambr_recipe`
+    -   list of `disambr` procedures that were applied to produce given
+        set(s)
     -   if it is a named list then first item is procedure name and the
         rest are properties:
-        -   `procedure`{.verbatim}
-        -   `file_name`{.verbatim}
-        -   `file_md5sum`{.verbatim} (to check file identity later)
-        -   `file_header`{.verbatim} (to check for consistency between
-            read files)
+        -   `procedure`
+        -   `file_name`
+        -   `file_md5sum` (to check file identity later)
+        -   `file_header` (to check for consistency between read files)
 
 # Overall design principles
 

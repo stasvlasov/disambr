@@ -29,13 +29,14 @@ Imports:
     parallel,
     stringi (>= 1.4)
 Suggests: 
-    testthat
+    testthat, tinytest
 Encoding: UTF-8
 LazyData: true
 References: This research was supported (in part) by the Fetzer
-    Franklin Fund of the John E. Fetzer Memorial Trust. The EVA
-    disambiguation algorithm is described in van den Akker, O. R.,
-    Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithm—Author name
-    disambiguation for large Web of Science datasets.
+        Franklin Fund of the John E. Fetzer Memorial Trust. The EVA
+        disambiguation algorithm is described in van den Akker, O. R.,
+        Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV
+        Algorithm—Author name disambiguation for large Web of Science
+        datasets.
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
