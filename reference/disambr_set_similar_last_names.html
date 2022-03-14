@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">disambr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
       </span>
     </div>
 
@@ -50,15 +50,24 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">disambr_set_similar_last_names</span><span class="op">(</span><span class="va">sets</span>, maxDist <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">disambr_set_similar_last_names</span><span class="op">(</span>
+  <span class="va">sets</span>,
+  max_dist <span class="op">=</span> <span class="fl">1</span>,
+  max_dist_short <span class="op">=</span> <span class="fl">0</span>,
+  min_length <span class="op">=</span> <span class="fl">0</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>sets</dt>
 <dd><p>Sets</p></dd>
-<dt>maxDist</dt>
+<dt>max_dist</dt>
 <dd><p>see max_dist in <code>match_fuzzy</code></p></dd>
+<dt>max_dist_short</dt>
+<dd><p>max_dist for short last names, default 0</p></dd>
+<dt>min_length</dt>
+<dd><p>who is short names defined, default 0 which means do not condider short names</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>

@@ -43,6 +43,9 @@
     <loc>/reference/disambr_get_strong_set.html</loc>
   </url>
   <url>
+    <loc>/reference/disambr_get_truth_set.html</loc>
+  </url>
+  <url>
     <loc>/reference/disambr_in_sets.html</loc>
   </url>
   <url>
@@ -116,6 +119,12 @@
   </url>
   <url>
     <loc>/reference/disambr_set_tekles_bornmann.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_stats.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_stats_table.html</loc>
   </url>
   <url>
     <loc>/reference/disambr_stop.html</loc>
