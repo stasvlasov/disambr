@@ -65,33 +65,35 @@
   <div class="contents col-md-9">
 
 
-<p><code>disambr</code> is an R <span class="emoji" data-emoji="package">📦</span> that provides a flexible framework for disambiguation of named entities. Currently this package implements the <a href="#org088633c">AEV algorithm</a> (van den Akker et al., 2020) for Web of Science author disambiguation.</p>
+<p><code class="verbatim">disambr</code> is an R <span class="emoji" data-emoji="package">📦</span> that provides a flexible framework for disambiguation of named entities. Currently this package implements the <a href="id:org:dux2eyd1gti0">AEV algorithm</a> (van den Akker et al., 2020) for Web of Science author disambiguation.</p>
 <div class="section level1">
 <div class="page-header"><h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h1></div>
 <p>The idea of basic usage is simply piping the disambiguation procedures. Each procedure takes list of sets as input and returns list of sets either by adding a new set or modifying input list of sets.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>data <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="st">    </span>disambr.get.different.authors <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="st">    </span>disambr.get.similar.initials <span class="op">%&gt;%</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="st">    </span>disambr.get.similar.last.names</span></code></pre></div>
+<div class="sourceCode" id="cb1" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">data</span> <span class="op">%&gt;%</span> 
+    <span class="va">disambr.get.different.authors</span> <span class="op">%&gt;%</span> 
+    <span class="va">disambr.get.similar.initials</span> <span class="op">%&gt;%</span>
+    <span class="va">disambr.get.similar.last.names</span></code></pre></div>
 <p>Sequence (piped functions) of disambiguation procedures defines a disambiguation algorithm.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>disambr.eva &lt;-<span class="st"> </span><span class="cf">function</span>(data) {</span>
-<span id="cb2-2"><a href="#cb2-2"></a>    data <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="st">        </span>disambr.get.different.authors <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="st">        </span>disambr.get.similar.initials <span class="op">%&gt;%</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="st">        </span>disambr.get.similar.last.names</span>
-<span id="cb2-6"><a href="#cb2-6"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb2" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">disambr.eva</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">data</span> <span class="op">%&gt;%</span> 
+        <span class="va">disambr.get.different.authors</span> <span class="op">%&gt;%</span> 
+        <span class="va">disambr.get.similar.initials</span> <span class="op">%&gt;%</span>
+        <span class="va">disambr.get.similar.last.names</span>
+<span class="op">}</span></code></pre></div>
 <p>A procedure can be defined as follows (not implemented). Just an idea.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>disambr.get.different.authors &lt;-<span class="st"> </span><span class="kw">disambr.define.procedure</span>(data <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="st">                                                            </span><span class="kw">get</span>(publication) <span class="op">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="st">                                                            </span>for.each <span class="op">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="st">                                                            </span><span class="kw">get</span>(<span class="dt">person =</span> author))</span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  <span class="co">## or</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  disambr.get.different.authors &lt;-<span class="st"> </span><span class="kw">disambr.define.procedure</span>(data<span class="op">$</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a><span class="st">                                                            </span>publication<span class="op">$</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="st">                                                            </span><span class="kw">person</span>(author))</span></code></pre></div>
-<p><a id="org088633c"></a></p>
+<div class="sourceCode" id="cb3" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">disambr.get.different.authors</span> <span class="op">&lt;-</span> <span class="fu">disambr.define.procedure</span><span class="op">(</span><span class="va">data</span> <span class="op">%&gt;%</span> 
+                                                            <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">publication</span><span class="op">)</span> <span class="op">%&gt;%</span>
+                                                            <span class="va">for.each</span> <span class="op">%&gt;%</span>
+                                                            <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span>person <span class="op">=</span> <span class="va">author</span><span class="op">)</span><span class="op">)</span>
+
+  <span class="co">## or</span>
+  <span class="va">disambr.get.different.authors</span> <span class="op">&lt;-</span> <span class="fu">disambr.define.procedure</span><span class="op">(</span><span class="va">data</span><span class="op">$</span>
+                                                            <span class="va">publication</span><span class="op">$</span>
+                                                            <span class="fu">person</span><span class="op">(</span><span class="va">author</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="implementation-of-eva-algorithm-van-den-akker-et-al-2020">Implementation of EVA algorithm (van den Akker et al., 2020)<a class="anchor" aria-label="anchor" href="#implementation-of-eva-algorithm-van-den-akker-et-al-2020"></a>
@@ -102,47 +104,74 @@
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h1>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">## Installs devtools it if not yet installed</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">require</span>(<span class="st">"devtools"</span>)) {</span>
-<span id="cb4-3"><a href="#cb4-3"></a>    <span class="kw">install.packages</span>(<span class="st">"devtools"</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>                   , <span class="dt">repos =</span> <span class="st">'http://cloud.r-project.org'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5"></a>}</span>
-<span id="cb4-6"><a href="#cb4-6"></a></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="co">## ## Remove old version if installed</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="co">## if (!require("disambr")) {</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="co">##     detach(package:disambr, unload = TRUE)</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a><span class="co">##     remove.packages("disambr")</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="co">## }</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a></span>
-<span id="cb4-13"><a href="#cb4-13"></a><span class="co">## Installs and loads disambr</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"stasvlasov/disambr"</span>)</span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="kw">library</span>(<span class="st">"disambr"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Installs devtools it if not yet installed</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span>
+                   , repos <span class="op">=</span> <span class="st">'http://cloud.r-project.org'</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="co">## ## Remove old version if installed</span>
+<span class="co">## if (!require("disambr")) {</span>
+<span class="co">##     detach(package:disambr, unload = TRUE)</span>
+<span class="co">##     remove.packages("disambr")</span>
+<span class="co">## }</span>
+
+<span class="co">## Installs and loads disambr</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"stasvlasov/disambr"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/stasvlasov/disambr" class="external-link">"disambr"</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="sets-attributes">Sets attributes<a class="anchor" aria-label="anchor" href="#sets-attributes"></a>
 </h1>
-<p>All disambiguation procedures used in <code>disambr</code> package work with sets. A set is basically any R object that can represent <a href="https://en.wikipedia.org/wiki/Set_(mathematics)" class="external-link">mathematical sets</a> (e.g., set of authors, set of companies) with special attributes that are used by <code>disabmr</code> functions to identify the kind of set it is working with or produce (e.g., a set of authors that are likely to be the same person, a set of companies that are definitely different companies, etc.).</p>
+<p>All disambiguation procedures used in <code class="verbatim">disambr</code> package work with sets. A set is basically any R object that can represent <a href="https://en.wikipedia.org/wiki/Set_(mathematics)" class="external-link">mathematical sets</a> (e.g., set of authors, set of companies) with special attributes that are used by <code class="verbatim">disabmr</code> functions to identify the kind of set it is working with or produce (e.g., a set of authors that are likely to be the same person, a set of companies that are definitely different companies, etc.).</p>
 <p>The attributes that are currently used to define/describe set as well as their values are listed below:</p>
-<ul>
+<dl>
+<dt>disambr<sub>entity</sub>
+</dt>
+<dd><ul>
 <li>
-<strong>disambr<sub>entity</sub>:</strong> - <em>person</em>, <em>organization</em>, <em>publication</em>
+<em>person</em>, <em>organization</em>, <em>publication</em>
 </li>
+</ul></dd>
+<dt>disambr<sub>settype</sub>
+</dt>
+<dd><ul>
 <li>
-<strong>disambr<sub>set</sub><sub>type</sub>:</strong> - <em>similar<sub>entities</sub></em>, <em>different<sub>entities</sub></em>
+<em>similar<sub>entities</sub></em>, <em>different<sub>entities</sub></em>
 </li>
+</ul></dd>
+<dt>disambr<sub>setcoefficient</sub>
+</dt>
+<dd><ul>
+<li>number between 0 and 1 indicating how strongly entities are similar or different from each other. It is use only for establishing order of sets processing (e.g., start with sets of least similar entities)</li>
+</ul></dd>
+<dt>disambr<sub>setname</sub>
+</dt>
+<dd><ul>
+<li>string name of the set</li>
+</ul></dd>
+<dt>disambr<sub>setcollection</sub>
+</dt>
+<dd><ul>
 <li>
-<strong>disambr<sub>set</sub><sub>coefficient</sub>:</strong> - number between 0 and 1 indicating how strongly entities are similar or different from each other. It is use only for establishing order of sets processing (e.g., start with sets of least similar entities)</li>
+<em>single<sub>settable</sub></em> (first column assumed to store entity id or entity id is just row number if <code class="verbatim">entity_id_reference</code> attribute is set to <em>self</em>, see below), <em>list<sub>ofsetsaslists</sub></em> (each set is a list of entity ids), <em>dyads<sub>table</sub></em> (first and second columns assumed to be ids for the pair of entities)</li>
+</ul></dd>
+<dt>disambr<sub>entityidreference</sub>
+</dt>
+<dd><ul>
 <li>
-<strong>disambr<sub>set</sub><sub>name</sub>:</strong> - string name of the set</li>
-<li>
-<strong>disambr<sub>set</sub><sub>collection</sub>:</strong> - <em>single<sub>set</sub><sub>table</sub></em> (first column assumed to store entity id or entity id is just row number if <code>entity_id_reference</code> attribute is set to <em>self</em>, see below), <em>list<sub>of</sub><sub>sets</sub><sub>as</sub><sub>lists</sub></em> (each set is a list of entity ids), <em>dyads<sub>table</sub></em> (first and second columns assumed to be ids for the pair of entities)</li>
-<li>
-<strong>disambr<sub>entity</sub><sub>id</sub><sub>reference</sub>:</strong> - <em>self</em>, name of other set as in its <code>set_name</code> attribute</li>
-<li>
-<strong>disambr<sub>entity</sub><sub>id</sub><sub>reference</sub><sub>md5</sub><sub>sum</sub>:</strong> - md5 cache sum of the object where entities ids are referring to ensure that we will get to correct data for entities in the set.</li>
-<li>
-<strong>disambr<sub>recipe</sub>:</strong> - list of <code>disambr</code> procedures that were applied to produce given set(s)
-<ul>
+<em>self</em>, name of other set as in its <code class="verbatim">set_name</code> attribute</li>
+</ul></dd>
+<dt>disambr<sub>entityidreferencemd5sum</sub>
+</dt>
+<dd><ul>
+<li>md5 cache sum of the object where entities ids are referring to ensure that we will get to correct data for entities in the set.</li>
+</ul></dd>
+<dt>disambr<sub>recipe</sub>
+</dt>
+<dd><ul>
+<li>list of <code class="verbatim">disambr</code> procedures that were applied to produce given set(s)</li>
 <li>if it is a named list then first item is procedure name and the rest are properties:
 <ul>
 <li><em>procedure</em></li>
@@ -153,9 +182,8 @@
 <em>file<sub>header</sub></em> (to check for consistency between read files)</li>
 </ul>
 </li>
-</ul>
-</li>
-</ul>
+</ul></dd>
+</dl>
 </div>
 <div class="section level1">
 <h1 id="overall-design-principles">Overall design principles<a class="anchor" aria-label="anchor" href="#overall-design-principles"></a>
@@ -174,7 +202,7 @@
 <ul>
 <li>All functions should have a verb</li>
 <li>Variables should not have a verb</li>
-<li>Everything that is available to user should start with “disambr_” (i.e., package name)</li>
+<li>Everything that is available to user should start with "disambr_" (i.e., package name)</li>
 <li>Internal functions and variables does not have to have this prefix</li>
 <li>Use mainstream coding style guides everywhere where possible
 <ul>
@@ -189,615 +217,309 @@
 <h1 id="web-of-science-field-tags-2018-06-27">Web of Science Field Tags 2018-06-27<a class="anchor" aria-label="anchor" href="#web-of-science-field-tags-2018-06-27"></a>
 </h1>
 <p><a href="https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Science-Core-Collection-List-of-field-tags-in-output?language=en_US" class="external-link uri">https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Science-Core-Collection-List-of-field-tags-in-output?language=en_US</a></p>
-<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides" class="table">
-<colgroup>
-<col class="org-left">
-<col class="org-left">
-</colgroup>
-<tbody>
-<tr>
-<td class="org-left">
-FN
-</td>
-<td class="org-left">
-File Name
-</td>
-</tr>
-<tr>
-<td class="org-left">
-VR
-</td>
-<td class="org-left">
-Version Number
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PT
-</td>
-<td class="org-left">
-Publication Type (J=Journal; B=Book; S=Series; P=Patent)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-AU
-</td>
-<td class="org-left">
-Authors
-</td>
-</tr>
-<tr>
-<td class="org-left">
-AF
-</td>
-<td class="org-left">
-Author Full Name
-</td>
-</tr>
-<tr>
-<td class="org-left">
-BA
-</td>
-<td class="org-left">
-Book Authors
-</td>
-</tr>
-<tr>
-<td class="org-left">
-BF
-</td>
-<td class="org-left">
-Book Authors Full Name
-</td>
-</tr>
-<tr>
-<td class="org-left">
-CA
-</td>
-<td class="org-left">
-Group Authors
-</td>
-</tr>
-<tr>
-<td class="org-left">
-GP
-</td>
-<td class="org-left">
-Book Group Authors
-</td>
-</tr>
-<tr>
-<td class="org-left">
-BE
-</td>
-<td class="org-left">
-Editors
-</td>
-</tr>
-<tr>
-<td class="org-left">
-TI
-</td>
-<td class="org-left">
-Document Title
-</td>
-</tr>
-<tr>
-<td class="org-left">
-SO
-</td>
-<td class="org-left">
-Publication Name
-</td>
-</tr>
-<tr>
-<td class="org-left">
-SE
-</td>
-<td class="org-left">
-Book Series Title
-</td>
-</tr>
-<tr>
-<td class="org-left">
-BS
-</td>
-<td class="org-left">
-Book Series Subtitle
-</td>
-</tr>
-<tr>
-<td class="org-left">
-LA
-</td>
-<td class="org-left">
-Language
-</td>
-</tr>
-<tr>
-<td class="org-left">
-DT
-</td>
-<td class="org-left">
-Document Type
-</td>
-</tr>
-<tr>
-<td class="org-left">
-CT
-</td>
-<td class="org-left">
-Conference Title
-</td>
-</tr>
-<tr>
-<td class="org-left">
-CY
-</td>
-<td class="org-left">
-Conference Date
-</td>
-</tr>
-<tr>
-<td class="org-left">
-CL
-</td>
-<td class="org-left">
-Conference Location
-</td>
-</tr>
-<tr>
-<td class="org-left">
-SP
-</td>
-<td class="org-left">
-Conference Sponsors
-</td>
-</tr>
-<tr>
-<td class="org-left">
-HO
-</td>
-<td class="org-left">
-Conference Host
-</td>
-</tr>
-<tr>
-<td class="org-left">
-DE
-</td>
-<td class="org-left">
-Author Keywords
-</td>
-</tr>
-<tr>
-<td class="org-left">
-ID
-</td>
-<td class="org-left">
-Keywords Plus®
-</td>
-</tr>
-<tr>
-<td class="org-left">
-AB
-</td>
-<td class="org-left">
-Abstract
-</td>
-</tr>
-<tr>
-<td class="org-left">
-C1
-</td>
-<td class="org-left">
-Author Address
-</td>
-</tr>
-<tr>
-<td class="org-left">
-RP
-</td>
-<td class="org-left">
-Reprint Address
-</td>
-</tr>
-<tr>
-<td class="org-left">
-EM
-</td>
-<td class="org-left">
-E-mail Address
-</td>
-</tr>
-<tr>
-<td class="org-left">
-RI
-</td>
-<td class="org-left">
-ResearcherID Number
-</td>
-</tr>
-<tr>
-<td class="org-left">
-OI
-</td>
-<td class="org-left">
-ORCID Identifier (Open Researcher and Contributor ID)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-FU
-</td>
-<td class="org-left">
-Funding Agency and Grant Number
-</td>
-</tr>
-<tr>
-<td class="org-left">
-FX
-</td>
-<td class="org-left">
-Funding Text
-</td>
-</tr>
-<tr>
-<td class="org-left">
-CR
-</td>
-<td class="org-left">
-Cited References
-</td>
-</tr>
-<tr>
-<td class="org-left">
-NR
-</td>
-<td class="org-left">
-Cited Reference Count
-</td>
-</tr>
-<tr>
-<td class="org-left">
-TC
-</td>
-<td class="org-left">
-Web of Science Core Collection Times Cited Count
-</td>
-</tr>
-<tr>
-<td class="org-left">
-Z9
-</td>
-<td class="org-left">
-Total Times Cited Count*
-</td>
-</tr>
-<tr>
-<td class="org-left">
-U1
-</td>
-<td class="org-left">
-Usage Count (Last 180 Days)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-U2
-</td>
-<td class="org-left">
-Usage Count (Since 2013)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PU
-</td>
-<td class="org-left">
-Publisher
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PI
-</td>
-<td class="org-left">
-Publisher City
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PA
-</td>
-<td class="org-left">
-Publisher Address
-</td>
-</tr>
-<tr>
-<td class="org-left">
-SN
-</td>
-<td class="org-left">
-International Standard Serial Number (ISSN)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-EI
-</td>
-<td class="org-left">
-Electronic International Standard Serial Number (eISSN)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-BN
-</td>
-<td class="org-left">
-International Standard Book Number (ISBN)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-J9
-</td>
-<td class="org-left">
-29-Character Source Abbreviation
-</td>
-</tr>
-<tr>
-<td class="org-left">
-JI
-</td>
-<td class="org-left">
-ISO Source Abbreviation
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PD
-</td>
-<td class="org-left">
-Publication Date
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PY
-</td>
-<td class="org-left">
-Year Published
-</td>
-</tr>
-<tr>
-<td class="org-left">
-VL
-</td>
-<td class="org-left">
-Volume
-</td>
-</tr>
-<tr>
-<td class="org-left">
-IS
-</td>
-<td class="org-left">
-Issue
-</td>
-</tr>
-<tr>
-<td class="org-left">
-SI
-</td>
-<td class="org-left">
-Special Issue
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PN
-</td>
-<td class="org-left">
-Part Number
-</td>
-</tr>
-<tr>
-<td class="org-left">
-SU
-</td>
-<td class="org-left">
-Supplement
-</td>
-</tr>
-<tr>
-<td class="org-left">
-MA
-</td>
-<td class="org-left">
-Meeting Abstract
-</td>
-</tr>
-<tr>
-<td class="org-left">
-BP
-</td>
-<td class="org-left">
-Beginning Page
-</td>
-</tr>
-<tr>
-<td class="org-left">
-EP
-</td>
-<td class="org-left">
-Ending Page
-</td>
-</tr>
-<tr>
-<td class="org-left">
-AR
-</td>
-<td class="org-left">
-Article Number
-</td>
-</tr>
-<tr>
-<td class="org-left">
-DI
-</td>
-<td class="org-left">
-Digital Object Identifier (DOI)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-D2
-</td>
-<td class="org-left">
-Book Digital Object Identifier (DOI)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PG
-</td>
-<td class="org-left">
-Page Count
-</td>
-</tr>
-<tr>
-<td class="org-left">
-P2
-</td>
-<td class="org-left">
-Chapter Count (Book Citation Index)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-WC
-</td>
-<td class="org-left">
-Web of Science Categories
-</td>
-</tr>
-<tr>
-<td class="org-left">
-SC
-</td>
-<td class="org-left">
-Research Areas
-</td>
-</tr>
-<tr>
-<td class="org-left">
-GA
-</td>
-<td class="org-left">
-Document Delivery Number
-</td>
-</tr>
-<tr>
-<td class="org-left">
-UT
-</td>
-<td class="org-left">
-Accession Number
-</td>
-</tr>
-<tr>
-<td class="org-left">
-PM
-</td>
-<td class="org-left">
-PubMed ID
-</td>
-</tr>
-<tr>
-<td class="org-left">
-ER
-</td>
-<td class="org-left">
-End of Record
-</td>
-</tr>
-<tr>
-<td class="org-left">
-EF
-</td>
-<td class="org-left">
-End of File
-</td>
-</tr>
-</tbody>
-</table>
+<table class="table"><tbody>
+<tr class="odd">
+<td align="left">FN</td>
+<td align="left">File Name</td>
+</tr>
+<tr class="even">
+<td align="left">VR</td>
+<td align="left">Version Number</td>
+</tr>
+<tr class="odd">
+<td align="left">PT</td>
+<td align="left">Publication Type (J=Journal; B=Book; S=Series; P=Patent)</td>
+</tr>
+<tr class="even">
+<td align="left">AU</td>
+<td align="left">Authors</td>
+</tr>
+<tr class="odd">
+<td align="left">AF</td>
+<td align="left">Author Full Name</td>
+</tr>
+<tr class="even">
+<td align="left">BA</td>
+<td align="left">Book Authors</td>
+</tr>
+<tr class="odd">
+<td align="left">BF</td>
+<td align="left">Book Authors Full Name</td>
+</tr>
+<tr class="even">
+<td align="left">CA</td>
+<td align="left">Group Authors</td>
+</tr>
+<tr class="odd">
+<td align="left">GP</td>
+<td align="left">Book Group Authors</td>
+</tr>
+<tr class="even">
+<td align="left">BE</td>
+<td align="left">Editors</td>
+</tr>
+<tr class="odd">
+<td align="left">TI</td>
+<td align="left">Document Title</td>
+</tr>
+<tr class="even">
+<td align="left">SO</td>
+<td align="left">Publication Name</td>
+</tr>
+<tr class="odd">
+<td align="left">SE</td>
+<td align="left">Book Series Title</td>
+</tr>
+<tr class="even">
+<td align="left">BS</td>
+<td align="left">Book Series Subtitle</td>
+</tr>
+<tr class="odd">
+<td align="left">LA</td>
+<td align="left">Language</td>
+</tr>
+<tr class="even">
+<td align="left">DT</td>
+<td align="left">Document Type</td>
+</tr>
+<tr class="odd">
+<td align="left">CT</td>
+<td align="left">Conference Title</td>
+</tr>
+<tr class="even">
+<td align="left">CY</td>
+<td align="left">Conference Date</td>
+</tr>
+<tr class="odd">
+<td align="left">CL</td>
+<td align="left">Conference Location</td>
+</tr>
+<tr class="even">
+<td align="left">SP</td>
+<td align="left">Conference Sponsors</td>
+</tr>
+<tr class="odd">
+<td align="left">HO</td>
+<td align="left">Conference Host</td>
+</tr>
+<tr class="even">
+<td align="left">DE</td>
+<td align="left">Author Keywords</td>
+</tr>
+<tr class="odd">
+<td align="left">ID</td>
+<td align="left">Keywords Plus®</td>
+</tr>
+<tr class="even">
+<td align="left">AB</td>
+<td align="left">Abstract</td>
+</tr>
+<tr class="odd">
+<td align="left">C1</td>
+<td align="left">Author Address</td>
+</tr>
+<tr class="even">
+<td align="left">RP</td>
+<td align="left">Reprint Address</td>
+</tr>
+<tr class="odd">
+<td align="left">EM</td>
+<td align="left">E-mail Address</td>
+</tr>
+<tr class="even">
+<td align="left">RI</td>
+<td align="left">ResearcherID Number</td>
+</tr>
+<tr class="odd">
+<td align="left">OI</td>
+<td align="left">ORCID Identifier (Open Researcher and Contributor ID)</td>
+</tr>
+<tr class="even">
+<td align="left">FU</td>
+<td align="left">Funding Agency and Grant Number</td>
+</tr>
+<tr class="odd">
+<td align="left">FX</td>
+<td align="left">Funding Text</td>
+</tr>
+<tr class="even">
+<td align="left">CR</td>
+<td align="left">Cited References</td>
+</tr>
+<tr class="odd">
+<td align="left">NR</td>
+<td align="left">Cited Reference Count</td>
+</tr>
+<tr class="even">
+<td align="left">TC</td>
+<td align="left">Web of Science Core Collection Times Cited Count</td>
+</tr>
+<tr class="odd">
+<td align="left">Z9</td>
+<td align="left">Total Times Cited Count*</td>
+</tr>
+<tr class="even">
+<td align="left">U1</td>
+<td align="left">Usage Count (Last 180 Days)</td>
+</tr>
+<tr class="odd">
+<td align="left">U2</td>
+<td align="left">Usage Count (Since 2013)</td>
+</tr>
+<tr class="even">
+<td align="left">PU</td>
+<td align="left">Publisher</td>
+</tr>
+<tr class="odd">
+<td align="left">PI</td>
+<td align="left">Publisher City</td>
+</tr>
+<tr class="even">
+<td align="left">PA</td>
+<td align="left">Publisher Address</td>
+</tr>
+<tr class="odd">
+<td align="left">SN</td>
+<td align="left">International Standard Serial Number (ISSN)</td>
+</tr>
+<tr class="even">
+<td align="left">EI</td>
+<td align="left">Electronic International Standard Serial Number (eISSN)</td>
+</tr>
+<tr class="odd">
+<td align="left">BN</td>
+<td align="left">International Standard Book Number (ISBN)</td>
+</tr>
+<tr class="even">
+<td align="left">J9</td>
+<td align="left">29-Character Source Abbreviation</td>
+</tr>
+<tr class="odd">
+<td align="left">JI</td>
+<td align="left">ISO Source Abbreviation</td>
+</tr>
+<tr class="even">
+<td align="left">PD</td>
+<td align="left">Publication Date</td>
+</tr>
+<tr class="odd">
+<td align="left">PY</td>
+<td align="left">Year Published</td>
+</tr>
+<tr class="even">
+<td align="left">VL</td>
+<td align="left">Volume</td>
+</tr>
+<tr class="odd">
+<td align="left">IS</td>
+<td align="left">Issue</td>
+</tr>
+<tr class="even">
+<td align="left">SI</td>
+<td align="left">Special Issue</td>
+</tr>
+<tr class="odd">
+<td align="left">PN</td>
+<td align="left">Part Number</td>
+</tr>
+<tr class="even">
+<td align="left">SU</td>
+<td align="left">Supplement</td>
+</tr>
+<tr class="odd">
+<td align="left">MA</td>
+<td align="left">Meeting Abstract</td>
+</tr>
+<tr class="even">
+<td align="left">BP</td>
+<td align="left">Beginning Page</td>
+</tr>
+<tr class="odd">
+<td align="left">EP</td>
+<td align="left">Ending Page</td>
+</tr>
+<tr class="even">
+<td align="left">AR</td>
+<td align="left">Article Number</td>
+</tr>
+<tr class="odd">
+<td align="left">DI</td>
+<td align="left">Digital Object Identifier (DOI)</td>
+</tr>
+<tr class="even">
+<td align="left">D2</td>
+<td align="left">Book Digital Object Identifier (DOI)</td>
+</tr>
+<tr class="odd">
+<td align="left">PG</td>
+<td align="left">Page Count</td>
+</tr>
+<tr class="even">
+<td align="left">P2</td>
+<td align="left">Chapter Count (Book Citation Index)</td>
+</tr>
+<tr class="odd">
+<td align="left">WC</td>
+<td align="left">Web of Science Categories</td>
+</tr>
+<tr class="even">
+<td align="left">SC</td>
+<td align="left">Research Areas</td>
+</tr>
+<tr class="odd">
+<td align="left">GA</td>
+<td align="left">Document Delivery Number</td>
+</tr>
+<tr class="even">
+<td align="left">UT</td>
+<td align="left">Accession Number</td>
+</tr>
+<tr class="odd">
+<td align="left">PM</td>
+<td align="left">PubMed ID</td>
+</tr>
+<tr class="even">
+<td align="left">ER</td>
+<td align="left">End of Record</td>
+</tr>
+<tr class="odd">
+<td align="left">EF</td>
+<td align="left">End of File</td>
+</tr>
+</tbody></table>
 </div>
 <div class="section level1">
 <h1 id="existing-tools-for-reading-wos-data">Existing tools for reading WoS data<a class="anchor" aria-label="anchor" href="#existing-tools-for-reading-wos-data"></a>
 </h1>
-<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides" class="table">
-<colgroup>
-<col class="org-left">
-<col class="org-left">
-</colgroup>
-<thead><tr>
-<th scope="col" class="org-left">
-name
-</th>
-<th scope="col" class="org-left">
-comments
-</th>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">comments</th>
 </tr></thead>
 <tbody>
-<tr>
-<td class="org-left">
-bibliometrix
-</td>
-<td class="org-left">
-reads only plaintext format into bibliometrixDB object
-</td>
+<tr class="odd">
+<td align="left">bibliometrix</td>
+<td align="left">reads only plaintext format into bibliometrixDB object</td>
 </tr>
-<tr>
-<td class="org-left">
-wosr
-</td>
-<td class="org-left">
-Requires WoS API subscription
-</td>
+<tr class="even">
+<td align="left">wosr</td>
+<td align="left">Requires WoS API subscription</td>
 </tr>
-<tr>
-<td class="org-left">
-refsplitr
-</td>
-<td class="org-left">
-package ‘refsplitr’ is not available (for R version 4.0.1)
-</td>
+<tr class="odd">
+<td align="left">refsplitr</td>
+<td align="left">package ‘refsplitr’ is not available (for R version 4.0.1)</td>
 </tr>
-<tr>
-<td class="org-left">
-read.wos.R
-</td>
-<td class="org-left">
-Does not work…
-</td>
+<tr class="even">
+<td align="left">read.wos.R</td>
+<td align="left">Does not work…</td>
 </tr>
-<tr>
-<td class="org-left">
-metagear
-</td>
-<td class="org-left">
-scrape<sub>bibliography</sub> by DOI
-</td>
+<tr class="odd">
+<td align="left">metagear</td>
+<td align="left">scrape<sub>bibliography</sub> by DOI</td>
 </tr>
-<tr>
-<td class="org-left">
-hindexcalculator
-</td>
-<td class="org-left">
-?
-</td>
+<tr class="even">
+<td align="left">hindexcalculator</td>
+<td align="left">?</td>
 </tr>
 </tbody>
 </table>
@@ -806,32 +528,32 @@ hindexcalculator
 </h2>
 <p><a href="https://github.com/massimoaria/bibliometrix" class="external-link uri">https://github.com/massimoaria/bibliometrix</a></p>
 <p>Site: <a href="https://bibliometrix.org/index.html" class="external-link uri">https://bibliometrix.org/index.html</a></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>git clone https<span class="op">:</span><span class="er">//</span>github.com<span class="op">/</span>massimoaria<span class="op">/</span>bibliometrix</span>
-<span id="cb5-2"><a href="#cb5-2"></a></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">install.packages</span>(<span class="st">"bibliometrix"</span>)</span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">library</span>(<span class="st">"bibliometrix"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">library</span>(<span class="st">"magrittr"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a></span>
-<span id="cb5-8"><a href="#cb5-8"></a>bmdata &lt;-<span class="st"> </span><span class="kw">convert2df</span>(<span class="dt">file =</span> <span class="st">'https://www.bibliometrix.org/datasets/wos_plaintext.txt'</span>, <span class="dt">dbsource =</span> <span class="st">'wos'</span>, <span class="dt">format =</span> <span class="st">"plaintext"</span>)</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a></span>
-<span id="cb5-11"><a href="#cb5-11"></a>bmdata <span class="op">%&gt;%</span><span class="st"> </span>class</span>
-<span id="cb5-12"><a href="#cb5-12"></a><span class="co">## [1] "data.frame"     "bibliometrixDB"</span></span>
-<span id="cb5-13"><a href="#cb5-13"></a></span>
-<span id="cb5-14"><a href="#cb5-14"></a>bmdata <span class="op">%&gt;%</span><span class="st"> </span>names</span>
-<span id="cb5-15"><a href="#cb5-15"></a></span>
-<span id="cb5-16"><a href="#cb5-16"></a></span>
-<span id="cb5-17"><a href="#cb5-17"></a>bmdata &lt;-<span class="st"> </span><span class="kw">convert2df</span>(<span class="dt">file =</span> <span class="st">'https://www.bibliometrix.org/datasets/wos_plaintext.txt'</span>, <span class="dt">dbsource =</span> <span class="st">'wos'</span>, <span class="dt">format =</span> <span class="st">"csv"</span>)</span></code></pre></div>
+<pre class="shell"><code>git clone https://github.com/massimoaria/bibliometrix</code></pre>
+<div class="sourceCode" id="cb6" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"bibliometrix"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://www.bibliometrix.org" class="external-link">"bibliometrix"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://magrittr.tidyverse.org" class="external-link">"magrittr"</a></span><span class="op">)</span>
+
+
+<span class="va">bmdata</span> <span class="op">&lt;-</span> <span class="fu">convert2df</span><span class="op">(</span>file <span class="op">=</span> <span class="st">'https://www.bibliometrix.org/datasets/wos_plaintext.txt'</span>, dbsource <span class="op">=</span> <span class="st">'wos'</span>, format <span class="op">=</span> <span class="st">"plaintext"</span><span class="op">)</span>
+
+
+<span class="va">bmdata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">class</span>
+<span class="co">## [1] "data.frame"     "bibliometrixDB"</span>
+
+<span class="va">bmdata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">names</span>
+
+
+<span class="va">bmdata</span> <span class="op">&lt;-</span> <span class="fu">convert2df</span><span class="op">(</span>file <span class="op">=</span> <span class="st">'https://www.bibliometrix.org/datasets/wos_plaintext.txt'</span>, dbsource <span class="op">=</span> <span class="st">'wos'</span>, format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="metagear">metagear<a class="anchor" aria-label="anchor" href="#metagear"></a>
 </h2>
 <p>CRAN docs: <a href="https://cran.r-project.org/web/packages/metagear/metagear.pdf" class="external-link uri">https://cran.r-project.org/web/packages/metagear/metagear.pdf</a></p>
 <p>GitHub: <a href="https://github.com/cran/metagear/" class="external-link uri">https://github.com/cran/metagear/</a></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>git clone https<span class="op">:</span><span class="er">//</span>github.com<span class="op">/</span>cran<span class="op">/</span>metagear<span class="op">/</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a>scrape_bibliography</span></code></pre></div>
+<pre class="shell"><code>git clone https://github.com/cran/metagear/</code></pre>
+<div class="sourceCode" id="cb8" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scrape_bibliography</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="bibplots">BibPlots<a class="anchor" aria-label="anchor" href="#bibplots"></a>
@@ -847,10 +569,10 @@ hindexcalculator
 <div class="section level2">
 <h2 id="refsplitr">refsplitr<a class="anchor" aria-label="anchor" href="#refsplitr"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>git clone https<span class="op">:</span><span class="er">//</span>github.com<span class="op">/</span>ropensci<span class="op">/</span>refsplitr</span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">install.packages</span>(<span class="st">"refsplitr"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">library</span>(<span class="st">"refsplitr"</span>)</span></code></pre></div>
+<pre class="shell"><code>git clone https://github.com/ropensci/refsplitr</code></pre>
+<div class="sourceCode" id="cb10" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"refsplitr"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"refsplitr"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="wosr">wosr<a class="anchor" aria-label="anchor" href="#wosr"></a>
@@ -859,50 +581,50 @@ hindexcalculator
 <p>CRAN doc: <a href="https://cran.r-project.org/web/packages/wosr/wosr.pdf" class="external-link uri">https://cran.r-project.org/web/packages/wosr/wosr.pdf</a></p>
 <p>Site: <a href="https://github.com/vt-arc/wosr" class="external-link uri">https://github.com/vt-arc/wosr</a></p>
 <p>GitHub: <a href="https://github.com/vt-arc/wosr" class="external-link uri">https://github.com/vt-arc/wosr</a></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>git clone https<span class="op">:</span><span class="er">//</span>github.com<span class="op">/</span>vt<span class="op">-</span>arc<span class="op">/</span>wosr</span>
-<span id="cb8-2"><a href="#cb8-2"></a></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">install.packages</span>(<span class="st">"wosr"</span>)</span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">library</span>(wosr)</span>
-<span id="cb8-5"><a href="#cb8-5"></a></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="co">## Get session ID</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a>sid &lt;-<span class="st"> </span><span class="kw">auth</span>(<span class="st">"s.vlasov@tilburguniversity.edu"</span>, <span class="dt">password =</span> <span class="st">""</span>)</span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co">## Error: No matches returned for Username s.vlasov@tilburguniversity.edu</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="co">## Query WoS to see how many results match your query</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a>query &lt;-<span class="st"> 'TS = ("animal welfare") AND PY = (2002-2003)'</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a><span class="kw">query_wos</span>(query, <span class="dt">sid =</span> sid)</span>
-<span id="cb8-13"><a href="#cb8-13"></a></span>
-<span id="cb8-14"><a href="#cb8-14"></a><span class="co">## Download data</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a><span class="kw">pull_wos</span>(query, <span class="dt">sid =</span> sid)</span></code></pre></div>
+<pre class="shell"><code>git clone https://github.com/vt-arc/wosr</code></pre>
+<div class="sourceCode" id="cb12" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"wosr"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://vt-arc.github.io/wosr/index.html" class="external-link">wosr</a></span><span class="op">)</span>
+
+<span class="co">## Get session ID</span>
+<span class="va">sid</span> <span class="op">&lt;-</span> <span class="fu">auth</span><span class="op">(</span><span class="st">"s.vlasov@tilburguniversity.edu"</span>, password <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
+<span class="co">## Error: No matches returned for Username s.vlasov@tilburguniversity.edu</span>
+
+<span class="co">## Query WoS to see how many results match your query</span>
+<span class="va">query</span> <span class="op">&lt;-</span> <span class="st">'TS = ("animal welfare") AND PY = (2002-2003)'</span>
+<span class="fu">query_wos</span><span class="op">(</span><span class="va">query</span>, sid <span class="op">=</span> <span class="va">sid</span><span class="op">)</span>
+
+<span class="co">## Download data</span>
+<span class="fu">pull_wos</span><span class="op">(</span><span class="va">query</span>, sid <span class="op">=</span> <span class="va">sid</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="readwosr">read.wos.R<a class="anchor" aria-label="anchor" href="#readwosr"></a>
 </h2>
 <p>GitHub: <a href="https://github.com/alberto-martin/read.wos.R" class="external-link uri">https://github.com/alberto-martin/read.wos.R</a></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>git clone https<span class="op">:</span><span class="er">//</span>github.com<span class="op">/</span>alberto<span class="op">-</span>martin<span class="op">/</span>read.wos.R</span>
-<span id="cb9-2"><a href="#cb9-2"></a></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="co">## load functions</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="co">## --------------------------------------------------------------------------------</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="kw">source</span>(<span class="st">"../lib/read.wos.R/read.wos.functions.R"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="co">## --------------------------------------------------------------------------------</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a></span>
-<span id="cb9-8"><a href="#cb9-8"></a></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="co">## test</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a></span>
-<span id="cb9-11"><a href="#cb9-11"></a>wos.data.mp &lt;-<span class="st"> </span><span class="kw">read.wos</span>(<span class="kw">dir</span>(<span class="st">"../data/Journals in Mathematical Psychology"</span>, <span class="dt">no.. =</span> <span class="ot">TRUE</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>))</span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="co">## Error in substring(fields, 4) : invalid multibyte string at '&lt;ff&gt;&lt;fe&gt;P'</span></span>
-<span id="cb9-13"><a href="#cb9-13"></a><span class="co">## In addition: Warning message:</span></span>
-<span id="cb9-14"><a href="#cb9-14"></a><span class="co">## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a></span>
-<span id="cb9-16"><a href="#cb9-16"></a>wos.data.mp &lt;-<span class="st"> </span><span class="kw">read.wos</span>(<span class="st">"../data/Journals in Mathematical Psychology/Psychonomic Bulletin &amp; Review 2.txt"</span>)</span>
-<span id="cb9-17"><a href="#cb9-17"></a><span class="co">## Error in substring(fields, 4) : invalid multibyte string at '&lt;ff&gt;&lt;fe&gt;P'</span></span>
-<span id="cb9-18"><a href="#cb9-18"></a><span class="co">## In addition: Warning message:</span></span>
-<span id="cb9-19"><a href="#cb9-19"></a><span class="co">## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul</span></span>
-<span id="cb9-20"><a href="#cb9-20"></a></span>
-<span id="cb9-21"><a href="#cb9-21"></a>wos.data &lt;-<span class="st"> </span><span class="kw">read.wos</span>(<span class="st">"/mnt/md5/data/wos/wos-sci-expanded.firm-names-query.analytical-instruments/LN Public NAICS records from 10001 to 10500.txt"</span>)</span>
-<span id="cb9-22"><a href="#cb9-22"></a><span class="co">## Error in substring(fields, 4) : invalid multibyte string at '&lt;ff&gt;&lt;fe&gt;P'</span></span>
-<span id="cb9-23"><a href="#cb9-23"></a><span class="co">## In addition: Warning message:</span></span>
-<span id="cb9-24"><a href="#cb9-24"></a><span class="co">## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul</span></span></code></pre></div>
+<pre class="shell"><code>git clone https://github.com/alberto-martin/read.wos.R</code></pre>
+<div class="sourceCode" id="cb14" org-language="R"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## load functions</span>
+<span class="co">## --------------------------------------------------------------------------------</span>
+<span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"../lib/read.wos.R/read.wos.functions.R"</span><span class="op">)</span>
+<span class="co">## --------------------------------------------------------------------------------</span>
+
+
+<span class="co">## test</span>
+
+<span class="va">wos.data.mp</span> <span class="op">&lt;-</span> <span class="fu">read.wos</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="st">"../data/Journals in Mathematical Psychology"</span>, no.. <span class="op">=</span> <span class="cn">TRUE</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+<span class="co">## Error in substring(fields, 4) : invalid multibyte string at '&lt;ff&gt;&lt;fe&gt;P'</span>
+<span class="co">## In addition: Warning message:</span>
+<span class="co">## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul</span>
+
+<span class="va">wos.data.mp</span> <span class="op">&lt;-</span> <span class="fu">read.wos</span><span class="op">(</span><span class="st">"../data/Journals in Mathematical Psychology/Psychonomic Bulletin &amp; Review 2.txt"</span><span class="op">)</span>
+<span class="co">## Error in substring(fields, 4) : invalid multibyte string at '&lt;ff&gt;&lt;fe&gt;P'</span>
+<span class="co">## In addition: Warning message:</span>
+<span class="co">## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul</span>
+
+<span class="va">wos.data</span> <span class="op">&lt;-</span> <span class="fu">read.wos</span><span class="op">(</span><span class="st">"/mnt/md5/data/wos/wos-sci-expanded.firm-names-query.analytical-instruments/LN Public NAICS records from 10001 to 10500.txt"</span><span class="op">)</span>
+<span class="co">## Error in substring(fields, 4) : invalid multibyte string at '&lt;ff&gt;&lt;fe&gt;P'</span>
+<span class="co">## In addition: Warning message:</span>
+<span class="co">## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul</span></code></pre></div>
 </div>
 </div>
 <div class="section level1">
