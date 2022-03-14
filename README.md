@@ -45,7 +45,11 @@ disambr.get.different.authors <- disambr.define.procedure(data %>%
                                                             person(author))
 ```
 
-# Implementation of EVA algorithm (van den Akker et al., 2020)
+# Implementation
+
+**The EVA-algorithm: An open-source solution for the disambiguation of
+author names in Web of Science data** Olmo R. van den Akker Sacha
+Epskamp Stanislav Vlasov
 
 The creation of co-authorship networks is a valuable way to depict the
 social structure of scientific fields. However, these co-authorship
@@ -104,53 +108,41 @@ companies, etc.).
 The attributes that are currently used to define/describe set as well as
 their values are listed below:
 
-disambr~entity~
-
-:   -   *person*, *organization*, *publication*
-
-disambr~settype~
-
-:   -   *similar~entities~*, *different~entities~*
-
-disambr~setcoefficient~
-
-:   -   number between 0 and 1 indicating how strongly entities are
+-   `disambr_entity`{.verbatim}
+    -   `person`{.verbatim}, `organization`{.verbatim},
+        `publication`{.verbatim}
+-   `disambr_set_type`{.verbatim}
+    -   `similar_entities`{.verbatim}, `different_entities`{.verbatim}
+-   `disambr_set_coefficient`{.verbatim}
+    -   number between 0 and 1 indicating how strongly entities are
         similar or different from each other. It is use only for
         establishing order of sets processing (e.g., start with sets of
         least similar entities)
-
-disambr~setname~
-
-:   -   string name of the set
-
-disambr~setcollection~
-
-:   -   *single~settable~* (first column assumed to store entity id or
-        entity id is just row number if `entity_id_reference`{.verbatim}
-        attribute is set to *self*, see below), *list~ofsetsaslists~*
-        (each set is a list of entity ids), *dyads~table~* (first and
-        second columns assumed to be ids for the pair of entities)
-
-disambr~entityidreference~
-
-:   -   *self*, name of other set as in its `set_name`{.verbatim}
-        attribute
-
-disambr~entityidreferencemd5sum~
-
-:   -   md5 cache sum of the object where entities ids are referring to
+-   `disambr_set_name`{.verbatim}
+    -   string name of the set
+-   `disambr_set_collection =
+     - =single_set_table`{.verbatim} (first column assumed to store
+    entity id or entity id is just row number if
+    `entity_id_reference`{.verbatim} attribute is set to
+    `self`{.verbatim}, see below), `list_of_sets_as_lists`{.verbatim}
+    (each set is a list of entity ids), `dyads_table`{.verbatim} (first
+    and second columns assumed to be ids for the pair of entities)
+-   `disambr_entity_id_reference`{.verbatim}
+    -   `self`{.verbatim}, name of other set as in its
+        `set_name`{.verbatim} attribute
+-   `disambr_entity_id_reference_md5_sum`{.verbatim}
+    -   md5 cache sum of the object where entities ids are referring to
         ensure that we will get to correct data for entities in the set.
-
-disambr~recipe~
-
-:   -   list of `disambr`{.verbatim} procedures that were applied to
+-   `disambr_recipe`{.verbatim}
+    -   list of `disambr`{.verbatim} procedures that were applied to
         produce given set(s)
     -   if it is a named list then first item is procedure name and the
         rest are properties:
-        -   *procedure*
-        -   *file~name~*
-        -   *file~md5sum~* (to check file identity later)
-        -   *file~header~* (to check for consistency between read files)
+        -   `procedure`{.verbatim}
+        -   `file_name`{.verbatim}
+        -   `file_md5sum`{.verbatim} (to check file identity later)
+        -   `file_header`{.verbatim} (to check for consistency between
+            read files)
 
 # Overall design principles
 
