@@ -1,7 +1,7 @@
 Package: disambr
 Title: disambr - Named Entity Disambiguation in R
 Version: 0.0.0.9000
-Date: 2022-03-14
+Date: 2022-03-15
 Authors@R: c(
     person(c("Stanislav", "A."), "Vlasov", , "stanislav.a.vlasov@gmail.com", role = c("aut", "cre")),
     person(c("Olmo", "R."), "van den Akker", , "ovdakker@gmail.com", role = "aut"),
@@ -23,7 +23,6 @@ Imports:
     stringi (>= 1.6.0)
 Suggests: 
     crayon,
-    fastmatch,
     tinytest
 Encoding: UTF-8
 References: This research was supported (in part) by the Fetzer Franklin

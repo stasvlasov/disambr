@@ -371,17 +371,74 @@ van den Akker, O. R., Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithmâ
 
 
 * Make & Deploy
-#+BEGIN_SRC emacs-lisp
-  ;; tangle source code
-  (org-babel-tangle)
-  ;; run package deployment scripts
-  (let ((org-confirm-babel-evaluate nil))
-	(save-excursion
-	  (org-babel-goto-named-src-block "document")
-	  (org-babel-execute-src-block)))
+
+#+name: deploy
+#+begin_src emacs-lisp
+  (save-excursion
+    (let ((calls '( "reset-working-directory"
+                    "tangle-readme"
+                    "tangle-buffer"
+                    "generate-package-docs"
+                    ))
+           ;; turn off babel prompts
+           org-confirm-babel-evaluate)
+      (mapcar
+       (lambda (name)
+         (let (org-confirm-babel-evaluate)
+           (save-excursion
+             (org-babel-goto-named-src-block name)
+             (or (org-babel-execute-src-block-maybe)
+                 (org-babel-lob-execute-maybe)))))
+       calls)))
+#+end_src
+
+** Initiate project
+
+*** Adding github workflows and badges
+https://github.com/r-lib/actions/blob/v1/examples/README.md
+#+BEGIN_SRC R
+  usethis::use_github_action("check-release")
+  usethis::use_github_action("test-coverage")
+  usethis::use_github_action("pkgdown")
+  usethis::use_github_actions_badge(name = "R-CMD-check")
 #+END_SRC
 
-** README.md
+*** Set up tinytest
+#+BEGIN_SRC R
+  tinytest::setup_tinytest(".")
+#+END_SRC
+
+** Reset working directory
+#+name: reset-working-directory
+#+BEGIN_SRC R :tangle no
+  ## Remove tangled and generated files
+  ## --------------------------------------------------------------------------------
+  files_to_remove <- c(
+      "DESCRIPTION"
+    , "NAMESPACE"
+    , "LICENSE.md"
+    , "README.md"
+  )
+
+  dirs_to_remove <-c(
+      "man"
+    , "inst/tinytest"
+    , "data"
+    , "R"
+  )
+
+  ## remove files in dirs recursively
+  sapply(dirs_to_remove
+       , function(dir) {
+           file.remove(list.files(dir , recursive = TRUE, full.names = TRUE))
+       })
+
+  ## remove files and empty dirs
+  sapply(c(files_to_remove, dirs_to_remove) , file.remove)
+#+END_SRC
+
+
+** Tangling README.md
 #+name: tangle-readme
 #+begin_src emacs-lisp
   (require 'org-goto)
@@ -391,40 +448,11 @@ van den Akker, O. R., Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithmâ
 #+end_src
 
 
-** Set up project
-*** Add github workflows and badges
-
-https://github.com/r-lib/actions/blob/v1/examples/README.md
-#+BEGIN_SRC R
-  usethis::use_github_action("check-release")
-  usethis::use_github_action("test-coverage")
-  usethis::use_github_action("pkgdown")
-  
-  usethis::use_github_actions_badge(name = "R-CMD-check")
+** Tangle source
+#+name: tangle-buffer
+#+BEGIN_SRC emacs-lisp :results none
+  (org-babel-tangle)
 #+END_SRC
-
-*** Set up tinytest
-#+BEGIN_SRC R
-  tinytest::setup_tinytest(".")
-#+END_SRC
-
-** Package documentation
-:PROPERTIES:
-:ID:       org:g01ja7119ri0
-:END:
-#+BEGIN_SRC R :tangle R/disambr.r
-  #' @details
-  #' This package provides a framework for disambiguating named entities (e.g., authors in large bibliometric databases)
-  #' 
-  #' Package provides following main functions
-  #' - disambr_read - reads WoS data
-  #' - disambr_aev - implementation of the AEV algorithm (van den Akker et al., 2020) for Web of Science author disambiguation.
-  #' 
-  #' This is work in progress. Please, file an issues or suggestion if you have any.
-  #' @keywords internal
-  "_PACKAGE"
-#+END_SRC
-
 ** Set .Rprofile (developer enviroment)
 *** CRAN Packages
 :PROPERTIES:
@@ -500,14 +528,14 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   }
   ## --------------------------------------------------------------------------------
 #+END_SRC
-** Set up package
 
+** Package documentation
 #+name: suggests
 | packages  | link                                                                |
 |-----------+---------------------------------------------------------------------|
 | tinytest  | https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md |
-| fastmatch | [[https://cran.r-project.org/web/packages/fastmatch/index.html][CRAN - Package fastmatch]]                                            |
 | crayon    |                                                                     |
+# | fastmatch | [[https://cran.r-project.org/web/packages/fastmatch/index.html][CRAN - Package fastmatch]]                                            |
 
 #+name: dependencies
 | packages   | current_version | ensure_version | link |
@@ -525,9 +553,6 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 #+BEGIN_SRC R :results value replace
   packageVersion(pkg)
 #+END_SRC
-
-
-
 
 #+name: generate-package-docs
 #+header: :var suggests = suggests
@@ -570,38 +595,35 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 
 #+END_SRC
-** Deploy package
+
+#+name: package-description
+#+BEGIN_SRC R :tangle R/disambr.r
+  #' @details
+  #' This package provides a framework for disambiguating named entities (e.g., authors in large bibliometric databases)
+  #' 
+  #' Package provides following main functions
+  #' - disambr_read - reads WoS data
+  #' - disambr_aev - implementation of the AEV algorithm (van den Akker et al., 2020) for Web of Science author disambiguation.
+  #' 
+  #' This is work in progress. Please, file an issues or suggestion if you have any.
+  #' @keywords internal
+  "_PACKAGE"
+#+END_SRC
+
+** Install package
+
 #+BEGIN_SRC R :tangle no
-  ## Deploy
-  ## --------------------------------------------------------------------------------
-  install(".")
-
-  install_github("stasvlasov/disambr")
-
-  ## Test
-  ## --------------------------------------------------------------------------------
-  library("disambr")
-
   ## Remove
   ## --------------------------------------------------------------------------------
   detach(package:disambr, unload = TRUE)
   remove.packages("disambr")
 
-  ## Just loadding
+  ## Deploy
   ## --------------------------------------------------------------------------------
-
+  devtools::install(".")
 #+END_SRC
 
 * Functions
-#+BEGIN_SRC R :tangle no
-  source("R/disambr_utils.r")
-  source("R/disambr_mess.r")
-  source("R/disambr_sets.r")
-  source("R/disambr_wos_tsv.r")
-  source("R/disambr_read.r")
-  source("R/disambr_eva.r")
-  source("R/disambr_stats.r")
-#+END_SRC
 ** disambr_options
 | option                      | behaviour when not set |
 |-----------------------------+------------------------|
