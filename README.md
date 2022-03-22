@@ -14,36 +14,22 @@ Each procedure takes list of sets as input and returns list of sets
 either by adding a new set or modifying input list of sets.
 
 ``` {.r org-language="R"}
-data %>% 
-    disambr.get.different.authors %>% 
-    disambr.get.similar.initials %>%
-    disambr.get.similar.last.names
+data |> 
+    disambr_set_not_on_same_paper() |> 
+    disambr_set_similar_initials() |>
+    disambr_set_similar_last_names()
 ```
 
 Sequence (piped functions) of disambiguation procedures defines a
 disambiguation algorithm.
 
 ``` {.r org-language="R"}
-disambr.eva <- function(data) {
-    data %>% 
-        disambr.get.different.authors %>% 
-        disambr.get.similar.initials %>%
-        disambr.get.similar.last.names
+disambr_eva <- function(data) {
+    data |>
+        disambr_set_not_on_same_paper() |>
+        disambr_set_similar_initials() |>
+        disambr_set_similar_last_names()
 }
-```
-
-A procedure can be defined as follows (not implemented). Just an idea.
-
-``` {.r org-language="R"}
-disambr.get.different.authors <- disambr.define.procedure(data %>% 
-                                                            get(publication) %>%
-                                                            for.each %>%
-                                                            get(person = author))
-
-  ## or
-  disambr.get.different.authors <- disambr.define.procedure(data$
-                                                            publication$
-                                                            person(author))
 ```
 
 # Implementation
@@ -78,18 +64,6 @@ al., 2020).
 # Installation
 
 ``` {.r org-language="R"}
-## Installs devtools it if not yet installed
-if (!require("devtools")) {
-    install.packages("devtools"
-                   , repos = 'http://cloud.r-project.org')
-}
-
-## ## Remove old version if installed
-## if (!require("disambr")) {
-##     detach(package:disambr, unload = TRUE)
-##     remove.packages("disambr")
-## }
-
 ## Installs and loads disambr
 devtools::install_github("stasvlasov/disambr")
 library("disambr")
@@ -102,29 +76,30 @@ A set is basically any R object that can represent [mathematical
 sets](https://en.wikipedia.org/wiki/Set_(mathematics)) (e.g., set of
 authors, set of companies) with special attributes that are used by
 `disabmr` functions to identify the kind of set it is working with or
-produce (e.g., a set of authors that are likely to be the same person, a
-set of companies that are definitely different companies, etc.).
+produced (e.g., a set of authors that are likely to be the same person
+or a set of companies that are definitely different companies, etc.).
 
-The attributes that are currently used to define/describe set as well as
-their values are listed below:
+The attributes that are currently used to define/describe sets as well
+as their values are listed below:
 
+-   `disambr_set_name`
+    -   string name of the set
 -   `disambr_entity`
-    -   `person`, `organization`, `publication`
+    -   either `person`, `organization`, `publication`
 -   `disambr_set_type`
     -   `similar_entities`, `different_entities`
 -   `disambr_set_coefficient`
     -   number between 0 and 1 indicating how strongly entities are
-        similar or different from each other. It is use only for
+        similar or different from each other. It is used only for
         establishing order of sets processing (e.g., start with sets of
         least similar entities)
--   `disambr_set_name`
-    -   string name of the set
 -   `disambr_set_collection`
     -   `single_set_table` (first column assumed to store entity id or
         entity id is just row number if `entity_id_reference` attribute
-        is set to `self`, see below), `list_of_sets_as_lists` (each set
-        is a list of entity ids), `dyads_table` (first and second
-        columns assumed to be ids for the pair of entities)
+        is set to `self`, see below),
+    -   `list_of_sets_as_lists` (each set is a list of entity ids),
+    -   `dyads_table` (first and second columns assumed to be ids for
+        the pair of entities)
 -   `disambr_entity_id_reference`
     -   `self`, name of other set as in its `set_name` attribute
 -   `disambr_entity_id_reference_md5_sum`
@@ -146,14 +121,14 @@ their values are listed below:
     accept and return list of sets (e.g., same person sets, different
     person sets, other probability of being the same person sets)
 -   List of sets from (chain of) various procedures will be then merged
-    (using sets algebra) according to the specific disambiguation
+    (using basis set algebra) according to the specific disambiguation
     algorithm to produce final list of sets.
 -   Initial input should be in the form of a list of initial sets (the
     simplest input is one set with every person likely to be non unique,
     e.g., data.table of authors from Web of Science bibliography data).
--   When reading data package should try to do as many sets as possible
-    on a fly (cleaning and splitting initial data to different types of
-    entities)
+-   When reading data the package should try to do as many sets as
+    possible on a fly (cleaning and splitting initial data to different
+    types of entities)
 -   Try to implement lazy data loading and processing where possible
 
 # Naming convention
