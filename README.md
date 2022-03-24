@@ -1,4 +1,4 @@
-# disambr  <img src="img/logo.png" align="right" alt="" width="120" />
+# disambr `<img src="img/logo.png" align="right" alt="" width="120" />`{.htlm}
 
 [![R-CMD-check](https://github.com/stasvlasov/disambr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/disabmr/actions)
 [![codecov](https://codecov.io/gh/stasvlasov/disambr/branch/master/graph/badge.svg?token=MCX4LA7KOR)](https://codecov.io/gh/stasvlasov/disambr)
@@ -9,7 +9,7 @@ disambiguation of named entities. Currently this package implements the
 [AEV algorithm](id:org:dux2eyd1gti0) (van den Akker et al., 2020) for
 Web of Science author disambiguation.
 
-# Usage
+## Usage
 
 The idea of basic usage is simply piping the disambiguation procedures.
 Each procedure takes list of sets as input and returns list of sets
@@ -34,7 +34,7 @@ disambr_eva <- function(data) {
 }
 ```
 
-# Implementation
+## Implementation
 
 **The EVA-algorithm: An open-source solution for the disambiguation of
 author names in Web of Science data** Olmo R. van den Akker Sacha
@@ -63,7 +63,7 @@ information about co-authorship, e-mail addresses, institutional
 affiliations, cited references, and article keywords (van den Akker et
 al., 2020).
 
-# Installation
+## Installation
 
 ``` {.r org-language="R"}
 ## Installs and loads disambr
@@ -71,7 +71,7 @@ devtools::install_github("stasvlasov/disambr")
 library("disambr")
 ```
 
-# Sets attributes
+## Sets attributes
 
 All disambiguation procedures used in `disambr` package work with sets.
 A set is basically any R object that can represent [mathematical
@@ -117,7 +117,7 @@ as their values are listed below:
         -   `file_md5sum` (to check file identity later)
         -   `file_header` (to check for consistency between read files)
 
-# Overall design principles
+## Overall design principles
 
 -   To allow for modular design each disambiguation procedure should
     accept and return list of sets (e.g., same person sets, different
@@ -133,7 +133,7 @@ as their values are listed below:
     types of entities)
 -   Try to implement lazy data loading and processing where possible
 
-# Naming convention
+## Naming convention
 
 -   All functions should have a verb
 -   Variables should not have a verb
@@ -145,7 +145,7 @@ as their values are listed below:
     -   <http://adv-r.had.co.nz/Style.html>
     -   <https://style.tidyverse.org/syntax.html#object-names>
 
-# Web of Science Field Tags 2018-06-27
+## Web of Science Field Tags 2018-06-27
 
 <https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Science-Core-Collection-List-of-field-tags-in-output?language=en_US>
 
@@ -219,7 +219,7 @@ as their values are listed below:
   EF   End of File
   ---- ----------------------------------------------------------
 
-# Existing tools for reading WoS data
+## Existing tools for reading WoS data
 
   name               comments
   ------------------ ------------------------------------------------------------
@@ -230,7 +230,7 @@ as their values are listed below:
   metagear           scrape~bibliography~ by DOI
   hindexcalculator   ?
 
-## bibliometrix
+### bibliometrix
 
 <https://github.com/massimoaria/bibliometrix>
 
@@ -258,7 +258,7 @@ bmdata %>% names
 bmdata <- convert2df(file = 'https://www.bibliometrix.org/datasets/wos_plaintext.txt', dbsource = 'wos', format = "csv")
 ```
 
-## metagear
+### metagear
 
 CRAN docs:
 <https://cran.r-project.org/web/packages/metagear/metagear.pdf>
@@ -273,19 +273,19 @@ git clone https://github.com/cran/metagear/
 scrape_bibliography
 ```
 
-## BibPlots
+### BibPlots
 
 CRAN docs:
 <https://cran.r-project.org/web/packages/BibPlots/BibPlots.pdf>
 
 Paper: <https://arxiv.org/pdf/1905.09095.pdf>
 
-## hindexcalculator
+### hindexcalculator
 
 CRAN docs:
 <https://cran.r-project.org/web/packages/hindexcalculator/hindexcalculator.pdf>
 
-## refsplitr
+### refsplitr
 
 ``` shell
 git clone https://github.com/ropensci/refsplitr
@@ -296,7 +296,7 @@ install.packages("refsplitr")
 library("refsplitr")
 ```
 
-## wosr
+### wosr
 
 Requires premium WoS API -
 <https://clarivate.com/webofsciencegroup/solutions/xml-and-apis>
@@ -327,7 +327,7 @@ query_wos(query, sid = sid)
 pull_wos(query, sid = sid)
 ```
 
-## read.wos.R
+### read.wos.R
 
 GitHub: <https://github.com/alberto-martin/read.wos.R>
 
@@ -360,7 +360,7 @@ wos.data <- read.wos("/mnt/md5/data/wos/wos-sci-expanded.firm-names-query.analyt
 ## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul
 ```
 
-# References
+## References
 
 *This research was supported (in part) by the Fetzer Franklin Fund of
 the John E. Fetzer Memorial Trust.*
