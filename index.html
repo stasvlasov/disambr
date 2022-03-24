@@ -68,43 +68,42 @@
 </h1></div>
 
 <p><code>disambr</code> is an R <span class="emoji" data-emoji="package">📦</span> that provides a flexible framework for disambiguation of named entities. Currently this package implements the <a href="id:org:dux2eyd1gti0">AEV algorithm</a> (van den Akker et al., 2020) for Web of Science author disambiguation.</p>
-</div>
-<div class="section level1">
-<h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
-</h1>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
 <p>The idea of basic usage is simply piping the disambiguation procedures. Each procedure takes list of sets as input and returns list of sets either by adding a new set or modifying input list of sets.</p>
 <div class="sourceCode" id="cb1" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">data</span> |&gt; 
-    <span class="fu">disambr_set_not_on_same_paper</span><span class="op">(</span><span class="op">)</span> |&gt; 
+    <span class="fu"><a href="reference/disambr_set_on_same_paper.html">disambr_set_on_same_paper</a></span><span class="op">(</span><span class="op">)</span> |&gt; 
     <span class="fu"><a href="reference/disambr_set_similar_initials.html">disambr_set_similar_initials</a></span><span class="op">(</span><span class="op">)</span> |&gt;
     <span class="fu"><a href="reference/disambr_set_similar_last_names.html">disambr_set_similar_last_names</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Sequence (piped functions) of disambiguation procedures defines a disambiguation algorithm.</p>
 <div class="sourceCode" id="cb2" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">disambr_eva</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">data</span> |&gt;
-        <span class="fu">disambr_set_not_on_same_paper</span><span class="op">(</span><span class="op">)</span> |&gt;
+        <span class="fu"><a href="reference/disambr_set_on_same_paper.html">disambr_set_on_same_paper</a></span><span class="op">(</span><span class="op">)</span> |&gt;
         <span class="fu"><a href="reference/disambr_set_similar_initials.html">disambr_set_similar_initials</a></span><span class="op">(</span><span class="op">)</span> |&gt;
         <span class="fu"><a href="reference/disambr_set_similar_last_names.html">disambr_set_similar_last_names</a></span><span class="op">(</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
-</h1>
+<div class="section level2">
+<h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
+</h2>
 <p><strong>The EVA-algorithm: An open-source solution for the disambiguation of author names in Web of Science data</strong> Olmo R. van den Akker Sacha Epskamp Stanislav Vlasov</p>
 <p>The creation of co-authorship networks is a valuable way to depict the social structure of scientific fields. However, these co-authorship networks often get distorted because of the problems of author name synonymy (the same author is split into two nodes because his name is spelled differently in different publications) and author name homonymy (different authors are compounded into one node because they share the same name). The practice of author name disambiguation (AND) tries to solve these problems by correctly identifying the authors of scientific articles.</p>
 <p>Several algorithms have been put forward in the context of AND, but none of them are suitable for large datasets of the Web of Science database. Therefore, in an earlier part of this project we proposed a new unsupervised learning algorithm based on the most recent AND literature. This so-called AEV-algorithm involves two phases: a blocking phase, in which pairs of authors are selected that are sufficiently similar, and a disambiguation phase, in which similar author names are either split or combined into one node based on information retrieved from the Web of Science database. In the disambiguation phase, the algorithm uses information about co-authorship, e-mail addresses, institutional affiliations, cited references, and article keywords (van den Akker et al., 2020).</p>
 </div>
-<div class="section level1">
-<h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h1>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb3" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Installs and loads disambr</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"stasvlasov/disambr"</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/stasvlasov/disambr" class="external-link">"disambr"</a></span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="sets-attributes">Sets attributes<a class="anchor" aria-label="anchor" href="#sets-attributes"></a>
-</h1>
+<div class="section level2">
+<h2 id="sets-attributes">Sets attributes<a class="anchor" aria-label="anchor" href="#sets-attributes"></a>
+</h2>
 <p>All disambiguation procedures used in <code>disambr</code> package work with sets. A set is basically any R object that can represent <a href="https://en.wikipedia.org/wiki/Set_(mathematics)" class="external-link">mathematical sets</a> (e.g., set of authors, set of companies) with special attributes that are used by <code>disabmr</code> functions to identify the kind of set it is working with or produced (e.g., a set of authors that are likely to be the same person or a set of companies that are definitely different companies, etc.).</p>
 <p>The attributes that are currently used to define/describe sets as well as their values are listed below:</p>
 <ul>
@@ -177,9 +176,9 @@
 </li>
 </ul>
 </div>
-<div class="section level1">
-<h1 id="overall-design-principles">Overall design principles<a class="anchor" aria-label="anchor" href="#overall-design-principles"></a>
-</h1>
+<div class="section level2">
+<h2 id="overall-design-principles">Overall design principles<a class="anchor" aria-label="anchor" href="#overall-design-principles"></a>
+</h2>
 <ul>
 <li>To allow for modular design each disambiguation procedure should accept and return list of sets (e.g., same person sets, different person sets, other probability of being the same person sets)</li>
 <li>List of sets from (chain of) various procedures will be then merged (using basis set algebra) according to the specific disambiguation algorithm to produce final list of sets.</li>
@@ -188,9 +187,9 @@
 <li>Try to implement lazy data loading and processing where possible</li>
 </ul>
 </div>
-<div class="section level1">
-<h1 id="naming-convention">Naming convention<a class="anchor" aria-label="anchor" href="#naming-convention"></a>
-</h1>
+<div class="section level2">
+<h2 id="naming-convention">Naming convention<a class="anchor" aria-label="anchor" href="#naming-convention"></a>
+</h2>
 <ul>
 <li>All functions should have a verb</li>
 <li>Variables should not have a verb</li>
@@ -205,9 +204,15 @@
 </li>
 </ul>
 </div>
+</div>
 <div class="section level1">
-<h1 id="web-of-science-field-tags-2018-06-27">Web of Science Field Tags 2018-06-27<a class="anchor" aria-label="anchor" href="#web-of-science-field-tags-2018-06-27"></a>
+<h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h1>
+<p><em>This research was supported (in part) by the Fetzer Franklin Fund of the John E. Fetzer Memorial Trust.</em></p>
+<p>van den Akker, O. R., Epskamp, Sacha, &amp; Vlasov, S. A. (2020). The AEV Algorithm—Author name disambiguation for large Web of Science datasets.</p>
+<div class="section level2">
+<h2 id="web-of-science-field-tags-2018-06-27">Web of Science Field Tags 2018-06-27<a class="anchor" aria-label="anchor" href="#web-of-science-field-tags-2018-06-27"></a>
+</h2>
 <p><a href="https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Science-Core-Collection-List-of-field-tags-in-output?language=en_US" class="external-link uri">https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Science-Core-Collection-List-of-field-tags-in-output?language=en_US</a></p>
 <table class="table"><tbody>
 <tr class="odd">
@@ -480,9 +485,9 @@
 </tr>
 </tbody></table>
 </div>
-<div class="section level1">
-<h1 id="existing-tools-for-reading-wos-data">Existing tools for reading WoS data<a class="anchor" aria-label="anchor" href="#existing-tools-for-reading-wos-data"></a>
-</h1>
+<div class="section level2">
+<h2 id="existing-tools-for-reading-wos-data">Existing tools for reading WoS data<a class="anchor" aria-label="anchor" href="#existing-tools-for-reading-wos-data"></a>
+</h2>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -515,9 +520,9 @@
 </tr>
 </tbody>
 </table>
-<div class="section level2">
-<h2 id="bibliometrix">bibliometrix<a class="anchor" aria-label="anchor" href="#bibliometrix"></a>
-</h2>
+<div class="section level3">
+<h3 id="bibliometrix">bibliometrix<a class="anchor" aria-label="anchor" href="#bibliometrix"></a>
+</h3>
 <p><a href="https://github.com/massimoaria/bibliometrix" class="external-link uri">https://github.com/massimoaria/bibliometrix</a></p>
 <p>Site: <a href="https://bibliometrix.org/index.html" class="external-link uri">https://bibliometrix.org/index.html</a></p>
 <pre class="shell"><code>git clone https://github.com/massimoaria/bibliometrix</code></pre>
@@ -538,37 +543,37 @@
 
 <span class="va">bmdata</span> <span class="op">&lt;-</span> <span class="fu">convert2df</span><span class="op">(</span>file <span class="op">=</span> <span class="st">'https://www.bibliometrix.org/datasets/wos_plaintext.txt'</span>, dbsource <span class="op">=</span> <span class="st">'wos'</span>, format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="metagear">metagear<a class="anchor" aria-label="anchor" href="#metagear"></a>
-</h2>
+<div class="section level3">
+<h3 id="metagear">metagear<a class="anchor" aria-label="anchor" href="#metagear"></a>
+</h3>
 <p>CRAN docs: <a href="https://cran.r-project.org/web/packages/metagear/metagear.pdf" class="external-link uri">https://cran.r-project.org/web/packages/metagear/metagear.pdf</a></p>
 <p>GitHub: <a href="https://github.com/cran/metagear/" class="external-link uri">https://github.com/cran/metagear/</a></p>
 <pre class="shell"><code>git clone https://github.com/cran/metagear/</code></pre>
 <div class="sourceCode" id="cb7" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">scrape_bibliography</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="bibplots">BibPlots<a class="anchor" aria-label="anchor" href="#bibplots"></a>
-</h2>
+<div class="section level3">
+<h3 id="bibplots">BibPlots<a class="anchor" aria-label="anchor" href="#bibplots"></a>
+</h3>
 <p>CRAN docs: <a href="https://cran.r-project.org/web/packages/BibPlots/BibPlots.pdf" class="external-link uri">https://cran.r-project.org/web/packages/BibPlots/BibPlots.pdf</a></p>
 <p>Paper: <a href="https://arxiv.org/pdf/1905.09095.pdf" class="external-link uri">https://arxiv.org/pdf/1905.09095.pdf</a></p>
 </div>
-<div class="section level2">
-<h2 id="hindexcalculator">hindexcalculator<a class="anchor" aria-label="anchor" href="#hindexcalculator"></a>
-</h2>
+<div class="section level3">
+<h3 id="hindexcalculator">hindexcalculator<a class="anchor" aria-label="anchor" href="#hindexcalculator"></a>
+</h3>
 <p>CRAN docs: <a href="https://cran.r-project.org/web/packages/hindexcalculator/hindexcalculator.pdf" class="external-link uri">https://cran.r-project.org/web/packages/hindexcalculator/hindexcalculator.pdf</a></p>
 </div>
-<div class="section level2">
-<h2 id="refsplitr">refsplitr<a class="anchor" aria-label="anchor" href="#refsplitr"></a>
-</h2>
+<div class="section level3">
+<h3 id="refsplitr">refsplitr<a class="anchor" aria-label="anchor" href="#refsplitr"></a>
+</h3>
 <pre class="shell"><code>git clone https://github.com/ropensci/refsplitr</code></pre>
 <div class="sourceCode" id="cb9" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"refsplitr"</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"refsplitr"</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="wosr">wosr<a class="anchor" aria-label="anchor" href="#wosr"></a>
-</h2>
+<div class="section level3">
+<h3 id="wosr">wosr<a class="anchor" aria-label="anchor" href="#wosr"></a>
+</h3>
 <p>Requires premium WoS API - <a href="https://clarivate.com/webofsciencegroup/solutions/xml-and-apis" class="external-link uri">https://clarivate.com/webofsciencegroup/solutions/xml-and-apis</a></p>
 <p>CRAN doc: <a href="https://cran.r-project.org/web/packages/wosr/wosr.pdf" class="external-link uri">https://cran.r-project.org/web/packages/wosr/wosr.pdf</a></p>
 <p>Site: <a href="https://github.com/vt-arc/wosr" class="external-link uri">https://github.com/vt-arc/wosr</a></p>
@@ -589,9 +594,9 @@
 <span class="co">## Download data</span>
 <span class="fu">pull_wos</span><span class="op">(</span><span class="va">query</span>, sid <span class="op">=</span> <span class="va">sid</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="readwosr">read.wos.R<a class="anchor" aria-label="anchor" href="#readwosr"></a>
-</h2>
+<div class="section level3">
+<h3 id="readwosr">read.wos.R<a class="anchor" aria-label="anchor" href="#readwosr"></a>
+</h3>
 <p>GitHub: <a href="https://github.com/alberto-martin/read.wos.R" class="external-link uri">https://github.com/alberto-martin/read.wos.R</a></p>
 <pre class="shell"><code>git clone https://github.com/alberto-martin/read.wos.R</code></pre>
 <div class="sourceCode" id="cb13" org-language="R"><pre class="downlit sourceCode r">
@@ -619,11 +624,6 @@
 <span class="co">## In readLines(files[1], n = 1) : line 1 appears to contain an embedded nul</span></code></pre></div>
 </div>
 </div>
-<div class="section level1">
-<h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h1>
-<p><em>This research was supported (in part) by the Fetzer Franklin Fund of the John E. Fetzer Memorial Trust.</em></p>
-<p>van den Akker, O. R., Epskamp, Sacha, &amp; Vlasov, S. A. (2020). The AEV Algorithm—Author name disambiguation for large Web of Science datasets.</p>
 </div>
 
   </div>
