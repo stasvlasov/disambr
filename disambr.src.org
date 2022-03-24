@@ -14,6 +14,8 @@
 :END:
 
 #+begin_export markdown
+# disambr  <img src="img/logo.png" align="right" alt="" width="120" />
+
 [![R-CMD-check](https://github.com/stasvlasov/disambr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/disabmr/actions)
 [![codecov](https://codecov.io/gh/stasvlasov/disambr/branch/master/graph/badge.svg?token=MCX4LA7KOR)](https://codecov.io/gh/stasvlasov/disambr)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/disambr)
@@ -21,7 +23,7 @@
 
 ~disambr~ is an R :package: that provides a flexible framework for disambiguation of named entities. Currently this package implements the [[id:org:dux2eyd1gti0][AEV algorithm]] (van den Akker et al., 2020) for Web of Science author disambiguation.
 
-** Usage
+*** Usage
 
 The idea of basic usage is simply piping the disambiguation procedures. Each procedure takes list of sets as input and returns list of sets either by adding a new set or modifying input list of sets.
 #+BEGIN_SRC R :results none :session :eval no-export
@@ -42,7 +44,7 @@ Sequence (piped functions) of disambiguation procedures defines a disambiguation
   }
 #+END_SRC
 
-** Implementation
+*** Implementation
 :PROPERTIES:
 :ID:       org:dux2eyd1gti0
 :END:
@@ -55,14 +57,14 @@ The creation of co-authorship networks is a valuable way to depict the social st
 
 Several algorithms have been put forward in the context of AND, but none of them are suitable for large datasets of the Web of Science database. Therefore, in an earlier part of this project we proposed a new unsupervised learning algorithm based on the most recent AND literature. This so-called AEV-algorithm involves two phases: a blocking phase, in which pairs of authors are selected that are sufficiently similar, and a disambiguation phase, in which similar author names are either split or combined into one node based on information retrieved from the Web of Science database. In the disambiguation phase, the algorithm uses information about co-authorship, e-mail addresses, institutional affiliations, cited references, and article keywords (van den Akker et al., 2020).
 
-** Installation
+*** Installation
 #+BEGIN_SRC R
   ## Installs and loads disambr
   devtools::install_github("stasvlasov/disambr")
   library("disambr")
 #+END_SRC
 
-** Sets attributes
+*** Sets attributes
 :PROPERTIES:
 :ID:       org:hu2b4ld1gti0
 :END:
@@ -94,7 +96,7 @@ The attributes that are currently used to define/describe sets as well as their 
     - ~file_md5sum~ (to check file identity later)
     - ~file_header~ (to check for consistency between read files)
 
-** Overall design principles
+*** Overall design principles
 
 - To allow for modular design each disambiguation procedure should accept and return list of sets (e.g., same person sets, different person sets, other probability of being the same person sets)
 - List of sets from (chain of) various procedures will be then merged (using basis set algebra) according to the specific disambiguation algorithm to produce final list of sets.
@@ -102,7 +104,7 @@ The attributes that are currently used to define/describe sets as well as their 
 - When reading data the package should try to do as many sets as possible on a fly (cleaning and splitting initial data to different types of entities)
 - Try to implement lazy data loading and processing where possible
 
-** Naming convention
+*** Naming convention
 - All functions should have a verb
 - Variables should not have a verb
 - Everything that is available to user should start with "disambr_" (i.e., package name)
@@ -112,7 +114,7 @@ The attributes that are currently used to define/describe sets as well as their 
   - http://adv-r.had.co.nz/Style.html
   - https://style.tidyverse.org/syntax.html#object-names
   
-** Web of Science Field Tags 2018-06-27
+*** Web of Science Field Tags 2018-06-27
 https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Science-Core-Collection-List-of-field-tags-in-output?language=en_US
 
 | FN | File Name                                                |
@@ -183,7 +185,7 @@ https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Sci
 | ER | End of Record                                            |
 | EF | End of File                                              |
 
-** Existing tools for reading WoS data
+*** Existing tools for reading WoS data
 | name             | comments                                                   |
 |------------------+------------------------------------------------------------|
 | bibliometrix     | reads only plaintext format into bibliometrixDB object     |
@@ -193,7 +195,7 @@ https://support.clarivate.com/ScientificandAcademicResearch/s/article/Web-of-Sci
 | metagear         | scrape_bibliography by DOI                                 |
 | hindexcalculator | ?                                                          |
 
-*** bibliometrix
+**** bibliometrix
 :PROPERTIES:
 :ID:       org:pfjja7119ri0
 :END:
@@ -223,7 +225,7 @@ Site: https://bibliometrix.org/index.html
   bmdata <- convert2df(file = 'https://www.bibliometrix.org/datasets/wos_plaintext.txt', dbsource = 'wos', format = "csv")
 #+END_SRC
 
-*** metagear
+**** metagear
 :PROPERTIES:
 :ID:       org:6apja7119ri0
 :END:
@@ -240,14 +242,14 @@ GitHub: https://github.com/cran/metagear/
   scrape_bibliography
 #+END_SRC
 
-*** BibPlots
+**** BibPlots
 CRAN docs: https://cran.r-project.org/web/packages/BibPlots/BibPlots.pdf
 
 Paper: https://arxiv.org/pdf/1905.09095.pdf
 
-*** hindexcalculator
+**** hindexcalculator
 CRAN docs:  https://cran.r-project.org/web/packages/hindexcalculator/hindexcalculator.pdf
-*** refsplitr
+**** refsplitr
 :PROPERTIES:
 :ID:       org:fztja7119ri0
 :END:
@@ -263,7 +265,7 @@ CRAN docs:  https://cran.r-project.org/web/packages/hindexcalculator/hindexcalcu
 #+END_SRC
 
 
-*** wosr
+**** wosr
 :PROPERTIES:
 :ID:       org:fx0ka7119ri0
 :END:
@@ -296,7 +298,7 @@ GitHub: https://github.com/vt-arc/wosr
   pull_wos(query, sid = sid)
 #+END_SRC
 
-*** read.wos.R
+**** read.wos.R
 :PROPERTIES:
 :ID:       org:9d6ka7119ri0
 :END:
@@ -334,7 +336,7 @@ GitHub: https://github.com/alberto-martin/read.wos.R
 
 
 
-** References
+*** References
 /This research was supported (in part) by the Fetzer Franklin Fund of the John E. Fetzer Memorial Trust./
 
 van den Akker, O. R., Epskamp, Sacha, & Vlasov, S. A. (2020). The AEV Algorithm—Author name disambiguation for large Web of Science datasets.
@@ -1475,7 +1477,7 @@ disambr_cbind_lists <- function(...) {
 :ID:       org:xz69svy0mti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_sets.r
-  ##' Get sets with strength parameter of 1 and rbind them into sincle set
+  ##' Get sets with strength parameter of 1 and rbind them into single set
   ##' @param sets sets
   ##' @param ... other attributes
   ##' @inheritDotParams disambr_in_sets
@@ -4927,9 +4929,9 @@ microbenchmark(combi(v), combn(v,2))
       truth <- truth[, .(author_id1 = first
                        , author_id2 = second)]
 
-      a <- nrow(fintersect(truth, strong))
-      b <- nrow(fsetdiff(strong, truth))
-      c <- nrow(fsetdiff(truth, strong))
+      a <- nrow(data.table::fintersect(truth, strong))
+      b <- nrow(data.table::fsetdiff(strong, truth))
+      c <- nrow(data.table::fsetdiff(truth, strong))
       d <- nrow(sets[[2]]) * (nrow(sets[[2]]) - 1) - nrow(funion(truth, strong))
 
       pw_presision <- a / (a + b)

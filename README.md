@@ -1,3 +1,5 @@
+# disambr  <img src="img/logo.png" align="right" alt="" width="120" />
+
 [![R-CMD-check](https://github.com/stasvlasov/disambr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/disabmr/actions)
 [![codecov](https://codecov.io/gh/stasvlasov/disambr/branch/master/graph/badge.svg?token=MCX4LA7KOR)](https://codecov.io/gh/stasvlasov/disambr)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/disambr)
