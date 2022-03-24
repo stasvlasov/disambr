@@ -40,9 +40,9 @@ The reproducible code snippets for each variations to EVA algorithm that we cons
   options(disambr_save_set_dir = "../eva-slow-dl11")
 
   ds <-
-      disambr_read("../data/wos-slow"
-                 , save_sets_as = "wos-slow.rds"
-                 , save_sets_dir = "../disambr-data") %>% 
+      disambr_read("../data/wos-slow-export-subset"
+                 , save_sets_as = "wos-slow-export-subset.rds"
+                 , save_sets_dir = "../data") %>% 
       disambr_set_tekles_bornmann(
           file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
       disambr_set_on_same_paper %>% 
