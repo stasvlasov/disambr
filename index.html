@@ -108,35 +108,22 @@
 <p>The attributes that are currently used to define/describe sets as well as their values are listed below:</p>
 <ul>
 <li>
-<code>disambr_set_name</code>
-<ul>
-<li>string name of the set</li>
-</ul>
+<code>disambr_set_name</code><ul><li>string name of the set</li></ul>
 </li>
 <li>
-<code>disambr_entity</code>
-<ul>
-<li>either <code>person</code>, <code>organization</code>, <code>publication</code>
-</li>
-</ul>
+<code>disambr_entity</code><ul><li>either <code>person</code>, <code>organization</code>, <code>publication</code>
+</li></ul>
 </li>
 <li>
-<code>disambr_set_type</code>
-<ul>
-<li>
+<code>disambr_set_type</code><ul><li>
 <code>similar_entities</code>, <code>different_entities</code>
-</li>
-</ul>
-</li>
-<li>
-<code>disambr_set_coefficient</code>
-<ul>
-<li>number between 0 and 1 indicating how strongly entities are similar or different from each other. It is used only for establishing order of sets processing (e.g., start with sets of least similar entities)</li>
-</ul>
+</li></ul>
 </li>
 <li>
-<code>disambr_set_collection</code>
-<ul>
+<code>disambr_set_coefficient</code><ul><li>number between 0 and 1 indicating how strongly entities are similar or different from each other. It is used only for establishing order of sets processing (e.g., start with sets of least similar entities)</li></ul>
+</li>
+<li>
+<code>disambr_set_collection</code><ul>
 <li>
 <code>single_set_table</code> (first column assumed to store entity id or entity id is just row number if <code>entity_id_reference</code> attribute is set to <code>self</code>, see below),</li>
 <li>
@@ -146,24 +133,16 @@
 </ul>
 </li>
 <li>
-<code>disambr_entity_id_reference</code>
-<ul>
-<li>
-<code>self</code>, name of other set as in its <code>set_name</code> attribute</li>
-</ul>
+<code>disambr_entity_id_reference</code><ul><li>
+<code>self</code>, name of other set as in its <code>set_name</code> attribute</li></ul>
 </li>
 <li>
-<code>disambr_entity_id_reference_md5_sum</code>
-<ul>
-<li>md5 cache sum of the object where entities ids are referring to ensure that we will get to correct data for entities in the set.</li>
-</ul>
+<code>disambr_entity_id_reference_md5_sum</code><ul><li>md5 cache sum of the object where entities ids are referring to ensure that we will get to correct data for entities in the set.</li></ul>
 </li>
 <li>
-<code>disambr_recipe</code>
-<ul>
+<code>disambr_recipe</code><ul>
 <li>list of <code>disambr</code> procedures that were applied to produce given set(s)</li>
-<li>if it is a named list then first item is procedure name and the rest are properties:
-<ul>
+<li>if it is a named list then first item is procedure name and the rest are properties:<ul>
 <li><code>procedure</code></li>
 <li><code>file_name</code></li>
 <li>
@@ -195,8 +174,7 @@
 <li>Variables should not have a verb</li>
 <li>Everything that is available to user should start with "disambr_" (i.e., package name)</li>
 <li>Internal functions and variables does not have to have this prefix</li>
-<li>Use mainstream coding style guides everywhere where possible
-<ul>
+<li>Use mainstream coding style guides everywhere where possible<ul>
 <li><a href="https://google.github.io/styleguide/Rguide.html" class="external-link uri">https://google.github.io/styleguide/Rguide.html</a></li>
 <li><a href="http://adv-r.had.co.nz/Style.html" class="external-link uri">http://adv-r.had.co.nz/Style.html</a></li>
 <li><a href="https://style.tidyverse.org/syntax.html#object-names" class="external-link uri">https://style.tidyverse.org/syntax.html#object-names</a></li>
@@ -681,7 +659,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
