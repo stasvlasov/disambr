@@ -3467,7 +3467,6 @@ this one is not needed as doi is unique and we can add them to refs_table
       disambr_mess_finish()
       return(sets)
    }
-
 #+END_SRC
 
 #+BEGIN_SRC R
@@ -3555,7 +3554,7 @@ dt.test <-
        if(verbose) message("--- made ,", length(return_sets_comb), " combinations")
        if(verbose) message("- expanding combinations")
        return_sets <-
-           pblapply(return_sets_comb
+           pbapply::pblapply(return_sets_comb
                   , function(comb) {
                       expand.grid(author_id1 = return_sets[[comb[1]]]
                                 , author_id2 = return_sets[[comb[2]]])
@@ -3637,7 +3636,7 @@ dt.test <-
           ## try cluster
           ## cl <- parallel::makeCluster(20,type="SOCK")
           output_set <- 
-              pblapply(1:(input_set_l-1), function(i) {
+              pbapply::pblapply(1:(input_set_l-1), function(i) {
                   ## combn using is data.table method
                   comb <- data.table::CJ(author_id1 = input_set[[i]]
                                        , author_id2 = unlist(input_set[(i+1):input_set_l])
@@ -3698,7 +3697,6 @@ dt.test <-
   ## dt %>%
       ## disambr_set_similar_last_names(verbose = TRUE) %>% 
       ## disambr_set_similar_initials_bank(verbose = TRUE)
-
 #+END_SRC
 
 *** disambr_set_similar_last_names
@@ -3754,7 +3752,7 @@ dt.test <-
       if(attr(input_set, "disambr_set_type") == "different") {
           disambr_mess(paste("- doing combinations on", input_set_l))
           output_set <- 
-              pblapply(1:(input_set_l-1), function(i) {
+              pbapply::pblapply(1:(input_set_l-1), function(i) {
 
                   ## this is data.table method
                   combs <- data.table::CJ(author_id1 = input_set[[i]]
@@ -3795,7 +3793,6 @@ dt.test <-
       disambr_mess_finish()
       return(c(sets, list(output_set)))
   }
-
 #+END_SRC
 
 tests
@@ -4018,121 +4015,90 @@ tests
 :END:
 
 #+BEGIN_SRC R
+  ##' Make a set of matched authors bases on the cases when one author cites the others paper.
+  ##' @param sets Sets
+  ##' @param match_refrerences_by_name_year Whether to check citations based on first author name and year pair in addition to machich citations based on DOI
+  ##' @return 
+  ##' @export 
   disambr_set_cite_others_paper <- function(sets
-                                          , verbose = TRUE
-                                          , save_set_as = TRUE
-                                          , pubs_set_name = "wos_records_tsv_export"
-                                          , author_set_name =
-                                                "wos_records_tsv_export_author_table"
-                                          , refs_set_name =
-                                                "wos_records_tsv_export_reference_table"
-                                          , input_set_name = "similar_last_names") {
-      if(verbose) message("disambr: Starting disambr_set_cite_others_paper...")
-      if(!is.list(sets)) stop("disambr: 'sets' parameter should be list!")
-      author_set <-
-          disambr_subsets(sets
-                        , list(disambr_set_name = author_set_name)
-                        , which_to_return = "first")
-      refs_set <-
-          disambr_subsets(sets
-                        , list(disambr_set_name = refs_set_name)
-                        , which_to_return = "first")
-      pubs_set <-
-          disambr_subsets(sets
-                        , list(disambr_set_name = pubs_set_name)
-                        , which_to_return = "first")
-      input_set <-
-          disambr_subsets(sets
-                        , list(disambr_set_name = input_set_name)
-                        , which_to_return = "first")
-      if(verbose) message("- checking if author sites other author's paper")
+                                          , match_refrerences_by_name_year = TRUE) {
+      disambr_mess_start()
+      if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
+      ## check if output set is ready
+      output_set <- disambr_get_output_set(sets)
+      if(!is.null(output_set)) return(sets)
+      output_set <- disambr_read_output_set()
+      if(!is.null(output_set)) return(c(sets, list(output_set)))
+      ## ----------------------------------------------------------------------
+      author_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
+      reference_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_references")
+      citations_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
+      input_set <- disambr_get_last_unstrong_set(sets)
+        ## ======================================================================
+      disambr_mess("- checking if author sites other author's paper")
       ## TODO: Add papers that were already matched previously
-      if(isTRUE("DI" %in% names(pubs_set))) {
-          if(verbose) message("- preparing publications info for each author")
-          ## get doi of the authors' paper (assume only one)
-          paper_ids_1 <- author_set$paper_id[input_set$author_id1]
-          paper_ids_2 <- author_set$paper_id[input_set$author_id2]
-          dois_1 <- pubs_set$DI[paper_ids_1]
-          dois_2 <- pubs_set$DI[paper_ids_2]
-          ## get name-year
-          years_1 <- pubs_set$PY[paper_ids_1]
-          last_names_1 <-
-              toupper(author_set$author_last_name[input_set$author_id1])
-          first_initials_1 <-
-              toupper(
-                  stringi::stri_sub(
-                               author_set$author_initials[input_set$author_id1]
-                             , to = 1))
-          ## put names and year into one string
-          names_years_1 <- paste(last_names_1
-                               , first_initials_1
-                               , years_1) 
-          ## get dois from referecences
-          if(verbose) message("- preparing references info for each author")
-          ## only do it for those papers that we need paper_ids_1
-          refs_set_used <-
-              refs_set$paper_id %in% unique(c(paper_ids_1, paper_ids_2))
-          refs_set[refs_set_used
-                 , "name_year" := paste(
-                       stringi::stri_extract_first_regex(
-                                    toupper(
-                                        first_author_name[refs_set_used])
-                                  , "[^\\s]+\\s+[^\\s]")
-                   , year[refs_set_used])]
-          if(verbose) message("- preparing references info for each author")
-          match_doi1_to_references2 <-
-              pbmapply(function(paper_id2
-                              , doi1) {
-                  doi1 %in% refs_set$doi[refs_set$paper_id == paper_id2]
-              }
-            , paper_ids_2
-            , dois_1)
-          match_doi2_to_references1 <-
-              pbmapply(function(paper_id1
-                              , doi2) {
-                  doi2 %in% refs_set$doi[refs_set$paper_id == paper_id1]
-              }
-            , paper_ids_1
-            , dois_2)
-      } else
-          stop("- NO DOI DATA IN REFS_SET!")
-      return(list(paper_ids_1, dois_1, names_years_1, match_doi1_to_references2, match_doi2_to_references1))
-
-
-      ## return_set <- input_set[affiliations_match]
-      ## input_set_recipe <- attr(author_set, "disambr_recipe")
-      ## return_set <-
-          ## disambr_setattr(
-              ## return_set
-            ## , disambr_entity = "person"
-            ## , disambr_set_type = "similar"
-            ## , disambr_set_coefficient = 1
-            ## , disambr_set_name = "cite_others_paper"
-            ## , disambr_set_collection = "dyads_table"
-            ## , disambr_entity_id_reference =
-                  ## "wos_records_tsv_export_author_table"
-            ## , disambr_recipe = c(list("disambr_set_cite_others_paper")
-                               ## , input_set_recipe))
-      ## disambr_save_set(return_set, save_set_as)
-      ## return(c(sets, list(return_set)))
+      ## get paper ids
+      input_set[, `:=`(
+          paper_ids_1 = author_data_set$paper_id[author_id1]
+        , paper_ids_2 = author_data_set$paper_id[author_id2])]
+      match_list <- list()
+      match_list$doi_1 <-
+          merge(input_set, reference_data_set,
+              , by.x = c("paper_ids_1", "paper_ids_2")
+              , by.y = c("paper_id", "doi_cited_id"))[, .(author_id1, author_id2)]
+      match_list$doi_2 <-
+          merge(input_set, reference_data_set,
+              , by.x = c("paper_ids_2", "paper_ids_1")
+              , by.y = c("paper_id", "doi_cited_id"))[, .(author_id1, author_id2)]
+      if(match_refrerences_by_name_year) {
+          match_list$name_1 <-
+              merge(input_set, citations_data_set,
+                  , by.x = c("paper_ids_1", "paper_ids_2")
+                  , by.y = c("citing_id", "cited_id"))[, .(author_id1, author_id2)]
+          match_list$name_2 <-
+              merge(input_set, citations_data_set,
+                  , by.x = c("paper_ids_2", "paper_ids_1")
+                  , by.y = c("citing_id", "cited_id"))[, .(author_id1, author_id2)]
+      }
+      output_set <- data.table::rbindlist(match_list)
+      output_set <- unique(output_set)
+      ## ======================================================================
+      disambr_add_set_attr(output_set, author_data_set
+                         , strength = 1
+                         , collection = "dyad_table"
+                         , reference = "wos_tsv_authors")
+      disambr_save_set(output_set)
+      disambr_mess_finish()
+      return(c(sets, list(output_set)))
   }
 
 
-   ## partial
+  ## partial
   ## dt <- readRDS(file = "my.wos.rds") %>%
-      ## disambr_set_tekles_bornmann(verbose = TRUE) %>%
-      ## disambr_set_on_same_paper(verbose = TRUE)
+  ## disambr_set_tekles_bornmann(verbose = TRUE) %>%
+  ## disambr_set_on_same_paper(verbose = TRUE)
+
+  ## dt.test <- 
+      ## dt %>%
+      ## disambr_set_on_same_paper %>% 
+      ## disambr_set_similar_last_names
+
+
+  ## dt.test %>% disambr_set_cite_others_paper %>% extract2(7)
 
   ## dt_atributes <- attributes(dt[[4]])
   ## dt[[4]] <- dt[[4]][1:2000]
   ## mostattributes(dt[[4]]) <- dt_atributes
 
   ## dt.short <-
-      ## dt %>%
-      ## disambr_set_similar_last_names(verbose = TRUE)
+  ## dt %>%
+  ## disambr_set_similar_last_names(verbose = TRUE)
   ## dt.short.test <-
-      ## dt.short %>%
-      ## disambr_set_cite_others_paper
+  ## dt.short %>%
+  ## disambr_set_cite_others_paper
   ## dt.short.test[[5]] %>% sum
 
 
@@ -4143,6 +4109,26 @@ tests
   ## https://www.crossref.org/blog/dois-and-matching-regular-expressions/
   ## "/^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i"
 
+
+  ## testing data.table
+  ## p <- data.table(id = c(1,2,3,4)
+  ## , b = TRUE
+  ## , y = c(7,4,6,3)
+  ## , n = c("o", "z", "o", "e")
+  ## , DI = c(11,22,33,44))
+
+  ## r <- data.table(id = c(6)
+  ## , b = FALSE
+  ## , y = c(2,6,4,8,3,1)
+  ## , n = c("a", "c", "z", "o", "e", "o")
+  ## , doi = c(88,22,99,55,11,55))
+
+  ## merge(p,r,by = "id")
+
+
+  ## p[r
+  ## , on = .(y, n)
+  ## , .(DI, doi, , paper_id, b, y, n)]
 #+END_SRC
 
 
@@ -4274,139 +4260,139 @@ tests
 :END:
 
 #+BEGIN_SRC R :tangle R/disambr_eva.r
-    ##' Make set of authors that have number of references in common
-    ##' @param sets Sets
-    ##' @param references_in_common number of references in common
-    ##' @return Sets with new set
-    ##' @export 
-    disambr_set_common_references <- function(sets
-                                            , references_in_common = 3) {
-        disambr_mess_start()
-        if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
-        ## check if output set is ready
-        output_set <- disambr_get_output_set(sets)
-        if(!is.null(output_set)) return(sets)
-        output_set <- disambr_read_output_set()
-        if(!is.null(output_set)) return(c(sets, list(output_set)))
-        ## ----------------------------------------------------------------------
-        author_data_set <-
-            disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
-        reference_data_set <-
-            disambr_get_first_data_set(sets, recipe = "wos_tsv_references")
-        citation_data_set <-
-            disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
-        input_set <- disambr_get_last_unstrong_set(sets)
-        ## ======================================================================
-        disambr_mess("- checking references in common")
-        ## TODO: Add papers that were already matched previously
-        input_set[, `:=`(
-            paper_ids_1 = author_data_set$paper_id[author_id1]
-          , paper_ids_2 = author_data_set$paper_id[author_id2]
-        )]
-        paper_ids_set <- unique(input_set[,.(paper_ids_1, paper_ids_2)])
-        ## for blade
-        if(.Platform$OS.type == "windows") {
-            cl <-
-                parallel::makePSOCKcluster(
-                              round(parallel::detectCores() * .70))
-            output_set <-
-                parallel::parLapply(
-                              cl, 1:nrow(paper_ids_set)
-                            , function(i) {
-                                id1 <- paper_ids_set$paper_ids_1[i]
-                                id2 <- paper_ids_set$paper_ids_2[i]
-                                common_refs <- 
-                                    match(reference_data_set[paper_id == id1, c(doi_cited_id)]
-                                        , reference_data_set[paper_id == id2, c(doi_cited_id)]
-                                        , nomatch = 0
-                                        , incomparables = NA)
-                                common_refs <- sum(common_refs > 0)
-                                if(common_refs < references_in_common) {
-                                    name_common_refs <- 
-                                        match(citation_data_set[citing_id == id1, c(cited_id)]
-                                            , citation_data_set[citing_id == id2, c(cited_id)]
-                                            , nomatch = 0
-                                            , incomparables = NA)
-                                    name_common_refs <- sum(name_common_refs > 0)
-                                    common_refs <- common_refs + name_common_refs
-                                    if(common_refs < references_in_common) {
-                                        return(FALSE)
-                                    } else {
-                                        return(TRUE)
-                                    }
-                                } else return(TRUE)
-                            }
-                          )
-            parallel::stopCluster(cl)
-        } else {
-            output_set <- 
-                pbmapply(function(id1, id2) {
-                    common_refs <- 
-                        match(reference_data_set[paper_id == id1, c(doi_cited_id)]
-                            , reference_data_set[paper_id == id2, c(doi_cited_id)]
-                            , nomatch = 0
-                            , incomparables = NA)
-                    common_refs <- sum(common_refs > 0)
-                    if(common_refs < references_in_common) {
-                        name_common_refs <- 
-                            match(citation_data_set[citing_id == id1, c(cited_id)]
-                                , citation_data_set[citing_id == id2, c(cited_id)]
-                                , nomatch = 0
-                                , incomparables = NA)
-                        name_common_refs <- sum(name_common_refs > 0)
-                        common_refs <- common_refs + name_common_refs
-                        if(common_refs < references_in_common) return(FALSE) else return(TRUE)
-                    } else return(TRUE)
-                }
-              , paper_ids_set$paper_ids_1
-              , paper_ids_set$paper_ids_2)
-        }
-        output_set <- paper_ids_set[output_set]
-        output_set <- merge(output_set, input_set, by = c("paper_ids_1", "paper_ids_2"))
-        output_set <- output_set[,.(author_id1, author_id2)]
-        ## ======================================================================
-        disambr_add_set_attr(output_set, author_data_set
-                           , strength = 1
-                           , collection = "dyad_table"
-                           , reference = "wos_tsv_authors")
-        disambr_save_set(output_set)
-        disambr_mess_finish()
-        return(c(sets, list(output_set)))
-    }
+  ##' Make set of authors that have number of references in common
+  ##' @param sets Sets
+  ##' @param references_in_common number of references in common
+  ##' @return Sets with new set
+  ##' @export 
+  disambr_set_common_references <- function(sets
+                                          , references_in_common = 3) {
+      disambr_mess_start()
+      if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
+      ## check if output set is ready
+      output_set <- disambr_get_output_set(sets)
+      if(!is.null(output_set)) return(sets)
+      output_set <- disambr_read_output_set()
+      if(!is.null(output_set)) return(c(sets, list(output_set)))
+      ## ----------------------------------------------------------------------
+      author_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
+      reference_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_references")
+      citation_data_set <-
+          disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
+      input_set <- disambr_get_last_unstrong_set(sets)
+      ## ======================================================================
+      disambr_mess("- checking references in common")
+      ## TODO: Add papers that were already matched previously
+      input_set[, `:=`(
+          paper_ids_1 = author_data_set$paper_id[author_id1]
+        , paper_ids_2 = author_data_set$paper_id[author_id2]
+      )]
+      paper_ids_set <- unique(input_set[,.(paper_ids_1, paper_ids_2)])
+      ## for blade
+      if(.Platform$OS.type == "windows") {
+          cl <-
+              parallel::makePSOCKcluster(
+                            round(parallel::detectCores() * .70))
+          output_set <-
+              parallel::parLapply(
+                            cl, 1:nrow(paper_ids_set)
+                          , function(i) {
+                              id1 <- paper_ids_set$paper_ids_1[i]
+                              id2 <- paper_ids_set$paper_ids_2[i]
+                              common_refs <- 
+                                  match(reference_data_set[paper_id == id1, c(doi_cited_id)]
+                                      , reference_data_set[paper_id == id2, c(doi_cited_id)]
+                                      , nomatch = 0
+                                      , incomparables = NA)
+                              common_refs <- sum(common_refs > 0)
+                              if(common_refs < references_in_common) {
+                                  name_common_refs <- 
+                                      match(citation_data_set[citing_id == id1, c(cited_id)]
+                                          , citation_data_set[citing_id == id2, c(cited_id)]
+                                          , nomatch = 0
+                                          , incomparables = NA)
+                                  name_common_refs <- sum(name_common_refs > 0)
+                                  common_refs <- common_refs + name_common_refs
+                                  if(common_refs < references_in_common) {
+                                      return(FALSE)
+                                  } else {
+                                      return(TRUE)
+                                  }
+                              } else return(TRUE)
+                          }
+                        )
+          parallel::stopCluster(cl)
+      } else {
+          output_set <- 
+              pbmapply(function(id1, id2) {
+                  common_refs <- 
+                      match(reference_data_set[paper_id == id1, c(doi_cited_id)]
+                          , reference_data_set[paper_id == id2, c(doi_cited_id)]
+                          , nomatch = 0
+                          , incomparables = NA)
+                  common_refs <- sum(common_refs > 0)
+                  if(common_refs < references_in_common) {
+                      name_common_refs <- 
+                          match(citation_data_set[citing_id == id1, c(cited_id)]
+                              , citation_data_set[citing_id == id2, c(cited_id)]
+                              , nomatch = 0
+                              , incomparables = NA)
+                      name_common_refs <- sum(name_common_refs > 0)
+                      common_refs <- common_refs + name_common_refs
+                      if(common_refs < references_in_common) return(FALSE) else return(TRUE)
+                  } else return(TRUE)
+              }
+            , paper_ids_set$paper_ids_1
+            , paper_ids_set$paper_ids_2)
+      }
+      output_set <- paper_ids_set[output_set]
+      output_set <- merge(output_set, input_set, by = c("paper_ids_1", "paper_ids_2"))
+      output_set <- output_set[,.(author_id1, author_id2)]
+      ## ======================================================================
+      disambr_add_set_attr(output_set, author_data_set
+                         , strength = 1
+                         , collection = "dyad_table"
+                         , reference = "wos_tsv_authors")
+      disambr_save_set(output_set)
+      disambr_mess_finish()
+      return(c(sets, list(output_set)))
+  }
 
 
-    ## partial
-    ## dt <- readRDS(file = "my.wos.rds") %>%
-    ##     disambr_set_tekles_bornmann(verbose = TRUE) %>%
-    ##     disambr_set_on_same_paper(verbose = TRUE)
+  ## partial
+  ## dt <- readRDS(file = "my.wos.rds") %>%
+  ##     disambr_set_tekles_bornmann(verbose = TRUE) %>%
+  ##     disambr_set_on_same_paper(verbose = TRUE)
 
-    ## dt_atributes <- attributes(dt[[4]])
-    ## dt[[4]] <- dt[[4]][1:2000]
-    ## mostattributes(dt[[4]]) <- dt_atributes
+  ## dt_atributes <- attributes(dt[[4]])
+  ## dt[[4]] <- dt[[4]][1:2000]
+  ## mostattributes(dt[[4]]) <- dt_atributes
 
-    ## dt.test %>% disambr_set_common_references %>% extract2(7)
+  ## dt.test %>% disambr_set_common_references %>% extract2(7)
 
-    ## dt.short <-
-    ##     dt %>%
-    ##     disambr_set_similar_last_names(verbose = TRUE)
-    ## dt.short.test <-
-    ##     dt.short %>%
-    ##     disambr_set_common_references
-    ## dt.short.test[[5]] %>% sum
-
-
+  ## dt.short <-
+  ##     dt %>%
+  ##     disambr_set_similar_last_names(verbose = TRUE)
+  ## dt.short.test <-
+  ##     dt.short %>%
+  ##     disambr_set_common_references
+  ## dt.short.test[[5]] %>% sum
 
 
 
-    ## https://stackoverflow.com/questions/27910/finding-a-doi-in-a-document-or-page
-    ## https://www.crossref.org/blog/dois-and-matching-regular-expressions/
-    ## "/^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i"
 
-    ## a <- data.table(a = c(1,2,3,4), b = c(11,22,33,44))
 
-    ## a[a %in% c(2,3), c(b)]
+  ## https://stackoverflow.com/questions/27910/finding-a-doi-in-a-document-or-page
+  ## https://www.crossref.org/blog/dois-and-matching-regular-expressions/
+  ## "/^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i"
 
-    ## c(NA,NA,1) %in% c(32,3,1,3, NA)
+  ## a <- data.table(a = c(1,2,3,4), b = c(11,22,33,44))
+
+  ## a[a %in% c(2,3), c(b)]
+
+  ## c(NA,NA,1) %in% c(32,3,1,3, NA)
 #+END_SRC
 
 *** disambr_set_cite_self_citation
@@ -4560,7 +4546,6 @@ tests
   ## a[a %in% c(2,3), c(b)]
 
   ## c(NA,NA,1) %in% c(32,3,1,3, NA)
-
 #+END_SRC
 
 
@@ -4696,7 +4681,7 @@ tests
           return(combi)
       }
       output_set <-
-          pblapply(ri_bank, function(ri) {
+          pbapply::pblapply(ri_bank, function(ri) {
               same_ri <- sapply(ri_data_set, function(i) ri %in% i)
               same_ri <- which(same_ri)
               combi(same_ri)
@@ -4711,7 +4696,6 @@ tests
       disambr_mess_finish()
       return(c(sets, list(output_set)))
   }
-
 #+END_SRC
 
 
@@ -4871,10 +4855,11 @@ microbenchmark(combi(v), combn(v,2))
 :END:
 
 #+BEGIN_SRC R :tangle R/disambr_stats.r
-  ##' Make a statistics for a collection of sets (specific algorithm) and writes to the file in dir
-  ##' @param sets collection of sets
-  ##' @param sets_dir dir with collection of sets if first arg is not provided, writes results here
-  ##' @param name name
+  ##' Make a statistics for a collection of sets (specific algorithm) and writes to the file in `sets_dir`
+  ##' 
+  ##' @param sets Collection of sets
+  ##' @param sets_dir If first arg is not provided search for collection of sets in this directory. The results are saved to this directory as well.
+  ##' @param name Name of the collection of sets
   ##' @param remove_data whether to remove first 4 sets (assumed to be a data) when sets arg is set
   ##' @param save_rds save_rds 
   ##' @return 
@@ -4885,39 +4870,35 @@ microbenchmark(combi(v), combn(v,2))
                           , remove_data = TRUE
                           , save_rds = TRUE) {
       if(is.null(sets)){
-      ## reads sets from directory
-      sets <- 
-          lapply(dir(sets_dir
-                   , full.names = TRUE
-                   , pattern = "disambr-set\\..*\\.rds$")
-               , readRDS)
+          ## reads sets from directory
+          sets <- 
+              lapply(dir(sets_dir
+                       , full.names = TRUE
+                       , pattern = "disambr-set\\..*\\.rds$")
+                   , readRDS)
       } else if(remove_data){
           ## remove data from the sets
           sets <- sets[-c(1:4)]
       }
-
+      ## get duration
       sets_attr <- 
           lapply(sets, attributes)
-
       sets_attr_duration <- 
           lapply(sets_attr, `[[`, "disambr_set_duration")
-
       sets_attr_duration <-
           unlist(sapply(sets_attr_duration, as.numeric, units = "mins"))
-
       dur_mins <- sum(sets_attr_duration)
-
+      ## get ground truth
       strong_set <- 
           disambr_get_strong_set(sets)
-
       truth_set <- 
           disambr_get_truth_set(sets)
 
-      ## mirror pairs for comparison
+      ## mirror pairs for comparison (this assumes that sets are data.tables)
       strong <-
-          unique(rbind(strong_set, strong_set[, .(author_id2
-                                                , author_id1)]))
-
+          unique(rbind(strong_set
+                     , strong_set[, .(author_id2
+                                    , author_id1)]))
       truth <-
           unique(rbind(truth_set
                      , truth_set[, .(second
@@ -4925,10 +4906,14 @@ microbenchmark(combi(v), combn(v,2))
       truth <- truth[, .(author_id1 = first
                        , author_id2 = second)]
 
+      ## True positive (a)
       a <- nrow(data.table::fintersect(truth, strong))
+      ## False positive (b)
       b <- nrow(data.table::fsetdiff(strong, truth))
+      ## False negative (c)
       c <- nrow(data.table::fsetdiff(truth, strong))
-      d <- nrow(sets[[2]]) * (nrow(sets[[2]]) - 1) - nrow(funion(truth, strong))
+      ## True negative (d)                                              (ref:bug)
+      d <- nrow(sets[[2]]) * (nrow(sets[[2]]) - 1) - nrow(data.table::funion(truth, strong))
 
       pw_presision <- a / (a + b)
       pw_recall <- a / (a + c)
@@ -4938,13 +4923,13 @@ microbenchmark(combi(v), combn(v,2))
       stats <- 
           list(name = name
              , true_positives = a
-              , false_positives = b
+             , false_positives = b
              , false_negatives = c
              , true_negatives = d
-            , pw_presision = pw_presision
+             , pw_presision = pw_presision
              , pw_recall = pw_recall
-            , pw_f1 = pw_f1
-              , pw_accuracy = pw_accuracy
+             , pw_f1 = pw_f1
+             , pw_accuracy = pw_accuracy
              , dur_mins = dur_mins
              , dur_sets = list(sets_attr_duration))
 
@@ -4962,123 +4947,14 @@ microbenchmark(combi(v), combn(v,2))
   ##' @md 
   ##' @export 
   disambr_stats_table <- function(sets_dir){
-  files <- dir(sets_dir
-             , recursive = TRUE
-             , full.names = TRUE
-             , pattern = "^disambr_stats\\.rds$")
-  stats_list <- lapply(files, readRDS)
-  data.table::rbindlist(stats_list)
+      files <- dir(sets_dir
+                 , recursive = TRUE
+                 , full.names = TRUE
+                 , pattern = "^disambr_stats\\.rds$")
+      stats_list <- lapply(files, readRDS)
+      data.table::rbindlist(stats_list)
   }
 
-#+END_SRC
-
-#+BEGIN_SRC R :session 
-
-  stats <- c("../eva-slow-dl01"
-           , "../eva-slow-dl11"
-           , "../eva-slow-dl124"
-           , "../eva-slow-dl125"
-           , "../eva-slow-dl126"
-           , "../eva-slow-dl11-c"
-           , "../eva-slow-dl11-e"
-           , "../eva-slow-dl11-i"
-           , "../eva-slow-dl11-k"
-           , "../eva-slow-dl11-x"
-           , "../eva-slow-dl11-eic2s"
-           , "../eva-slow-dl11-eic2sk2"
-           , "../eva-slow-dl11-eicsk2"
-    ) %>%
-        lapply(function(d) {
-            print(d)
-            disambr_stats(sets_dir = d, save_rds = FALSE)
-        }) %>%
-        rbindlist
-      
-
-  stats_dur <- 
-      as.data.table(stats$dur_sets) %>%
-      setnames(stats$name) %>%
-      as.matrix %>%
-      barplot(legend.text = paste("procedure", 1:(nrow(.))), las = 2)
-
-#+END_SRC
-
-#+BEGIN_SRC R :results replace output :session none :colnames yes :
-library(magrittr)
-library(data.table)
-  source("R/disambr_sets.r")
-  source("R/disambr_stats.r")
-options("digits" = 3)
-c("../eva-slow-dl01"
-  , "../eva-slow-dl11"
-  , "../eva-slow-dl11-c"
-  , "../eva-slow-dl11-e"
-  , "../eva-slow-dl11-eic2s"
-  , "../eva-slow-dl11-eic2sk2"
-  , "../eva-slow-dl11-eicsk2"
-  , "../eva-slow-dl11-i"
-  , "../eva-slow-dl11-k"
-  , "../eva-slow-dl11-x"
-  , "../eva-slow-dl124"
-  , "../eva-slow-dl125"
-  , "../eva-slow-dl126") %>%
-      lapply(function(d) {
-          print(d)
-          disambr_stats(sets_dir = d, save_rds = FALSE)
-      }) %>%
-      rbindlist %>%
-      as.matrix
-#+END_SRC
-
-#+RESULTS:
-
-| name                   | true_positives | false_positives | false_negatives | true_negatives | pw_presision pw_recall pw_f1  pw_accuracy dur_mins | w_presision | pw_recall | pw_f1 | pw_accuracy dur_mins |
-|------------------------+----------------+-----------------+-----------------+----------------+----------------------------------------------------+-------------+-----------+-------+----------------------|
-| eva-slow-dl01"         |           2976 |              38 |            2461 |          -5473 |                                              0.987 |       0.547 |     0.704 | -1248 |                 16.3 |
-| eva-slow-dl11"         |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                   35 |
-| eva-slow-dl11-c"       |             83 |               4 |            5354 |             NA |                                              0.954 |      0.0153 |    0.0301 |    NA |                 0.73 |
-| eva-slow-dl11-e"       |           1294 |               0 |            4143 |        1667705 |                                                  1 |       0.238 |     0.384 | 0.998 |                0.741 |
-| eva-slow-dl11-eic2s"   |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
-| eva-slow-dl11-eic2sk2" |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                   34 |
-| eva-slow-dl11-eicsk2"  |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                 33.9 |
-| eva-slow-dl11-i"       |           2362 |              77 |            3075 |        5940768 |                                              0.968 |       0.434 |       0.6 | 0.999 |                0.757 |
-| eva-slow-dl11-k"       |            503 |               6 |            4934 |             NA |                                              0.988 |      0.0925 |     0.169 |    NA |                 3.98 |
-| eva-slow-dl11-x"       |            233 |               0 |            5204 |             NA |                                                  1 |      0.0429 |    0.0822 |    NA |                 14.4 |
-| eva-slow-dl124"        |           2977 |             102 |            2460 |          -5537 |                                              0.967 |       0.548 |     0.699 | -1280 |                 37.6 |
-| eva-slow-dl125"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 34.2 |
-| eva-slow-dl126"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
-
-*** on blade
-
-#+BEGIN_SRC R
-  setwd("S:/disambr")
-
-    options(disambr_get_output_set = TRUE)
-    options(disambr_mess_pretty = TRUE)
-    options(disambr_save_as = TRUE)
-    options(disambr_save_set_dir = "eva-1")
-
-  ts_eva_full <-
-        disambr_read("wos-slow-export-subset"
-                   , save_sets_as = "wos-slow-export-subset-2.rds"
-                   , save_sets_dir = "eva-1") %>% 
-        disambr_set_tekles_bornmann %>% #59149  vs_1962896
-        disambr_set_on_same_paper %>%
-        disambr_set_similar_initials %>% 
-        disambr_set_similar_last_names %>%
-        disambr_set_same_email %>% 
-        disambr_set_same_affiliation %>%
-        disambr_set_cite_others_paper %>%
-        disambr_set_common_references %>%
-        disambr_set_cite_self_citation %>%
-        disambr_set_common_keywords %>%
-        disambr_set_same_researcher_ids
-
-
-  ts_eva_full_try <-
-        disambr_read("../data/wos-slow-export-subset"
-                   , save_sets_as = "wos-slow-export-subset-2.rds"
-                   , save_sets_dir = "../data")
 #+END_SRC
 
 

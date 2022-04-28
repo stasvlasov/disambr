@@ -1,4 +1,7 @@
 * Variations on EVA algorithm
+:PROPERTIES:
+:ID:       org:1h78h9c0cfj0
+:END:
 
 The EVA algorithms described in van den Akker et al. (2020) justifies and proposes a number of general disambiguation procedures and the sequence of their execution. This general algorithm can be tuned in many ways for specific needs at hand. Below we demonstrate a comparison between different versions of the algorithm and discuss some implications.
 
@@ -22,14 +25,12 @@ The table below presents comparison of EVA algorithms. The motivation for these 
 | eva-slow-dl11-eicsk2  |           2981 |              92 |            2456 |          -5527 |         0.97 |     0.548 |  0.701 |       -1273 |     33.9 |
 | eva-slow-dl11-i       |           2362 |              77 |            3075 |        5940768 |        0.968 |     0.434 |    0.6 |       0.999 |    0.757 |
 
-
 The barchart below shows duration profiles of procedure for different EVA algorithms.
 [[file:./disambr.analysis.png]]
 
 The tentative results shows that the baseline version of the algorithm eva-slow-dl01 has relatively better performance (based on F1 index) but it is also one of the most time consuming.
 
 The reproducible code snippets for each variations to EVA algorithm that we considered for the analysis are below. More in depth investigation will follow.
-
 
 ** eva-dl11
 #+BEGIN_SRC R
@@ -44,7 +45,7 @@ The reproducible code snippets for each variations to EVA algorithm that we cons
                  , save_sets_as = "wos-slow-export-subset.rds"
                  , save_sets_dir = "../data") %>% 
       disambr_set_tekles_bornmann(
-          file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+          file_path = "./inst/testdata/tekles-bornmann-researcher-ids.txt") %>%
       disambr_set_on_same_paper %>% 
       disambr_set_similar_initials %>% 
       disambr_set_similar_last_names %>%
@@ -395,6 +396,149 @@ This one is skipped as the procedure requires prior matched (strong sets) author
       ## disambr_set_cite_self_citation %>%
       disambr_set_common_keywords %>%
       disambr_set_same_researcher_ids
+#+END_SRC
+
+* Run benchmarking
+:PROPERTIES:
+:ID:       org:qwgkjhd0cfj0
+:END:
+#+BEGIN_SRC R :session 
+
+  stats <- c("../eva-slow-dl01"
+           , "../eva-slow-dl11"
+           , "../eva-slow-dl124"
+           , "../eva-slow-dl125"
+           , "../eva-slow-dl126"
+           , "../eva-slow-dl11-c"
+           , "../eva-slow-dl11-e"
+           , "../eva-slow-dl11-i"
+           , "../eva-slow-dl11-k"
+           , "../eva-slow-dl11-x"
+           , "../eva-slow-dl11-eic2s"
+           , "../eva-slow-dl11-eic2sk2"
+           , "../eva-slow-dl11-eicsk2"
+    ) %>%
+        lapply(function(d) {
+            print(d)
+            disambr_stats(sets_dir = d, save_rds = FALSE)
+        }) %>%
+        rbindlist
+      
+
+  stats_dur <- 
+      as.data.table(stats$dur_sets) %>%
+      setnames(stats$name) %>%
+      as.matrix %>%
+      barplot(legend.text = paste("procedure", 1:(nrow(.))), las = 2)
+
+#+END_SRC
+
+#+BEGIN_SRC R :results replace output :session none :colnames yes :
+library(magrittr)
+library(data.table)
+  source("R/disambr_sets.r")
+  source("R/disambr_stats.r")
+options("digits" = 3)
+c("../eva-slow-dl01"
+  , "../eva-slow-dl11"
+  , "../eva-slow-dl11-c"
+  , "../eva-slow-dl11-e"
+  , "../eva-slow-dl11-eic2s"
+  , "../eva-slow-dl11-eic2sk2"
+  , "../eva-slow-dl11-eicsk2"
+  , "../eva-slow-dl11-i"
+  , "../eva-slow-dl11-k"
+  , "../eva-slow-dl11-x"
+  , "../eva-slow-dl124"
+  , "../eva-slow-dl125"
+  , "../eva-slow-dl126") %>%
+      lapply(function(d) {
+          print(d)
+          disambr_stats(sets_dir = d, save_rds = FALSE)
+      }) %>%
+      rbindlist %>%
+      as.matrix
+#+END_SRC
+
+#+RESULTS:
+
+| name                   | true_positives | false_positives | false_negatives | true_negatives | pw_presision pw_recall pw_f1  pw_accuracy dur_mins | w_presision | pw_recall | pw_f1 | pw_accuracy dur_mins |
+|------------------------+----------------+-----------------+-----------------+----------------+----------------------------------------------------+-------------+-----------+-------+----------------------|
+| eva-slow-dl01"         |           2976 |              38 |            2461 |          -5473 |                                              0.987 |       0.547 |     0.704 | -1248 |                 16.3 |
+| eva-slow-dl11"         |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                   35 |
+| eva-slow-dl11-c"       |             83 |               4 |            5354 |             NA |                                              0.954 |      0.0153 |    0.0301 |    NA |                 0.73 |
+| eva-slow-dl11-e"       |           1294 |               0 |            4143 |        1667705 |                                                  1 |       0.238 |     0.384 | 0.998 |                0.741 |
+| eva-slow-dl11-eic2s"   |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
+| eva-slow-dl11-eic2sk2" |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                   34 |
+| eva-slow-dl11-eicsk2"  |           2981 |              92 |            2456 |          -5527 |                                               0.97 |       0.548 |     0.701 | -1273 |                 33.9 |
+| eva-slow-dl11-i"       |           2362 |              77 |            3075 |        5940768 |                                              0.968 |       0.434 |       0.6 | 0.999 |                0.757 |
+| eva-slow-dl11-k"       |            503 |               6 |            4934 |             NA |                                              0.988 |      0.0925 |     0.169 |    NA |                 3.98 |
+| eva-slow-dl11-x"       |            233 |               0 |            5204 |             NA |                                                  1 |      0.0429 |    0.0822 |    NA |                 14.4 |
+| eva-slow-dl124"        |           2977 |             102 |            2460 |          -5537 |                                              0.967 |       0.548 |     0.699 | -1280 |                 37.6 |
+| eva-slow-dl125"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 34.2 |
+| eva-slow-dl126"        |           2977 |              89 |            2460 |          -5524 |                                              0.971 |       0.548 |       0.7 | -1274 |                 33.9 |
+
+[2022-04-15 Fri]
+#+BEGIN_SRC R :results replace output :session none :colnames yes :
+  library(magrittr)
+  library(data.table)
+    source("R/disambr_sets.r")
+    source("R/disambr_stats.r")
+  options("digits" = 3)
+
+  "/mnt/raid5/data/disambr-data" |>
+      file.path(c("eva-slow-dl01"
+                , "eva-slow-dl11"
+                , "eva-slow-dl11-c"
+                , "eva-slow-dl11-e"
+                , "eva-slow-dl11-eic2s"
+                , "eva-slow-dl11-eic2sk2"
+                , "eva-slow-dl11-eicsk2"
+                , "eva-slow-dl11-i"
+                , "eva-slow-dl11-k"
+                , "eva-slow-dl11-x"
+                , "eva-slow-dl124"
+                , "eva-slow-dl125"
+                , "eva-slow-dl126")) |>
+      lapply(function(d) {
+          print(d)
+          disambr_stats(sets_dir = d, save_rds = FALSE)
+      }) |>
+      data.table::rbindlist() |>
+      as.matrix()
+#+END_SRC
+
+** on blade
+
+#+BEGIN_SRC R
+  setwd("S:/disambr")
+
+    options(disambr_get_output_set = TRUE)
+    options(disambr_mess_pretty = TRUE)
+    options(disambr_save_as = TRUE)
+    options(disambr_save_set_dir = "eva-1")
+
+  ts_eva_full <-
+        disambr_read("wos-slow-export-subset"
+                   , save_sets_as = "wos-slow-export-subset-2.rds"
+                   , save_sets_dir = "eva-1") %>% 
+        disambr_set_tekles_bornmann %>% #59149  vs_1962896
+        disambr_set_on_same_paper %>%
+        disambr_set_similar_initials %>% 
+        disambr_set_similar_last_names %>%
+        disambr_set_same_email %>% 
+        disambr_set_same_affiliation %>%
+        disambr_set_cite_others_paper %>%
+        disambr_set_common_references %>%
+        disambr_set_cite_self_citation %>%
+        disambr_set_common_keywords %>%
+        disambr_set_same_researcher_ids
+
+
+  ts_eva_full_try <-
+        disambr_read("../data/wos-slow-export-subset"
+                   , save_sets_as = "wos-slow-export-subset-2.rds"
+                   , save_sets_dir = "../data")
 #+END_SRC
 
 * References

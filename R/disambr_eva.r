@@ -112,7 +112,7 @@ disambr_set_not_on_same_paper <- function(sets
      if(verbose) message("--- made ,", length(return_sets_comb), " combinations")
      if(verbose) message("- expanding combinations")
      return_sets <-
-         pblapply(return_sets_comb
+         pbapply::pblapply(return_sets_comb
                 , function(comb) {
                     expand.grid(author_id1 = return_sets[[comb[1]]]
                               , author_id2 = return_sets[[comb[2]]])
@@ -191,7 +191,7 @@ disambr_set_similar_initials <- function(sets
         ## try cluster
         ## cl <- parallel::makeCluster(20,type="SOCK")
         output_set <- 
-            pblapply(1:(input_set_l-1), function(i) {
+            pbapply::pblapply(1:(input_set_l-1), function(i) {
                 ## combn using is data.table method
                 comb <- data.table::CJ(author_id1 = input_set[[i]]
                                      , author_id2 = unlist(input_set[(i+1):input_set_l])
@@ -305,7 +305,7 @@ disambr_set_similar_last_names <- function(sets
     if(attr(input_set, "disambr_set_type") == "different") {
         disambr_mess(paste("- doing combinations on", input_set_l))
         output_set <- 
-            pblapply(1:(input_set_l-1), function(i) {
+            pbapply::pblapply(1:(input_set_l-1), function(i) {
 
                 ## this is data.table method
                 combs <- data.table::CJ(author_id1 = input_set[[i]]
@@ -1024,7 +1024,7 @@ disambr_set_same_researcher_ids <- function(sets) {
         return(combi)
     }
     output_set <-
-        pblapply(ri_bank, function(ri) {
+        pbapply::pblapply(ri_bank, function(ri) {
             same_ri <- sapply(ri_data_set, function(i) ri %in% i)
             same_ri <- which(same_ri)
             combi(same_ri)
