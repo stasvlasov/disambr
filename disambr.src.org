@@ -723,7 +723,6 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
           }
           return(mess)
       }
-
 #+END_SRC
 
 **** disambr_mess
@@ -731,23 +730,23 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 :ID:       org:nqfdt1n0mti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_mess.r
-    ##' Report a message with message()
-    ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
-    ##' @param h_prefix Character vector of prefixes for each outline level
-    ##' @inheritDotParams create_mess
-    ##' @return Same as `message` returns
-    ##' 
-    ##' @md 
-    ##' @export
-    disambr_mess <- function(mess
-                           , h_prefix = c("disambr:", "-")
-                           , ...) {
-        ## skip is not verbose (verbose by default)
-        if(isFALSE(list(...)$verbose)) return()
-        mess <- create_mess(mess, h_prefix = h_prefix, ...)
-        ## post message
-        message(mess)
-    }
+  ##' Report a message with message()
+  ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
+  ##' @param h_prefix Character vector of prefixes for each outline level
+  ##' @inheritDotParams create_mess
+  ##' @return Same as `message` returns
+  ##' 
+  ##' @md 
+  ##' @export
+  disambr_message <- function(mess
+                         , h_prefix = c("disambr:", "-")
+                         , ...) {
+      ## skip is not verbose (verbose by default)
+      if(isFALSE(list(...)$verbose)) return()
+      mess <- create_mess(mess, h_prefix = h_prefix, ...)
+      ## post message
+      message(mess)
+  }
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
@@ -777,11 +776,10 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
                                           , c("^disambr_set_([^()]+).*")
                                           , "$1")
       mess <- paste(start_mess_prefix, running_procedure_name)
-      disambr_mess(mess, ...)
+      disambr_message(mess, ...)
       ## record the time started
       assign("disambr_start_time", Sys.time(), pos = parent.frame())
   }
-
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
@@ -827,9 +825,8 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
               dhms(Sys.time() - get("disambr_start_time", pos = parent.frame()))
           mess <- paste(mess, "in", disambr_duration)
       }   
-      disambr_mess(mess, ...)
+      disambr_message(mess, ...)
   }
-
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
@@ -847,25 +844,25 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 :ID:       org:0xagt1n0mti0
 :END:
     #+BEGIN_SRC R :tangle R/disambr_mess.r
-    ##' Report a message with warning()
-    ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
-    ##' @param h_prefix Character vector of prefixes for each outline level
-    ##' @param call. See `warning`
-    ##' @param immediate. See `warning`
-    ##' @inheritDotParams create_mess
-    ##' @return Same as `warning` returns
-    ##' 
-    ##' @md 
-    ##' @export
-    disambr_warn <- function(mess
-                           , h_prefix = c("disambr:", "-")
-                           , call. = FALSE
-                           , immediate. = TRUE
-                           , ...) {
-        mess <- create_mess(mess, h_prefix = h_prefix, ...)
-        ## post message
-        warning(mess, call. = call. , immediate. = immediate.)
-    }
+      ##' Report a message with warning()
+      ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
+      ##' @param h_prefix Character vector of prefixes for each outline level
+      ##' @param call. See `warning`
+      ##' @param immediate. See `warning`
+      ##' @inheritDotParams create_mess
+      ##' @return Same as `warning` returns
+      ##' 
+      ##' @md 
+      ##' @export
+      disambr_warn <- function(mess
+                             , h_prefix = c("disambr:", "-")
+                             , call. = FALSE
+                             , immediate. = TRUE
+                             , ...) {
+          mess <- create_mess(mess, h_prefix = h_prefix, ...)
+          ## post message
+          warning(mess, call. = call. , immediate. = immediate.)
+      }
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
@@ -1299,7 +1296,6 @@ disambr_cbind_lists <- function(...) {
       ## return overlap of sets_filters
       return(Reduce(`&`, sets_filters))
   }
-
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
@@ -1350,7 +1346,6 @@ disambr_cbind_lists <- function(...) {
       }
   }
 #+END_SRC
-
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
   a <- list(disambr_set_attr(c(1,2,3), recipe = "my_function_123")
@@ -1496,7 +1491,6 @@ disambr_cbind_lists <- function(...) {
       }
       return(sets)
   }
-
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
@@ -1608,7 +1602,6 @@ disambr_cbind_lists <- function(...) {
           disambr_stop("Weak and strong sets should be data.tables!")
       }
   }
-
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
@@ -1755,9 +1748,6 @@ disambr_cbind_lists <- function(...) {
       disambr_set_attr(focal_set, ...)
       return(focal_set)
   }
-
-
-
 #+END_SRC
 
 
@@ -1854,11 +1844,11 @@ disambr_cbind_lists <- function(...) {
               disambr_set_attr(set_to_save, file = save_set_as)
               ## save
               saveRDS(set_to_save, file = save_set_as[[1]], compress = FALSE)
-              disambr_mess(paste0(
+              disambr_message(paste0(
                   "- set saved as '", save_set_as, "'"))
               return(save_set_as)
           } else {
-              disambr_mess(
+              disambr_message(
                   paste0("- do not know how to save 'set_to_save' as '"
                        , save_set_as, "'"))
               return()
@@ -1918,10 +1908,10 @@ disambr_cbind_lists <- function(...) {
           if(length(output_set_index) == 0) {
               return()
           } else if(length(output_set_index) == 1) {
-              disambr_mess(paste("- reusing output set:", procedure_short_name))
+              disambr_message(paste("- reusing output set:", procedure_short_name))
               return(sets[[output_set_index]])
           } else {
-              disambr_mess(paste("- reusing last output set:", procedure_short_name))
+              disambr_message(paste("- reusing last output set:", procedure_short_name))
               output_set_index <- output_set_index[length(output_set_index)]
               return(sets[[output_set_index]])
           }
@@ -1930,7 +1920,6 @@ disambr_cbind_lists <- function(...) {
       }
    }
 #+END_SRC
-
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
 
@@ -1997,7 +1986,7 @@ disambr_cbind_lists <- function(...) {
               ## take the last file (as they are sorted alphabetically)
               output_set_file <- output_set_file[length(output_set_file)]
               output_set_file <- file.path(save_set_dir, output_set_file)
-              disambr_mess(paste("- reusing saved set:", output_set_file))
+              disambr_message(paste("- reusing saved set:", output_set_file))
               return(readRDS(file = output_set_file))
           } else {
               return()
@@ -2006,7 +1995,6 @@ disambr_cbind_lists <- function(...) {
           return()
       }
   }
-
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
@@ -2143,9 +2131,6 @@ disambr_cbind_lists <- function(...) {
 #+BEGIN_SRC R :tangle R/disambr_read.r
   ##' Reads the data for disambiguation
   ##' @param files_path Path to data. You can specify almost everything
-  ##' @param save_sets_as How save sets
-  ##' @param save_sets_dir where to save sets 
-  ##' @param use_time_stamp wheather to use timestamp 
   ##' @return 
   ##' 
   ##' @md 
@@ -2158,7 +2143,7 @@ disambr_cbind_lists <- function(...) {
       ## see if the data is available already
       if(is.character(save_sets_as) &&
          file.exists(file.path(save_sets_dir, save_sets_as))) {
-          disambr_mess(paste("- reusing saved sets:", save_sets_as))
+          disambr_message(paste("- reusing saved sets:", save_sets_as))
           return(readRDS(file.path(save_sets_dir, save_sets_as)))
       }
       files_path <- parse_files_path(files_path)
@@ -2378,11 +2363,11 @@ test
               lapply(processabe_data_recipes, `[[`, "file_header")
           ## check if all headers ate the same before rbindlist
           if (length(unique(processabe_data_headers)) == 1) {
-              disambr_mess("Processing wos tsv export data..")
-              disambr_mess("- rbinding wos publication tables..")
+              disambr_message("Processing wos tsv export data..")
+              disambr_message("- rbinding wos publication tables..")
               wos_publication <-
                   disambr_make_wos_tsv_publications(files_data_list, processabe_data_recipes)
-              disambr_mess("- making wos authors table..")
+              disambr_message("- making wos authors table..")
               wos_author <- disambr_make_wos_tsv_authors(wos_publication)
               if(drop_ejected) {
                   ## remove fields that we do not need
@@ -2394,7 +2379,7 @@ test
                   ## to use a varialbe it should be in ()
                   wos_publication[, (remove_headers) := NULL]
               }
-              disambr_mess("- making wos references table..")
+              disambr_message("- making wos references table..")
               wos_reference <- disambr_make_wos_tsv_references(wos_publication)
               if(drop_ejected) {
                   remove_headers <- c("CR")
@@ -2404,7 +2389,7 @@ test
                   ## remove headers without hard copy
                   wos_publication[, (remove_headers) := NULL]
               }
-              disambr_mess("- making author-year citations table..")
+              disambr_message("- making author-year citations table..")
               citation_name_table <-
                   disambr_make_wos_tsv_author_year_citations(wos_publication, wos_reference)
               ## if all data is wos data return only that
@@ -2427,7 +2412,7 @@ test
                   ))
               }
           } else {
-              disambr_mess("Files data has different headers. Skipping processing...")
+              disambr_message("Files data has different headers. Skipping processing...")
               return(files_data_list)
           }
       } else {
@@ -2881,7 +2866,7 @@ test
              , "author_initials"
              , "author_email") %in% list_of_author_fields) &&
          "AU" %in% names(wos_data_table)) {
-          disambr_mess("-- parsing AU field", ...)
+          disambr_message("-- parsing AU field", ...)
           authors_tables$au <-
               lapply(
                   stringi::stri_split_fixed(wos_data_table$AU, "; ")
@@ -2895,7 +2880,7 @@ test
              , "author_orcid"
              , "author_affiliations") %in% list_of_author_fields) &&
          "AF" %in% names(wos_data_table)) {
-          disambr_mess("-- parsing AF field", ...)
+          disambr_message("-- parsing AF field", ...)
           authors_tables$af <-
               lapply(
                   stringi::stri_split_fixed(wos_data_table$AF, "; ")
@@ -2904,7 +2889,7 @@ test
       ## RP
       if(any(c("author_email") %in% list_of_author_fields) &&
          "RP" %in% names(wos_data_table)) {
-          disambr_mess("-- parsing RP field", ...)
+          disambr_message("-- parsing RP field", ...)
           ## save RP separately as it is different order from AU
           rp <-
               lapply(wos_data_table$RP
@@ -2914,7 +2899,7 @@ test
       ## EM
       if(any(c("author_email") %in% list_of_author_fields) &&
          all(c("AU", "EM", "RP") %in% names(wos_data_table))) {
-          disambr_mess("-- parsing EM field", ...)
+          disambr_message("-- parsing EM field", ...)
           ## disambr_wos_tsv_parse_em updates authors_tables$au
           ## so no need to save it
           pbapply::pbmapply(disambr_wos_tsv_parse_em
@@ -2927,7 +2912,7 @@ test
       ## C1
       if(any(c("author_affiliations") %in% list_of_author_fields) &&
          all(c("C1", "AF") %in% names(wos_data_table))) {
-          disambr_mess("-- parsing C1 field", ...)
+          disambr_message("-- parsing C1 field", ...)
           authors_tables$c1 <-
               pbapply::pbmapply(disambr_wos_tsv_parse_c1
                    , wos_data_table$C1
@@ -2937,7 +2922,7 @@ test
       ## RI
       if(any(c("author_researcher_id") %in% list_of_author_fields) &&
          all(c("RI", "AF") %in% names(wos_data_table))) {
-          disambr_mess("-- parsing RI field", ...)
+          disambr_message("-- parsing RI field", ...)
           authors_tables$ri <-
               pbapply::pbmapply(disambr_wos_tsv_parse_ri
                    , stringi::stri_split_fixed(wos_data_table$RI, "; ")
@@ -2948,7 +2933,7 @@ test
       ## OI
       if(any(c("author_orcid") %in% list_of_author_fields) &&
          all(c("OI", "AF") %in% names(wos_data_table))) {
-          disambr_mess("-- parsing OI field", ...)
+          disambr_message("-- parsing OI field", ...)
           authors_tables$oi <-
               pbapply::pbmapply(disambr_wos_tsv_parse_oi
                    , stringi::stri_split_fixed(wos_data_table$OI, "; ")
@@ -2957,7 +2942,7 @@ test
                    , USE.NAMES = FALSE)
       }
       ## remove duplicated columns
-      disambr_mess("-- stacking author fields", ...)
+      disambr_message("-- stacking author fields", ...)
       authors_tables <- 
           lapply(authors_tables, data.table::rbindlist, idcol = "paper_id")
       authors_table <- do.call(cbind, authors_tables)
@@ -3101,14 +3086,14 @@ test
                                             , ...) {
       ## disambr_mess_start()
       if("CR" %in% names(wos_data_table)) {
-          disambr_mess("-- parsing references", ...)
+          disambr_message("-- parsing references", ...)
           references_list <-
               pbapply::pblapply(stringi::stri_split_fixed(wos_data_table$CR, "; ")
                      , disambr_wos_tsv_parse_cr)
-          disambr_mess("-- stacking references", ...)
+          disambr_message("-- stacking references", ...)
           references_table <-
               data.table::rbindlist(references_list, idcol = "paper_id")
-          disambr_mess("-- matching DOI citations", ...)
+          disambr_message("-- matching DOI citations", ...)
           ## assume unique doi
           doi_match <- match(references_table$doi
                            , wos_data_table$doi
@@ -3439,13 +3424,13 @@ this one is not needed as doi is unique and we can add them to refs_table
           output_set <- disambr_read_output_set()
           if(!is.null(output_set)) return(c(sets, list(output_set)))
           ## ----------------------------------------------------------------------
-          disambr_mess("- Tekles, A., & Bornmann, L. (2019) researcher IDs")
+          disambr_message("- Tekles, A., & Bornmann, L. (2019) researcher IDs")
           if(file.exists(file_path)) {
               researcher_ids <- readLines(file_path)
           } else {
               disambr_stop("- Can not find file with researcher IDs. Please, provide")
           }
-          disambr_mess("- coping 'wos_tsv_authors' data set")
+          disambr_message("- coping 'wos_tsv_authors' data set")
           authors_data_set_index <- disambr_in_sets(sets
                                                   , recipe = "wos_tsv_authors"
                                                   , match_attr_value_parcially = TRUE)
@@ -3456,7 +3441,7 @@ this one is not needed as doi is unique and we can add them to refs_table
           }
           authors_data_set <- sets[[authors_data_set_index]]
           ## ======================================================================
-          disambr_mess("- filtering authors from Tekles & Bornmann (2019)")
+          disambr_message("- filtering authors from Tekles & Bornmann (2019)")
           authors_data_set_new <- authors_data_set[author_researcher_id %in% researcher_ids]
           ## ======================================================================
           mostattributes(authors_data_set_new) <- attributes(authors_data_set)
@@ -3514,7 +3499,7 @@ dt.test <-
       author_data_set <-
           disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
       ## ======================================================================
-      disambr_mess("- spliting co-authors")
+      disambr_message("- spliting co-authors")
       output_set <- author_data_set %>% {split(1:nrow(.), .$paper_id)}
       ## ======================================================================
       disambr_add_set_attr(output_set, author_data_set
@@ -3609,7 +3594,7 @@ dt.test <-
       initials_data_set <- stringi::stri_sub(initials_data_set, to = 2)
       input_set <- disambr_get_last_set(sets)
       ## ======================================================================
-      disambr_mess("- fuzzy matching initials")
+      disambr_message("- fuzzy matching initials")
       ## assume all authors will be used in the table
       initials_bank <- unique(initials_data_set)
       ## lets leave NAs
@@ -3634,7 +3619,7 @@ dt.test <-
       ## this is the case if we apply this procedure first
       if(attr(input_set, "disambr_set_type") == "different") {
           input_set_l <- length(input_set)
-          disambr_mess(paste("- doing combinations on", input_set_l))
+          disambr_message(paste("- doing combinations on", input_set_l))
           ## try cluster
           ## cl <- parallel::makeCluster(20,type="SOCK")
           output_set <- 
@@ -3654,7 +3639,7 @@ dt.test <-
                   return(comb[,.(author_id1, author_id2)])
               })
           ##parallel::stopCluster(cl = cl)
-          disambr_mess("- rbinding dyads")
+          disambr_message("- rbinding dyads")
           output_set <- data.table::rbindlist(output_set)
           ## other case is when follow matching last names procedure
       } else if(attr(input_set, "disambr_set_type") == "similar") {
@@ -3732,7 +3717,7 @@ dt.test <-
       input_set <- disambr_get_last_set(sets)
       input_set_l <- length(input_set)
       ## ======================================================================
-      disambr_mess("- fuzzy matching last names")
+      disambr_message("- fuzzy matching last names")
       ## assume all authors will be used in the table
       last_names_bank <- unique(last_name_data_set)
       ## lets leave NAs
@@ -3753,7 +3738,7 @@ dt.test <-
       }
       ## ----------------------------------------------------------------------
       if(attr(input_set, "disambr_set_type") == "different") {
-          disambr_mess(paste("- doing combinations on", input_set_l))
+          disambr_message(paste("- doing combinations on", input_set_l))
           output_set <- 
               pbapply::pblapply(1:(input_set_l-1), function(i) {
 
@@ -3772,10 +3757,10 @@ dt.test <-
                           , by = c("author_last_name_1", "author_last_name_2"))
                   return(combs[,.(author_id1, author_id2)])
               })
-          disambr_mess("- rbinding dyads")
+          disambr_message("- rbinding dyads")
           output_set <- data.table::rbindlist(output_set)
       } else if(attr(input_set, "disambr_set_type") == "similar") {
-          disambr_mess(paste("- fuzzy matching authors by last name"))
+          disambr_message(paste("- fuzzy matching authors by last name"))
           output_set <- input_set
           ## add names
           output_set[, `:=`(
@@ -3891,7 +3876,7 @@ tests
       email_data_set <- toupper(author_data_set$author_email)
       input_set <- disambr_get_last_unstrong_set(sets)
       ## ======================================================================
-      disambr_mess("- checking emails")
+      disambr_message("- checking emails")
       output_set <-
           email_data_set[input_set$author_id1] == 
           email_data_set[input_set$author_id2]
@@ -3961,7 +3946,7 @@ tests
           disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
       input_set <- disambr_get_last_unstrong_set(sets)
       ## ======================================================================
-      disambr_mess("- checking overlapping affiliations")
+      disambr_message("- checking overlapping affiliations")
       affiliations1 <- author_data_set$affiliations[input_set$author_id1]
       affiliations1 <- lapply(affiliations1, toupper)
       ## affiliations1 <- ifelse(is.na(affiliations1), NULL, affiliations1)
@@ -4042,8 +4027,8 @@ tests
       citations_data_set <-
           disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
       input_set <- disambr_get_last_unstrong_set(sets)
-      ## ======================================================================
-      disambr_mess("- checking if author sites other author's paper")
+        ## ======================================================================
+      disambr_message("- checking if author sites other author's paper")
       ## TODO: Add papers that were already matched previously
       ## get paper ids
       input_set[, `:=`(
@@ -4087,9 +4072,9 @@ tests
   ## disambr_set_on_same_paper(verbose = TRUE)
 
   ## dt.test <- 
-  ## dt %>%
-  ## disambr_set_on_same_paper %>% 
-  ## disambr_set_similar_last_names
+      ## dt %>%
+      ## disambr_set_on_same_paper %>% 
+      ## disambr_set_similar_last_names
 
 
   ## dt.test %>% disambr_set_cite_others_paper %>% extract2(7)
@@ -4289,7 +4274,7 @@ tests
           disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
       input_set <- disambr_get_last_unstrong_set(sets)
       ## ======================================================================
-      disambr_mess("- checking references in common")
+      disambr_message("- checking references in common")
       ## TODO: Add papers that were already matched previously
       input_set[, `:=`(
           paper_ids_1 = author_data_set$paper_id[author_id1]
@@ -4429,7 +4414,7 @@ tests
       input_set <- disambr_get_last_unstrong_set(sets)
       ## ======================================================================
       ## TODO: check named citations
-      disambr_mess("- checking if author cites a self-citation of other")
+      disambr_message("- checking if author cites a self-citation of other")
       check_self_citations <- function(id1, id2) {
           own_papers <- 
               author_data_set$paper_id[
@@ -4585,7 +4570,7 @@ tests
           disambr_get_first_data_set(sets, recipe = "wos_tsv_publications")
       input_set <- disambr_get_last_unstrong_set(sets)
       ## ======================================================================
-      disambr_mess("- checking common keywords (Author Keywords)")
+      disambr_message("- checking common keywords (Author Keywords)")
       keywords_1 <- 
           publication_data_set[author_data_set[input_set$author_id1, c(paper_id)], c(DE)]
       keywords_1 <- stringi::stri_split_fixed(keywords_1, "; ")
@@ -4677,7 +4662,7 @@ tests
       ri_bank <- unique(unlist(ri_data_set))
       ri_bank <- sort(ri_bank) # removes NAs
       ## ======================================================================
-      disambr_mess("- expanding grid and cheching researcher IDs")
+      disambr_message("- expanding grid and cheching researcher IDs")
       ## this is fast combn
       combi <- function(vect)
       {
@@ -4897,20 +4882,20 @@ microbenchmark(combi(v), combn(v,2))
       sets_attr_duration <-
           unlist(sapply(sets_attr_duration, as.numeric, units = "mins"))
       dur_mins <- sum(sets_attr_duration)
-      ## get ground truth
-      strong_set <- 
-          disambr_get_strong_set(sets)
-      truth_set <- 
+      ## get sets
+      truth <- 
           disambr_get_truth_set(sets)
-
+      strong <- 
+          disambr_get_strong_set(sets)
+      input <- disambr_get_input_set(sets)
       ## mirror pairs for comparison (this assumes that sets are data.tables)
       strong <-
-          unique(rbind(strong_set
-                     , strong_set[, .(author_id2
-                                    , author_id1)]))
+          unique(rbind(strong
+                     , strong[, .(author_id2
+                                , author_id1)]))
       truth <-
-          unique(rbind(truth_set
-                     , truth_set[, .(second
+          unique(rbind(truth
+                     , truth[, .(second
                                    , first)]))
       truth <- truth[, .(author_id1 = first
                        , author_id2 = second)]
@@ -4922,7 +4907,8 @@ microbenchmark(combi(v), combn(v,2))
       ## False negative (c)
       c <- nrow(data.table::fsetdiff(truth, strong))
       ## True negative (d)                                              (ref:bug)
-      d <- nrow(sets[[2]]) * (nrow(sets[[2]]) - 1) - nrow(data.table::funion(truth, strong))
+      d <- nrow(sets[[2]]) * (nrow(sets[[2]]) - 1) -
+          nrow(data.table::funion(truth, strong))
 
       pw_presision <- a / (a + b)
       pw_recall <- a / (a + c)
@@ -4963,7 +4949,6 @@ microbenchmark(combi(v), combn(v,2))
       stats_list <- lapply(files, readRDS)
       data.table::rbindlist(stats_list)
   }
-
 #+END_SRC
 
 

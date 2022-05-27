@@ -392,7 +392,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
            , "author_initials"
            , "author_email") %in% list_of_author_fields) &&
        "AU" %in% names(wos_data_table)) {
-        disambr_mess("-- parsing AU field", ...)
+        disambr_message("-- parsing AU field", ...)
         authors_tables$au <-
             lapply(
                 stringi::stri_split_fixed(wos_data_table$AU, "; ")
@@ -406,7 +406,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
            , "author_orcid"
            , "author_affiliations") %in% list_of_author_fields) &&
        "AF" %in% names(wos_data_table)) {
-        disambr_mess("-- parsing AF field", ...)
+        disambr_message("-- parsing AF field", ...)
         authors_tables$af <-
             lapply(
                 stringi::stri_split_fixed(wos_data_table$AF, "; ")
@@ -415,7 +415,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
     ## RP
     if(any(c("author_email") %in% list_of_author_fields) &&
        "RP" %in% names(wos_data_table)) {
-        disambr_mess("-- parsing RP field", ...)
+        disambr_message("-- parsing RP field", ...)
         ## save RP separately as it is different order from AU
         rp <-
             lapply(wos_data_table$RP
@@ -425,7 +425,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
     ## EM
     if(any(c("author_email") %in% list_of_author_fields) &&
        all(c("AU", "EM", "RP") %in% names(wos_data_table))) {
-        disambr_mess("-- parsing EM field", ...)
+        disambr_message("-- parsing EM field", ...)
         ## disambr_wos_tsv_parse_em updates authors_tables$au
         ## so no need to save it
         pbapply::pbmapply(disambr_wos_tsv_parse_em
@@ -438,7 +438,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
     ## C1
     if(any(c("author_affiliations") %in% list_of_author_fields) &&
        all(c("C1", "AF") %in% names(wos_data_table))) {
-        disambr_mess("-- parsing C1 field", ...)
+        disambr_message("-- parsing C1 field", ...)
         authors_tables$c1 <-
             pbapply::pbmapply(disambr_wos_tsv_parse_c1
                  , wos_data_table$C1
@@ -448,7 +448,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
     ## RI
     if(any(c("author_researcher_id") %in% list_of_author_fields) &&
        all(c("RI", "AF") %in% names(wos_data_table))) {
-        disambr_mess("-- parsing RI field", ...)
+        disambr_message("-- parsing RI field", ...)
         authors_tables$ri <-
             pbapply::pbmapply(disambr_wos_tsv_parse_ri
                  , stringi::stri_split_fixed(wos_data_table$RI, "; ")
@@ -459,7 +459,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
     ## OI
     if(any(c("author_orcid") %in% list_of_author_fields) &&
        all(c("OI", "AF") %in% names(wos_data_table))) {
-        disambr_mess("-- parsing OI field", ...)
+        disambr_message("-- parsing OI field", ...)
         authors_tables$oi <-
             pbapply::pbmapply(disambr_wos_tsv_parse_oi
                  , stringi::stri_split_fixed(wos_data_table$OI, "; ")
@@ -468,7 +468,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
                  , USE.NAMES = FALSE)
     }
     ## remove duplicated columns
-    disambr_mess("-- stacking author fields", ...)
+    disambr_message("-- stacking author fields", ...)
     authors_tables <- 
         lapply(authors_tables, data.table::rbindlist, idcol = "paper_id")
     authors_table <- do.call(cbind, authors_tables)
@@ -547,14 +547,14 @@ disambr_make_wos_tsv_references <- function(wos_data_table
                                           , ...) {
     ## disambr_mess_start()
     if("CR" %in% names(wos_data_table)) {
-        disambr_mess("-- parsing references", ...)
+        disambr_message("-- parsing references", ...)
         references_list <-
             pbapply::pblapply(stringi::stri_split_fixed(wos_data_table$CR, "; ")
                    , disambr_wos_tsv_parse_cr)
-        disambr_mess("-- stacking references", ...)
+        disambr_message("-- stacking references", ...)
         references_table <-
             data.table::rbindlist(references_list, idcol = "paper_id")
-        disambr_mess("-- matching DOI citations", ...)
+        disambr_message("-- matching DOI citations", ...)
         ## assume unique doi
         doi_match <- match(references_table$doi
                          , wos_data_table$doi

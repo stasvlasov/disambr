@@ -16,7 +16,7 @@ disambr_read <- function(files_path
     ## see if the data is available already
     if(is.character(save_sets_as) &&
        file.exists(file.path(save_sets_dir, save_sets_as))) {
-        disambr_mess(paste("- reusing saved sets:", save_sets_as))
+        disambr_message(paste("- reusing saved sets:", save_sets_as))
         return(readRDS(file.path(save_sets_dir, save_sets_as)))
     }
     files_path <- parse_files_path(files_path)
@@ -51,7 +51,7 @@ disambr_read <- function(files_path
     ## see if the data is available already
     if(is.character(save_sets_as) &&
        file.exists(file.path(save_sets_dir, save_sets_as))) {
-        disambr_mess(paste("- reusing saved sets:", save_sets_as))
+        disambr_message(paste("- reusing saved sets:", save_sets_as))
         return(readRDS(file.path(save_sets_dir, save_sets_as)))
     }
     files_path <- parse_files_path(files_path)
@@ -187,11 +187,11 @@ disambr_make_data <- function(files_data_list
             lapply(processabe_data_recipes, `[[`, "file_header")
         ## check if all headers ate the same before rbindlist
         if (length(unique(processabe_data_headers)) == 1) {
-            disambr_mess("Processing wos tsv export data..")
-            disambr_mess("- rbinding wos publication tables..")
+            disambr_message("Processing wos tsv export data..")
+            disambr_message("- rbinding wos publication tables..")
             wos_publication <-
                 disambr_make_wos_tsv_publications(files_data_list, processabe_data_recipes)
-            disambr_mess("- making wos authors table..")
+            disambr_message("- making wos authors table..")
             wos_author <- disambr_make_wos_tsv_authors(wos_publication)
             if(drop_ejected) {
                 ## remove fields that we do not need
@@ -203,7 +203,7 @@ disambr_make_data <- function(files_data_list
                 ## to use a varialbe it should be in ()
                 wos_publication[, (remove_headers) := NULL]
             }
-            disambr_mess("- making wos references table..")
+            disambr_message("- making wos references table..")
             wos_reference <- disambr_make_wos_tsv_references(wos_publication)
             if(drop_ejected) {
                 remove_headers <- c("CR")
@@ -213,7 +213,7 @@ disambr_make_data <- function(files_data_list
                 ## remove headers without hard copy
                 wos_publication[, (remove_headers) := NULL]
             }
-            disambr_mess("- making author-year citations table..")
+            disambr_message("- making author-year citations table..")
             citation_name_table <-
                 disambr_make_wos_tsv_author_year_citations(wos_publication, wos_reference)
             ## if all data is wos data return only that
@@ -236,7 +236,7 @@ disambr_make_data <- function(files_data_list
                 ))
             }
         } else {
-            disambr_mess("Files data has different headers. Skipping processing...")
+            disambr_message("Files data has different headers. Skipping processing...")
             return(files_data_list)
         }
     } else {

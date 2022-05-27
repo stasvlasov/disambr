@@ -24,13 +24,13 @@ disambr_set_tekles_bornmann <-
         output_set <- disambr_read_output_set()
         if(!is.null(output_set)) return(c(sets, list(output_set)))
         ## ----------------------------------------------------------------------
-        disambr_mess("- Tekles, A., & Bornmann, L. (2019) researcher IDs")
+        disambr_message("- Tekles, A., & Bornmann, L. (2019) researcher IDs")
         if(file.exists(file_path)) {
             researcher_ids <- readLines(file_path)
         } else {
             disambr_stop("- Can not find file with researcher IDs. Please, provide")
         }
-        disambr_mess("- coping 'wos_tsv_authors' data set")
+        disambr_message("- coping 'wos_tsv_authors' data set")
         authors_data_set_index <- disambr_in_sets(sets
                                                 , recipe = "wos_tsv_authors"
                                                 , match_attr_value_parcially = TRUE)
@@ -41,7 +41,7 @@ disambr_set_tekles_bornmann <-
         }
         authors_data_set <- sets[[authors_data_set_index]]
         ## ======================================================================
-        disambr_mess("- filtering authors from Tekles & Bornmann (2019)")
+        disambr_message("- filtering authors from Tekles & Bornmann (2019)")
         authors_data_set_new <- authors_data_set[author_researcher_id %in% researcher_ids]
         ## ======================================================================
         mostattributes(authors_data_set_new) <- attributes(authors_data_set)
@@ -74,7 +74,7 @@ disambr_set_on_same_paper <- function(sets) {
     author_data_set <-
         disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
     ## ======================================================================
-    disambr_mess("- spliting co-authors")
+    disambr_message("- spliting co-authors")
     output_set <- author_data_set %>% {split(1:nrow(.), .$paper_id)}
     ## ======================================================================
     disambr_add_set_attr(output_set, author_data_set
@@ -164,7 +164,7 @@ disambr_set_similar_initials <- function(sets
     initials_data_set <- stringi::stri_sub(initials_data_set, to = 2)
     input_set <- disambr_get_last_set(sets)
     ## ======================================================================
-    disambr_mess("- fuzzy matching initials")
+    disambr_message("- fuzzy matching initials")
     ## assume all authors will be used in the table
     initials_bank <- unique(initials_data_set)
     ## lets leave NAs
@@ -189,7 +189,7 @@ disambr_set_similar_initials <- function(sets
     ## this is the case if we apply this procedure first
     if(attr(input_set, "disambr_set_type") == "different") {
         input_set_l <- length(input_set)
-        disambr_mess(paste("- doing combinations on", input_set_l))
+        disambr_message(paste("- doing combinations on", input_set_l))
         ## try cluster
         ## cl <- parallel::makeCluster(20,type="SOCK")
         output_set <- 
@@ -209,7 +209,7 @@ disambr_set_similar_initials <- function(sets
                 return(comb[,.(author_id1, author_id2)])
             })
         ##parallel::stopCluster(cl = cl)
-        disambr_mess("- rbinding dyads")
+        disambr_message("- rbinding dyads")
         output_set <- data.table::rbindlist(output_set)
         ## other case is when follow matching last names procedure
     } else if(attr(input_set, "disambr_set_type") == "similar") {
@@ -285,7 +285,7 @@ disambr_set_similar_last_names <- function(sets
     input_set <- disambr_get_last_set(sets)
     input_set_l <- length(input_set)
     ## ======================================================================
-    disambr_mess("- fuzzy matching last names")
+    disambr_message("- fuzzy matching last names")
     ## assume all authors will be used in the table
     last_names_bank <- unique(last_name_data_set)
     ## lets leave NAs
@@ -306,7 +306,7 @@ disambr_set_similar_last_names <- function(sets
     }
     ## ----------------------------------------------------------------------
     if(attr(input_set, "disambr_set_type") == "different") {
-        disambr_mess(paste("- doing combinations on", input_set_l))
+        disambr_message(paste("- doing combinations on", input_set_l))
         output_set <- 
             pbapply::pblapply(1:(input_set_l-1), function(i) {
 
@@ -325,10 +325,10 @@ disambr_set_similar_last_names <- function(sets
                         , by = c("author_last_name_1", "author_last_name_2"))
                 return(combs[,.(author_id1, author_id2)])
             })
-        disambr_mess("- rbinding dyads")
+        disambr_message("- rbinding dyads")
         output_set <- data.table::rbindlist(output_set)
     } else if(attr(input_set, "disambr_set_type") == "similar") {
-        disambr_mess(paste("- fuzzy matching authors by last name"))
+        disambr_message(paste("- fuzzy matching authors by last name"))
         output_set <- input_set
         ## add names
         output_set[, `:=`(
@@ -374,7 +374,7 @@ disambr_set_same_email <- function(sets) {
     email_data_set <- toupper(author_data_set$author_email)
     input_set <- disambr_get_last_unstrong_set(sets)
     ## ======================================================================
-    disambr_mess("- checking emails")
+    disambr_message("- checking emails")
     output_set <-
         email_data_set[input_set$author_id1] == 
         email_data_set[input_set$author_id2]
@@ -442,7 +442,7 @@ disambr_set_same_affiliation <- function(sets) {
         disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
     input_set <- disambr_get_last_unstrong_set(sets)
     ## ======================================================================
-    disambr_mess("- checking overlapping affiliations")
+    disambr_message("- checking overlapping affiliations")
     affiliations1 <- author_data_set$affiliations[input_set$author_id1]
     affiliations1 <- lapply(affiliations1, toupper)
     ## affiliations1 <- ifelse(is.na(affiliations1), NULL, affiliations1)
@@ -521,8 +521,8 @@ disambr_set_cite_others_paper <- function(sets
     citations_data_set <-
         disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
     input_set <- disambr_get_last_unstrong_set(sets)
-    ## ======================================================================
-    disambr_mess("- checking if author sites other author's paper")
+      ## ======================================================================
+    disambr_message("- checking if author sites other author's paper")
     ## TODO: Add papers that were already matched previously
     ## get paper ids
     input_set[, `:=`(
@@ -566,9 +566,9 @@ disambr_set_cite_others_paper <- function(sets
 ## disambr_set_on_same_paper(verbose = TRUE)
 
 ## dt.test <- 
-## dt %>%
-## disambr_set_on_same_paper %>% 
-## disambr_set_similar_last_names
+    ## dt %>%
+    ## disambr_set_on_same_paper %>% 
+    ## disambr_set_similar_last_names
 
 
 ## dt.test %>% disambr_set_cite_others_paper %>% extract2(7)
@@ -642,7 +642,7 @@ disambr_set_common_references <- function(sets
         disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
     input_set <- disambr_get_last_unstrong_set(sets)
     ## ======================================================================
-    disambr_mess("- checking references in common")
+    disambr_message("- checking references in common")
     ## TODO: Add papers that were already matched previously
     input_set[, `:=`(
         paper_ids_1 = author_data_set$paper_id[author_id1]
@@ -779,7 +779,7 @@ disambr_set_cite_self_citation <- function(sets) {
     input_set <- disambr_get_last_unstrong_set(sets)
     ## ======================================================================
     ## TODO: check named citations
-    disambr_mess("- checking if author cites a self-citation of other")
+    disambr_message("- checking if author cites a self-citation of other")
     check_self_citations <- function(id1, id2) {
         own_papers <- 
             author_data_set$paper_id[
@@ -931,7 +931,7 @@ disambr_set_common_keywords <- function(sets
         disambr_get_first_data_set(sets, recipe = "wos_tsv_publications")
     input_set <- disambr_get_last_unstrong_set(sets)
     ## ======================================================================
-    disambr_mess("- checking common keywords (Author Keywords)")
+    disambr_message("- checking common keywords (Author Keywords)")
     keywords_1 <- 
         publication_data_set[author_data_set[input_set$author_id1, c(paper_id)], c(DE)]
     keywords_1 <- stringi::stri_split_fixed(keywords_1, "; ")
@@ -1020,7 +1020,7 @@ disambr_set_same_researcher_ids <- function(sets) {
     ri_bank <- unique(unlist(ri_data_set))
     ri_bank <- sort(ri_bank) # removes NAs
     ## ======================================================================
-    disambr_mess("- expanding grid and cheching researcher IDs")
+    disambr_message("- expanding grid and cheching researcher IDs")
     ## this is fast combn
     combi <- function(vect)
     {

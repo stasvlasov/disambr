@@ -21,7 +21,7 @@ disambr_subsets(
 \item{negate_subsets}{whether to return sets that was not matched insted}
 }
 \value{
-list of sets or set if \code{which_to_return} is ethier "first" or "last"
+list of sets or set if \code{which_to_return} is either "first" or "last"
 }
 \description{
 Filters list of sets

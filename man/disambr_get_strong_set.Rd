@@ -2,7 +2,7 @@
 % Please edit documentation in R/disambr_sets.r
 \name{disambr_get_strong_set}
 \alias{disambr_get_strong_set}
-\title{Get sets with strength parameter of 1 and rbind them into sincle set}
+\title{Get sets with strength parameter of 1 and rbind them into single set}
 \usage{
 disambr_get_strong_set(sets, ...)
 }
@@ -21,5 +21,5 @@ disambr_get_strong_set(sets, ...)
 set or NULL if none found
 }
 \description{
-Get sets with strength parameter of 1 and rbind them into sincle set
+Get sets with strength parameter of 1 and rbind them into single set
 }

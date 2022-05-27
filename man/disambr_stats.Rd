@@ -2,7 +2,7 @@
 % Please edit documentation in R/disambr_stats.r
 \name{disambr_stats}
 \alias{disambr_stats}
-\title{Make a statistics for a collection of sets (specific algorithm) and writes to the file in dir}
+\title{Make a statistics for a collection of sets (specific algorithm) and writes to the file in \code{sets_dir}}
 \usage{
 disambr_stats(
   sets = NULL,
@@ -13,11 +13,11 @@ disambr_stats(
 )
 }
 \arguments{
-\item{sets}{collection of sets}
+\item{sets}{Collection of sets}
 
-\item{sets_dir}{dir with collection of sets if first arg is not provided, writes results here}
+\item{sets_dir}{If first arg is not provided search for collection of sets in this directory. The results are saved to this directory as well.}
 
-\item{name}{name}
+\item{name}{Name of the collection of sets}
 
 \item{remove_data}{whether to remove first 4 sets (assumed to be a data) when sets arg is set}
 
@@ -27,5 +27,5 @@ disambr_stats(
 
 }
 \description{
-Make a statistics for a collection of sets (specific algorithm) and writes to the file in dir
+Make a statistics for a collection of sets (specific algorithm) and writes to the file in \code{sets_dir}
 }

@@ -251,13 +251,13 @@ The reproducible code snippets for each variations to EVA algorithm that we cons
   options(disambr_read_output_set = TRUE)
   options(disambr_mess_pretty = TRUE)
   options(disambr_save_as = TRUE)
-  options(disambr_save_set_dir = "../eva-slow-dl11-e")
+  options(disambr_save_set_dir = "../data/disambr-data/eva-slow-dl11-e")
 
   ds <-
       disambr_read("../data/wos-slow"
                  , save_sets_as = "wos-slow.rds"
-                 , save_sets_dir = "../disambr-data") %>%  
-        disambr_set_tekles_bornmann(file_path = "../data/tekles-bornmann-researcher-ids.txt") %>%
+                 , save_sets_dir = "../data/disambr-data/disambr-data") %>%  
+        disambr_set_tekles_bornmann(file_path = "./inst/testdata/tekles-bornmann-researcher-ids.txt") %>%
       disambr_set_on_same_paper %>% 
       disambr_set_similar_initials %>% 
       disambr_set_similar_last_names %>%

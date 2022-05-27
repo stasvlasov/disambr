@@ -142,7 +142,7 @@ disambr_get_last_weak_set <- function(sets, ...) {
 
 
 ## -------->>  [[file:../disambr.src.org::*disambr_get_strong_set][disambr_get_strong_set:1]]
-##' Get sets with strength parameter of 1 and rbind them into sincle set
+##' Get sets with strength parameter of 1 and rbind them into single set
 ##' @param sets sets
 ##' @param ... other attributes
 ##' @inheritDotParams disambr_in_sets
@@ -383,11 +383,11 @@ disambr_save_set <- function(set_to_save
             disambr_set_attr(set_to_save, file = save_set_as)
             ## save
             saveRDS(set_to_save, file = save_set_as[[1]], compress = FALSE)
-            disambr_mess(paste0(
+            disambr_message(paste0(
                 "- set saved as '", save_set_as, "'"))
             return(save_set_as)
         } else {
-            disambr_mess(
+            disambr_message(
                 paste0("- do not know how to save 'set_to_save' as '"
                      , save_set_as, "'"))
             return()
@@ -425,10 +425,10 @@ disambr_get_output_set <- function(sets
         if(length(output_set_index) == 0) {
             return()
         } else if(length(output_set_index) == 1) {
-            disambr_mess(paste("- reusing output set:", procedure_short_name))
+            disambr_message(paste("- reusing output set:", procedure_short_name))
             return(sets[[output_set_index]])
         } else {
-            disambr_mess(paste("- reusing last output set:", procedure_short_name))
+            disambr_message(paste("- reusing last output set:", procedure_short_name))
             output_set_index <- output_set_index[length(output_set_index)]
             return(sets[[output_set_index]])
         }
@@ -479,7 +479,7 @@ disambr_read_output_set <- function(read_output_set = getOption("disambr_read_ou
             ## take the last file (as they are sorted alphabetically)
             output_set_file <- output_set_file[length(output_set_file)]
             output_set_file <- file.path(save_set_dir, output_set_file)
-            disambr_mess(paste("- reusing saved set:", output_set_file))
+            disambr_message(paste("- reusing saved set:", output_set_file))
             return(readRDS(file = output_set_file))
         } else {
             return()
@@ -498,7 +498,7 @@ disambr_read_output_set <- function(read_output_set = getOption("disambr_read_ou
 ##' @param attribute_value_list list of attribute values where list elements name correspond attribute names used for filtering sets
 ##' @param which_to_return whether to return "all", "first" or "last" set from filtered sets
 ##' @param negate_subsets whether to return sets that was not matched insted
-##' @return list of sets or set if `which_to_return` is ethier "first" or "last"
+##' @return list of sets or set if `which_to_return` is either "first" or "last"
 ##' 
 ##' @export 
 disambr_subsets <- function(sets_list, attribute_value_list

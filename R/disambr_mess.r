@@ -98,7 +98,7 @@
 ##' 
 ##' @md 
 ##' @export
-disambr_mess <- function(mess
+disambr_message <- function(mess
                        , h_prefix = c("disambr:", "-")
                        , ...) {
     ## skip is not verbose (verbose by default)
@@ -128,7 +128,7 @@ disambr_mess_start <- function(start_mess_prefix = "Making set -"
                                         , c("^disambr_set_([^()]+).*")
                                         , "$1")
     mess <- paste(start_mess_prefix, running_procedure_name)
-    disambr_mess(mess, ...)
+    disambr_message(mess, ...)
     ## record the time started
     assign("disambr_start_time", Sys.time(), pos = parent.frame())
 }
@@ -163,7 +163,7 @@ disambr_mess_finish <- function(mess = "Finished -"
             dhms(Sys.time() - get("disambr_start_time", pos = parent.frame()))
         mess <- paste(mess, "in", disambr_duration)
     }   
-    disambr_mess(mess, ...)
+    disambr_message(mess, ...)
 }
 ## --------<<  disambr_mess_finish:1 ends here
 
