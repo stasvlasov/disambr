@@ -75,7 +75,8 @@ disambr_set_on_same_paper <- function(sets) {
         disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
     ## ======================================================================
     disambr_message("- spliting co-authors")
-    output_set <- author_data_set %>% {split(1:nrow(.), .$paper_id)}
+    output_set <- split(1:nrow(author_data_set)
+                      , author_data_set$paper_id)
     ## ======================================================================
     disambr_add_set_attr(output_set, author_data_set
                        , type = "different"

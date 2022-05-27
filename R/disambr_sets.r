@@ -269,9 +269,10 @@ disambr_set_attr <- function(focal_set
 ## --------<<  disambr_set_attr:1 ends here
 
 
-
 ## -------->>  [[file:../disambr.src.org::*disambr_add_set_attr][disambr_add_set_attr:1]]
 ##' Add disambr attribures to focal set from template set and update some of them
+##'
+##' It adds attributes by reference (with setattr {data.table}), i.e. without making a copy
 ##'
 ##' It updates:
 ##' - time stamp (disambr_set_st) to current

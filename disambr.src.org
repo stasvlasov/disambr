@@ -1689,6 +1689,8 @@ disambr_cbind_lists <- function(...) {
 #+BEGIN_SRC R :tangle R/disambr_sets.r
   ##' Add disambr attribures to focal set from template set and update some of them
   ##'
+  ##' It adds attributes by reference (with setattr {data.table}), i.e. without making a copy
+  ##'
   ##' It updates:
   ##' - time stamp (disambr_set_st) to current
   ##' - disambr_set_file to NULL
@@ -3500,7 +3502,8 @@ dt.test <-
           disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
       ## ======================================================================
       disambr_message("- spliting co-authors")
-      output_set <- author_data_set %>% {split(1:nrow(.), .$paper_id)}
+      output_set <- split(1:nrow(author_data_set)
+                        , author_data_set$paper_id)
       ## ======================================================================
       disambr_add_set_attr(output_set, author_data_set
                          , type = "different"
