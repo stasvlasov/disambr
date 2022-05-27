@@ -29,7 +29,7 @@ disambr_read <- function(files_path
                        , save_set_dir = save_sets_dir
                        , use_time_stamp = use_time_stamp)
     }
-    disambr_mess_finish()
+    disambr_message_finish()
     return(sets)
 }
 ## --------<<  TEMPLATE:1 ends here
@@ -64,7 +64,7 @@ disambr_read <- function(files_path
                        , save_set_dir = save_sets_dir
                        , use_time_stamp = use_time_stamp)
     }
-    disambr_mess_finish()
+    disambr_message_finish()
     return(sets)
 }
 ## --------<<  disambr_read:1 ends here

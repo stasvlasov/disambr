@@ -48,7 +48,7 @@ disambr_set_tekles_bornmann <-
         disambr_set_attr(authors_data_set_new, name = "tekles_bornmann")
         ## disambr_save_set(authors_data_set_new)
         sets[[authors_data_set_index]] <- authors_data_set_new
-        disambr_mess_finish()
+        disambr_message_finish()
         return(sets)
     }
 ## --------<<  disambr_set_tekles_bornmann:1 ends here
@@ -83,7 +83,7 @@ disambr_set_on_same_paper <- function(sets) {
                        , collection = "list_of_lists"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 ## --------<<  disambr_set_on_same_paper:1 ends here
@@ -241,7 +241,7 @@ disambr_set_similar_initials <- function(sets
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 
@@ -346,7 +346,7 @@ disambr_set_similar_last_names <- function(sets
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 ## --------<<  disambr_set_similar_last_names:1 ends here
@@ -385,7 +385,7 @@ disambr_set_same_email <- function(sets) {
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 
@@ -462,7 +462,7 @@ disambr_set_same_affiliation <- function(sets) {
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 
@@ -555,7 +555,7 @@ disambr_set_cite_others_paper <- function(sets
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 
@@ -715,7 +715,7 @@ disambr_set_common_references <- function(sets
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 
@@ -839,7 +839,7 @@ disambr_set_cite_self_citation <- function(sets) {
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 
@@ -951,7 +951,7 @@ disambr_set_common_keywords <- function(sets
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 
@@ -1045,7 +1045,7 @@ disambr_set_same_researcher_ids <- function(sets) {
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_mess_finish()
+    disambr_message_finish()
     return(c(sets, list(output_set)))
 }
 ## --------<<  disambr_set_same_researcher_ids:1 ends here

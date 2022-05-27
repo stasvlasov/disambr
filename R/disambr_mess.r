@@ -144,7 +144,7 @@ disambr_mess_start <- function(start_mess_prefix = "Making set -"
 ##' @return time started
 ##' 
 ##' @export 
-disambr_mess_finish <- function(mess = "Finished -"
+disambr_message_finish <- function(mess = "Finished -"
                               , append_running_procedure_name = TRUE
                               , ...) {
     if(isTRUE(append_running_procedure_name)) {

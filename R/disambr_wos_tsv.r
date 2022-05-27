@@ -488,7 +488,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
                        , strength = 0.1
                        , name = "wos_tsv_authors")
     #disambr_save_set(authors_table)
-    disambr_mess_finish(mess = "-- finished -")
+    disambr_message_finish(mess = "-- finished -")
     return(authors_table)
 }
 ## --------<<  disambr_make_wos_tsv_authors:1 ends here

@@ -806,7 +806,7 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   ##' @return time started
   ##' 
   ##' @export 
-  disambr_mess_finish <- function(mess = "Finished -"
+  disambr_message_finish <- function(mess = "Finished -"
                                 , append_running_procedure_name = TRUE
                                 , ...) {
       if(isTRUE(append_running_procedure_name)) {
@@ -2156,7 +2156,7 @@ disambr_cbind_lists <- function(...) {
                          , save_set_dir = save_sets_dir
                          , use_time_stamp = use_time_stamp)
       }
-      disambr_mess_finish()
+      disambr_message_finish()
       return(sets)
   }
 #+END_SRC
@@ -2962,7 +2962,7 @@ test
                          , strength = 0.1
                          , name = "wos_tsv_authors")
       #disambr_save_set(authors_table)
-      disambr_mess_finish(mess = "-- finished -")
+      disambr_message_finish(mess = "-- finished -")
       return(authors_table)
   }
 #+END_SRC
@@ -3448,7 +3448,7 @@ this one is not needed as doi is unique and we can add them to refs_table
           disambr_set_attr(authors_data_set_new, name = "tekles_bornmann")
           ## disambr_save_set(authors_data_set_new)
           sets[[authors_data_set_index]] <- authors_data_set_new
-          disambr_mess_finish()
+          disambr_message_finish()
           return(sets)
       }
 #+END_SRC
@@ -3508,7 +3508,7 @@ dt.test <-
                          , collection = "list_of_lists"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 #+END_SRC
@@ -3671,7 +3671,7 @@ dt.test <-
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -3778,7 +3778,7 @@ dt.test <-
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 #+END_SRC
@@ -3887,7 +3887,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -3966,7 +3966,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -4061,7 +4061,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -4347,7 +4347,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -4474,7 +4474,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -4590,7 +4590,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -4687,7 +4687,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 #+END_SRC
