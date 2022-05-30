@@ -179,7 +179,7 @@ disambr_set_attr(a
                              , "first_procedure"))
 
 foo <- function(b, a = NULL, ...) {
-    disambr_mess_start()
+    disambr_message_start()
     disambr_add_set_attr(b, a, ...)
     return(attributes(b))
 }

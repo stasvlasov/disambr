@@ -383,7 +383,7 @@ disambr_make_wos_tsv_authors <- function(wos_data_table
                                       , "author_orcid"
                                       , "author_affiliations")
                                 , ...) {
-    disambr_mess_start(start_mess_prefix = "-- making set")
+    disambr_message_start(start_mess_prefix = "-- making set")
     authors_tables <- list()
     ## AU
     if(any(c("author_order"
@@ -545,7 +545,7 @@ disambr_wos_tsv_parse_cr <- function(references) {
 ##' @export 
 disambr_make_wos_tsv_references <- function(wos_data_table
                                           , ...) {
-    ## disambr_mess_start()
+    ## disambr_message_start()
     if("CR" %in% names(wos_data_table)) {
         disambr_message("-- parsing references", ...)
         references_list <-
@@ -572,7 +572,7 @@ disambr_make_wos_tsv_references <- function(wos_data_table
           , strength = 0.1
           , name = "wos_tsv_references"
           , collection = "unit_table")
-        ## disambr_mess_finish()
+        ## disambr_message_finish()
         return(references_table)
     } else {
         disambr_stop("THERE IS NOT 'CR' FIELD WITH REFERENCES!")

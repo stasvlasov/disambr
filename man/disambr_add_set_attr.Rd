@@ -28,6 +28,9 @@ disambr_add_set_attr(
 
 }
 \description{
+It adds attributes by reference (with setattr {data.table}), i.e. without making a copy
+}
+\details{
 It updates:
 \itemize{
 \item time stamp (disambr_set_st) to current

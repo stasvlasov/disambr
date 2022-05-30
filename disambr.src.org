@@ -405,7 +405,8 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
        })
 
   ## remove files and empty dirs
-  sapply(c(files_to_remove, dirs_to_remove) , file.remove)
+  sapply(c(files_to_remove, dirs_to_remove)
+       , \(file) if(file.exists(file)) file.remove(file))
 #+END_SRC
 
 
@@ -630,13 +631,13 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   }
 #+END_SRC
 
-*** mess
-**** create_mess
+*** messaging
+**** create_message
 :PROPERTIES:
 :ID:       org:dpadt1n0mti0
 :END:
 
-#+BEGIN_SRC R :tangle R/disambr_mess.r
+#+BEGIN_SRC R :tangle R/disambr_messaging.r
   ##' Creates message string for reporting during procedures
       ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
       ##' @param h Forse specific ouline level of message
@@ -652,7 +653,7 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
       ##' @return Message string
       ##' 
       ##' @export 
-      create_mess <- function(mess
+      create_message <- function(mess
                             , h = integer(0)
                             , indent = integer(0)
                             , prefix = ""
@@ -725,15 +726,15 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
       }
 #+END_SRC
 
-**** disambr_mess
+**** disambr_message
 :PROPERTIES:
 :ID:       org:nqfdt1n0mti0
 :END:
-#+BEGIN_SRC R :tangle R/disambr_mess.r
+#+BEGIN_SRC R :tangle R/disambr_messaging.r
   ##' Report a message with message()
   ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
   ##' @param h_prefix Character vector of prefixes for each outline level
-  ##' @inheritDotParams create_mess
+  ##' @inheritDotParams create_message
   ##' @return Same as `message` returns
   ##' 
   ##' @md 
@@ -743,30 +744,30 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
                          , ...) {
       ## skip is not verbose (verbose by default)
       if(isFALSE(list(...)$verbose)) return()
-      mess <- create_mess(mess, h_prefix = h_prefix, ...)
+      mess <- create_message(mess, h_prefix = h_prefix, ...)
       ## post message
       message(mess)
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
-  expect_message(disambr_mess("Hello world!"))
-  expect_null(disambr_mess("Hello world!", verbose = FALSE))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_message.r
+  expect_message(disambr_message("Hello world!"))
+  expect_null(disambr_message("Hello world!", verbose = FALSE))
 #+END_SRC
 
-**** disambr_mess_start
+**** disambr_message_start
 :PROPERTIES:
 :ID:       org:9rmdt1n0mti0
 :END:
 
-#+BEGIN_SRC R :tangle R/disambr_mess.r
+#+BEGIN_SRC R :tangle R/disambr_messaging.r
   ##' Post a starting message for disambr procedure. Records time started in `disambr_start_time` variable in its `parent.frame()`
   ##' @param start_mess_prefix Prefix for staring message
-  ##' @inheritDotParams disambr_mess
+  ##' @inheritDotParams disambr_message
   ##' @return time started
   ##' 
   ##' @export 
-  disambr_mess_start <- function(start_mess_prefix = "Making set -"
+  disambr_message_start <- function(start_mess_prefix = "Making set -"
                                 , ...) {
       ## get name of running procedure
       running_procedure_name <- deparse(sys.calls()[[sys.nframe() - 1]])
@@ -782,10 +783,10 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_message_start.r
 
   foo <- function() {
-      disambr_mess_start()
+      disambr_message_start()
       return(disambr_start_time)
   }
   expect_inherits(foo(), c("POSIXt", "POSIXct"))
@@ -793,16 +794,16 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 #+END_SRC
 
-**** disambr_mess_finish
+**** disambr_message_finish
 :PROPERTIES:
 :ID:       org:m6vdt1n0mti0
 :END:
 
-#+BEGIN_SRC R :tangle R/disambr_mess.r
+#+BEGIN_SRC R :tangle R/disambr_messaging.r
   ##' Post a starting message for disambr procedure. Records time started in `disambr_start_time` variable in its `parent.frame()`
   ##' @param mess Prefix for staring message
   ##' @param append_running_procedure_name Whether to append running procedure name
-  ##' @inheritDotParams disambr_mess
+  ##' @inheritDotParams disambr_message
   ##' @return time started
   ##' 
   ##' @export 
@@ -829,44 +830,44 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_message_finish.r
   foo <- function() {
       disambr_start_time <- Sys.time() - 1000
-      disambr_mess_finish()
+      disambr_message_finish()
   }
 
   expect_message(foo(), "foo.*in")
 
 #+END_SRC
 
-**** disambr_warn
+**** disambr_warning
 :PROPERTIES:
 :ID:       org:0xagt1n0mti0
 :END:
-    #+BEGIN_SRC R :tangle R/disambr_mess.r
+#+BEGIN_SRC R :tangle R/disambr_messaging.r
       ##' Report a message with warning()
       ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
       ##' @param h_prefix Character vector of prefixes for each outline level
       ##' @param call. See `warning`
       ##' @param immediate. See `warning`
-      ##' @inheritDotParams create_mess
+      ##' @inheritDotParams create_message
       ##' @return Same as `warning` returns
       ##' 
       ##' @md 
       ##' @export
-      disambr_warn <- function(mess
+      disambr_warning <- function(mess
                              , h_prefix = c("disambr:", "-")
                              , call. = FALSE
                              , immediate. = TRUE
                              , ...) {
-          mess <- create_mess(mess, h_prefix = h_prefix, ...)
+          mess <- create_message(mess, h_prefix = h_prefix, ...)
           ## post message
           warning(mess, call. = call. , immediate. = immediate.)
       }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
-   expect_warning(disambr_warn("Ahtung!"))
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_warning.r
+   expect_warning(disambr_warning("Ahtung!"))
 
 #+END_SRC
 
@@ -875,11 +876,11 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 :ID:       org:qlegt1n0mti0
 :END:
 
-#+BEGIN_SRC R :tangle R/disambr_mess.r
+#+BEGIN_SRC R :tangle R/disambr_messaging.r
   ##' Report a message with stop()
   ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
   ##' @param call. See `stop`
-  ##' @inheritDotParams create_mess
+  ##' @inheritDotParams create_message
   ##' @return Same as `stop` returns
   ##' 
   ##' @md 
@@ -890,7 +891,7 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
       parent.call <- deparse(sys.calls()[[sys.nframe() - 1]])
       parent.call <- as.character(parent.call)
       mess <-
-          create_mess(mess
+          create_message(mess
                     , h_prefix = paste0(parent.call, ":")
                     , ...)
       ## post message
@@ -898,7 +899,7 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_mess.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_disambr_stop.r
   expect_error(disambr_stop())
 #+END_SRC
 
@@ -1886,7 +1887,7 @@ disambr_cbind_lists <- function(...) {
                                , "first_procedure"))
 
   foo <- function(b, a = NULL, ...) {
-      disambr_mess_start()
+      disambr_message_start()
       disambr_add_set_attr(b, a, ...)
       return(attributes(b))
   }
@@ -2258,7 +2259,7 @@ disambr_cbind_lists <- function(...) {
                          , save_sets_as = NULL
                          , save_sets_dir = "disambr-data"
                          , use_time_stamp = FALSE) {
-      disambr_mess_start()
+      disambr_message_start()
       ## see if the data is available already
       if(is.character(save_sets_as) &&
          file.exists(file.path(save_sets_dir, save_sets_as))) {
@@ -2296,11 +2297,11 @@ disambr_cbind_lists <- function(...) {
                          , save_sets_as = NULL
                          , save_sets_dir = "disambr-data"
                          , use_time_stamp = FALSE) {
-      disambr_mess_start()
+      disambr_message_start()
       ## see if the data is available already
       if(is.character(save_sets_as) &&
          file.exists(file.path(save_sets_dir, save_sets_as))) {
-          disambr_mess(paste("- reusing saved sets:", save_sets_as))
+          disambr_message(paste("- reusing saved sets:", save_sets_as))
           return(readRDS(file.path(save_sets_dir, save_sets_as)))
       }
       files_path <- parse_files_path(files_path)
@@ -2313,7 +2314,7 @@ disambr_cbind_lists <- function(...) {
                          , save_set_dir = save_sets_dir
                          , use_time_stamp = use_time_stamp)
       }
-      disambr_mess_finish()
+      disambr_message_finish()
       return(sets)
   }
 #+END_SRC
@@ -2976,7 +2977,7 @@ test
                                         , "author_orcid"
                                         , "author_affiliations")
                                   , ...) {
-      disambr_mess_start(start_mess_prefix = "-- making set")
+      disambr_message_start(start_mess_prefix = "-- making set")
       authors_tables <- list()
       ## AU
       if(any(c("author_order"
@@ -3203,7 +3204,7 @@ test
   ##' @export 
   disambr_make_wos_tsv_references <- function(wos_data_table
                                             , ...) {
-      ## disambr_mess_start()
+      ## disambr_message_start()
       if("CR" %in% names(wos_data_table)) {
           disambr_message("-- parsing references", ...)
           references_list <-
@@ -3230,7 +3231,7 @@ test
             , strength = 0.1
             , name = "wos_tsv_references"
             , collection = "unit_table")
-          ## disambr_mess_finish()
+          ## disambr_message_finish()
           return(references_table)
       } else {
           disambr_stop("THERE IS NOT 'CR' FIELD WITH REFERENCES!")
@@ -3242,7 +3243,7 @@ test
   my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
 
   if(file.exists(my.file)) {
-    
+
       dt <- disambr_read_file(my.file)
 
       expect_equal(nrow(disambr_make_wos_tsv_references(dt)), 3760)
@@ -3538,7 +3539,7 @@ this one is not needed as doi is unique and we can add them to refs_table
                              , "tekles-bornmann-researcher-ids.txt"
                              , package = "disambr")) {
           force(sets)
-          disambr_mess_start()
+          disambr_message_start()
           if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
           ## check if output set is ready
           output_set <- disambr_get_output_set(sets)
@@ -3610,7 +3611,7 @@ dt.test <-
   ##' @export 
   disambr_split_authors_if_on_the_same_paper <- function(sets) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -3702,7 +3703,7 @@ dt.test <-
   disambr_merge_authors_with_similar_initials <- function(sets
                                          , maxDist = 1) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -3777,12 +3778,12 @@ dt.test <-
                             , by = c("author_initials_1", "author_initials_2"))
           output_set <- output_set[,.(author_id1, author_id2)]
           ## } else if(attr(input_set, "disambr_set_type") == "similar") {
-          ##     disambr_mess("- subsetting first two initials_bank")
+          ##     disambr_message("- subsetting first two initials_bank")
           ##     initials_bank1 <-
           ##         stri_sub(author_data_set$author_initials_bank[input_set$author_id1], to = 2)
           ##     initials_bank2 <-
           ##         stri_sub(author_data_set$author_initials_bank[input_set$author_id2], to = 2)
-          ##     disambr_mess("- calculating distance b/w initials_bank")
+          ##     disambr_message("- calculating distance b/w initials_bank")
           ##     dist <- stringdist(initials_bank1
           ##                      , initials_bank2
           ##                      , method = "lv")
@@ -3826,7 +3827,7 @@ dt.test <-
                                            , max_dist_short = 0
                                            , min_length = 0) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -3985,7 +3986,7 @@ tests
   ##' @export 
   disambr_merge_authors_with_same_emails <- function(sets) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -4057,7 +4058,7 @@ tests
   ##' @export 
   disambr_merge_authors_with_same_affiliation <- function(sets) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -4135,7 +4136,7 @@ tests
   ##' @export 
   disambr_merge_authors_if_citing_others_papers <- function(sets
                                           , match_refrerences_by_name_year = TRUE) {
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -4151,7 +4152,7 @@ tests
           disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
       input_set <- disambr_get_last_unstrong_set(sets)
         ## ======================================================================
-      disambr_mess("- checking if author sites other author's paper")
+      disambr_message("- checking if author sites other author's paper")
       ## TODO: Add papers that were already matched previously
       ## get paper ids
       input_set[, `:=`(
@@ -4184,7 +4185,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -4257,7 +4258,7 @@ tests
   ##' @export 
   disambr_set_cite_others_paper <- function(sets
                                           , match_refrerences_by_name_year = TRUE) {
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -4273,7 +4274,7 @@ tests
           disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
       input_set <- disambr_get_last_unstrong_set(sets)
         ## ======================================================================
-      disambr_mess("- checking if author sites other author's paper")
+      disambr_message("- checking if author sites other author's paper")
       ## TODO: Add papers that were already matched previously
       ## get paper ids
       input_set[, `:=`(
@@ -4306,7 +4307,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -4380,7 +4381,7 @@ tests
   disambr_merge_authors_with_common_references <-
       function(sets
              , match_refrerences_by_name_year = TRUE) {
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -4393,7 +4394,7 @@ tests
       paper_id_max <- max(author_data_set$paper_id)
       input_set <- disambr_get_last_unstrong_set(sets)
         ## ======================================================================
-      disambr_mess("- filtering cases with shared co-authors")
+      disambr_message("- filtering cases with shared co-authors")
       ## get paper ids
       output_set <- 
           input_set[
@@ -4417,7 +4418,7 @@ tests
                          , collection = "dyad_table"
                          , reference = "wos_tsv_authors")
       disambr_save_set(output_set)
-      disambr_mess_finish()
+      disambr_message_finish()
       return(c(sets, list(output_set)))
   }
 
@@ -4457,7 +4458,7 @@ tests
   disambr_merge_authors_with_common_references <- function(sets
                                           , references_in_common = 3) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -4597,7 +4598,7 @@ tests
   ##' @export 
   disambr_merge_authors_if_citing_self_citation <- function(sets) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -4755,7 +4756,7 @@ tests
   disambr_merge_authors_with_common_keywords <- function(sets
                                         , keywords_in_common = 3) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)
@@ -4847,7 +4848,7 @@ tests
   ##' @export 
   disambr_merge_authors_with_same_researcher_ids <- function(sets) {
       force(sets)
-      disambr_mess_start()
+      disambr_message_start()
       if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
       ## check if output set is ready
       output_set <- disambr_get_output_set(sets)

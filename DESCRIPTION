@@ -1,7 +1,7 @@
 Package: disambr
 Title: disambr - Named Entity Disambiguation in R
 Version: 0.0.0.9000
-Date: 2022-03-15
+Date: 2022-05-30
 Authors@R: c(
     person(c("Stanislav", "A."), "Vlasov", , "stanislav.a.vlasov@gmail.com", role = c("aut", "cre")),
     person(c("Olmo", "R."), "van den Akker", , "ovdakker@gmail.com", role = "aut"),
@@ -12,8 +12,8 @@ License: LGPL (>= 3)
 URL: https://github.com/stasvlasov/disambr
 BugReports: https://github.com/stasvlasov/disambr/issues
 Depends: 
-    R (>= 4.0),
-    data.table(>= 1.13.0)
+    data.table(>= 1.13.0),
+    R (>= 4.0)
 Imports: 
     data.table (>= 1.13.0),
     magrittr (>= 1.4.0),
