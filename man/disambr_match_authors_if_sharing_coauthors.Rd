@@ -4,14 +4,25 @@
 \alias{disambr_match_authors_if_sharing_coauthors}
 \title{Make a set of matched authors that share co-authors}
 \usage{
-disambr_match_authors_if_sharing_coauthors(sets)
+disambr_match_authors_if_sharing_coauthors(
+  sets,
+  min_number_of_shared_coauthors = 1
+)
 }
 \arguments{
-\item{sets}{Sets}
+\item{sets}{Sets of matched author names dyads}
+
+\item{min_number_of_shared_coauthors}{Minimum number of co-authors that should be shared in order for author names to be cosidered as matched/merged}
 }
 \value{
-
+Original sets with table of matched author dyads appended to it
 }
 \description{
-Make a set of matched authors that share co-authors
+\itemize{
+\item First we index dyads of papers for matched authors by indexing elements in an upper triangle in square paper by paper matrix (see \code{get_upper_triangle_index} function)
+\item Then we group and count matched author dyads that are associated with the same paper dyad index. If there are no duplicates in authors ids then it would be the number of co-shared co-authors but there is an issue when we try to match same author name to several author names on the other paper (next steps meant to fix this issue)
+\item Within these groups of same paper dyads we count same authors ids on each paper to access the number of open triads (when the same author is matched to two different authors from the same paper) for every author dyad in a group (Nid1 + Nid2 - 2)
+The algorithm for matching authors based on shared co-authors is the following:
+\item Finally, we filter matched author dyads based on the difference between number of paper dyads and number of open triangles for authors (records_per_paper - open_triangles > 1). Also see \code{min_number_of_shared_coauthors}
+}
 }
