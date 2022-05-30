@@ -13,7 +13,7 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/create_mess.html</loc>
+    <loc>/reference/create_message.html</loc>
   </url>
   <url>
     <loc>/reference/dhms.html</loc>
@@ -23,6 +23,9 @@
   </url>
   <url>
     <loc>/reference/disambr_add_set_attr.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_filter_authors_by_researcher_ids.html</loc>
   </url>
   <url>
     <loc>/reference/disambr_get_first_data_set.html</loc>
@@ -58,13 +61,37 @@
     <loc>/reference/disambr_make_wos_tsv_references.html</loc>
   </url>
   <url>
-    <loc>/reference/disambr_mess.html</loc>
+    <loc>/reference/disambr_merge_authors_if_citing_self_citation.html</loc>
   </url>
   <url>
-    <loc>/reference/disambr_mess_finish.html</loc>
+    <loc>/reference/disambr_merge_authors_with_common_keywords.html</loc>
   </url>
   <url>
-    <loc>/reference/disambr_mess_start.html</loc>
+    <loc>/reference/disambr_merge_authors_with_common_references.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_merge_authors_with_same_affiliation.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_merge_authors_with_same_emails.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_merge_authors_with_same_researcher_ids.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_merge_authors_with_similar_initials.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_merge_authors_with_similar_last_names.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_message.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_message_finish.html</loc>
+  </url>
+  <url>
+    <loc>/reference/disambr_message_start.html</loc>
   </url>
   <url>
     <loc>/reference/disambr_read.html</loc>
@@ -91,34 +118,7 @@
     <loc>/reference/disambr_set_cite_others_paper.html</loc>
   </url>
   <url>
-    <loc>/reference/disambr_set_cite_self_citation.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_common_keywords.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_common_references.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_on_same_paper.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_same_affiliation.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_same_email.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_same_researcher_ids.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_similar_initials.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_similar_last_names.html</loc>
-  </url>
-  <url>
-    <loc>/reference/disambr_set_tekles_bornmann.html</loc>
+    <loc>/reference/disambr_split_authors_if_on_the_same_paper.html</loc>
   </url>
   <url>
     <loc>/reference/disambr_stats.html</loc>
@@ -133,7 +133,7 @@
     <loc>/reference/disambr_subsets.html</loc>
   </url>
   <url>
-    <loc>/reference/disambr_warn.html</loc>
+    <loc>/reference/disambr_warning.html</loc>
   </url>
   <url>
     <loc>/reference/disambr_wos_tsv_parse_af.html</loc>
@@ -161,6 +161,9 @@
   </url>
   <url>
     <loc>/reference/get_file_extension.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_upper_triangle_index.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>

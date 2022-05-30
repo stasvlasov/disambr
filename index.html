@@ -74,16 +74,16 @@
 <p>The idea of basic usage is simply piping the disambiguation procedures. Each procedure takes list of sets as input and returns list of sets either by adding a new set or modifying input list of sets.</p>
 <div class="sourceCode" id="cb1" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">data</span> |&gt; 
-    <span class="fu"><a href="reference/disambr_set_on_same_paper.html">disambr_set_on_same_paper</a></span><span class="op">(</span><span class="op">)</span> |&gt; 
-    <span class="fu"><a href="reference/disambr_set_similar_initials.html">disambr_set_similar_initials</a></span><span class="op">(</span><span class="op">)</span> |&gt;
-    <span class="fu"><a href="reference/disambr_set_similar_last_names.html">disambr_set_similar_last_names</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+    <span class="fu">disambr_set_on_same_paper</span><span class="op">(</span><span class="op">)</span> |&gt; 
+    <span class="fu">disambr_set_similar_initials</span><span class="op">(</span><span class="op">)</span> |&gt;
+    <span class="fu">disambr_set_similar_last_names</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Sequence (piped functions) of disambiguation procedures defines a disambiguation algorithm.</p>
 <div class="sourceCode" id="cb2" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">disambr_eva</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">data</span> |&gt;
-        <span class="fu"><a href="reference/disambr_set_on_same_paper.html">disambr_set_on_same_paper</a></span><span class="op">(</span><span class="op">)</span> |&gt;
-        <span class="fu"><a href="reference/disambr_set_similar_initials.html">disambr_set_similar_initials</a></span><span class="op">(</span><span class="op">)</span> |&gt;
-        <span class="fu"><a href="reference/disambr_set_similar_last_names.html">disambr_set_similar_last_names</a></span><span class="op">(</span><span class="op">)</span>
+        <span class="fu">disambr_set_on_same_paper</span><span class="op">(</span><span class="op">)</span> |&gt;
+        <span class="fu">disambr_set_similar_initials</span><span class="op">(</span><span class="op">)</span> |&gt;
+        <span class="fu">disambr_set_similar_last_names</span><span class="op">(</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 </div>
 <div class="section level2">

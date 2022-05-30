@@ -48,7 +48,7 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="create_mess.html">create_mess()</a></code> </p>
+          <p><code><a href="create_message.html">create_message()</a></code> </p>
         </td>
         <td><p>Creates message string for reporting during procedures</p></td>
       </tr><tr><td>
@@ -59,6 +59,10 @@
           <p><code><a href="disambr_add_set_attr.html">disambr_add_set_attr()</a></code> </p>
         </td>
         <td><p>Add disambr attribures to focal set from template set and update some of them</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_filter_authors_by_researcher_ids.html">disambr_filter_authors_by_researcher_ids()</a></code> </p>
+        </td>
+        <td><p>Subsets WoS authors table with Researcher IDs</p></td>
       </tr><tr><td>
           <p><code><a href="disambr_get_first_data_set.html">disambr_get_first_data_set()</a></code> </p>
         </td>
@@ -82,7 +86,7 @@
       </tr><tr><td>
           <p><code><a href="disambr_get_strong_set.html">disambr_get_strong_set()</a></code> </p>
         </td>
-        <td><p>Get sets with strength parameter of 1 and rbind them into sincle set</p></td>
+        <td><p>Get sets with strength parameter of 1 and rbind them into single set</p></td>
       </tr><tr><td>
           <p><code><a href="disambr_get_truth_set.html">disambr_get_truth_set()</a></code> </p>
         </td>
@@ -104,15 +108,47 @@
         </td>
         <td><p>Make references table from WoS tsv data</p></td>
       </tr><tr><td>
-          <p><code><a href="disambr_mess.html">disambr_mess()</a></code> </p>
+          <p><code><a href="disambr_merge_authors_if_citing_self_citation.html">disambr_merge_authors_if_citing_self_citation()</a></code> </p>
+        </td>
+        <td><p>Make a set of matched authors based on cases when one author cites others self citation. Self-citations here are detected based on DOI.</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_merge_authors_with_common_keywords.html">disambr_merge_authors_with_common_keywords()</a></code> </p>
+        </td>
+        <td><p>Makes set of authors with number of keywords in their papers in common</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_merge_authors_with_common_references.html">disambr_merge_authors_with_common_references()</a></code> <code><a href="disambr_merge_authors_with_common_references.html">disambr_merge_authors_with_common_references()</a></code> </p>
+        </td>
+        <td><p>Make a set of matched authors bases on the cases when one author cites the others paper.</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_merge_authors_with_same_affiliation.html">disambr_merge_authors_with_same_affiliation()</a></code> </p>
+        </td>
+        <td><p>Makes set of matched authors based on same affiliation</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_merge_authors_with_same_emails.html">disambr_merge_authors_with_same_emails()</a></code> </p>
+        </td>
+        <td><p>Makes set of matched authors bases on same email addresses</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_merge_authors_with_same_researcher_ids.html">disambr_merge_authors_with_same_researcher_ids()</a></code> </p>
+        </td>
+        <td><p>For testing. Makes so called ground truth set based on same research IDs</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_merge_authors_with_similar_initials.html">disambr_merge_authors_with_similar_initials()</a></code> </p>
+        </td>
+        <td><p>Makes set of similar authors based on their initials</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_merge_authors_with_similar_last_names.html">disambr_merge_authors_with_similar_last_names()</a></code> </p>
+        </td>
+        <td><p>Makes set of similar authors based on their last names</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_message.html">disambr_message()</a></code> </p>
         </td>
         <td><p>Report a message with message()</p></td>
       </tr><tr><td>
-          <p><code><a href="disambr_mess_finish.html">disambr_mess_finish()</a></code> </p>
+          <p><code><a href="disambr_message_finish.html">disambr_message_finish()</a></code> </p>
         </td>
         <td><p>Post a starting message for disambr procedure. Records time started in <code>disambr_start_time</code> variable in its <code><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame()</a></code></p></td>
       </tr><tr><td>
-          <p><code><a href="disambr_mess_start.html">disambr_mess_start()</a></code> </p>
+          <p><code><a href="disambr_message_start.html">disambr_message_start()</a></code> </p>
         </td>
         <td><p>Post a starting message for disambr procedure. Records time started in <code>disambr_start_time</code> variable in its <code><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame()</a></code></p></td>
       </tr><tr><td>
@@ -148,49 +184,13 @@
         </td>
         <td><p>Make a set of matched authors bases on the cases when one author cites the others paper.</p></td>
       </tr><tr><td>
-          <p><code><a href="disambr_set_cite_self_citation.html">disambr_set_cite_self_citation()</a></code> </p>
-        </td>
-        <td><p>Make a set of matched authors based on cases when one author cites others self citation. Self-citations here are detected based on DOI.</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_common_keywords.html">disambr_set_common_keywords()</a></code> </p>
-        </td>
-        <td><p>Makes set of authors with number of keywords in their papers in common</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_common_references.html">disambr_set_common_references()</a></code> </p>
-        </td>
-        <td><p>Make set of authors that have number of references in common</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_on_same_paper.html">disambr_set_on_same_paper()</a></code> </p>
+          <p><code><a href="disambr_split_authors_if_on_the_same_paper.html">disambr_split_authors_if_on_the_same_paper()</a></code> </p>
         </td>
         <td><p>Makes sets of co-authors assuming that all authors on paper are different person.</p></td>
       </tr><tr><td>
-          <p><code><a href="disambr_set_same_affiliation.html">disambr_set_same_affiliation()</a></code> </p>
-        </td>
-        <td><p>Makes set of matched authors based on same affiliation</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_same_email.html">disambr_set_same_email()</a></code> </p>
-        </td>
-        <td><p>Makes set of matched authors bases on same email addresses</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_same_researcher_ids.html">disambr_set_same_researcher_ids()</a></code> </p>
-        </td>
-        <td><p>For testing. Makes so called ground truth set based on same research IDs</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_similar_initials.html">disambr_set_similar_initials()</a></code> </p>
-        </td>
-        <td><p>Makes set of similar authors based on their initials</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_similar_last_names.html">disambr_set_similar_last_names()</a></code> </p>
-        </td>
-        <td><p>Makes set of similar authors based on their last names</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_tekles_bornmann.html">disambr_set_tekles_bornmann()</a></code> </p>
-        </td>
-        <td><p>Subsets WoS authors table with Researcher IDs used in Tekles &amp; Bornmann (2019). Meant for reproducability.</p></td>
-      </tr><tr><td>
           <p><code><a href="disambr_stats.html">disambr_stats()</a></code> </p>
         </td>
-        <td><p>Make a statistics for a collection of sets (specific algorithm) and writes to the file in dir</p></td>
+        <td><p>Make a statistics for a collection of sets (specific algorithm) and writes to the file in <code>sets_dir</code></p></td>
       </tr><tr><td>
           <p><code><a href="disambr_stats_table.html">disambr_stats_table()</a></code> </p>
         </td>
@@ -204,7 +204,7 @@
         </td>
         <td><p>Filters list of sets</p></td>
       </tr><tr><td>
-          <p><code><a href="disambr_warn.html">disambr_warn()</a></code> </p>
+          <p><code><a href="disambr_warning.html">disambr_warning()</a></code> </p>
         </td>
         <td><p>Report a message with warning()</p></td>
       </tr><tr><td>
@@ -243,6 +243,10 @@
           <p><code><a href="get_file_extension.html">get_file_extension()</a></code> </p>
         </td>
         <td><p>Extention extractor. Same as tools::file_ext but for NULL input returns NULL instead of logical(0).</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_upper_triangle_index.html">get_upper_triangle_index()</a></code> </p>
+        </td>
+        <td><p>Returns the index of element in upper triangle of squared <code>n</code> by <code>n</code> matrix</p></td>
       </tr><tr><td>
           <p><code><a href="match_fuzzy.html">match_fuzzy()</a></code> </p>
         </td>
