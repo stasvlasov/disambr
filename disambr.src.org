@@ -1247,7 +1247,7 @@ disambr_cbind_lists <- function(...) {
 
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_get_upper_triangle_index.r
-  get_upper_triangle_index <- disamber:::get_upper_triangle_index
+  get_upper_triangle_index <- disambr:::get_upper_triangle_index
 
   ## 3x3
   m <- matrix(c(1,2,3

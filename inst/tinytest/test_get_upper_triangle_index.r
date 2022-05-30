@@ -1,5 +1,5 @@
 ## -------->>  [[file:../../disambr.src.org::*get_upper_triangle_index][get_upper_triangle_index:2]]
-get_upper_triangle_index <- disamber:::get_upper_triangle_index
+get_upper_triangle_index <- disambr:::get_upper_triangle_index
 
 ## 3x3
 m <- matrix(c(1,2,3
