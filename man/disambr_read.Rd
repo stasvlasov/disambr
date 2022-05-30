@@ -20,6 +20,12 @@ disambr_read(
 }
 \arguments{
 \item{files_path}{Path to data. You can specify almost everything}
+
+\item{save_sets_as}{Save set as}
+
+\item{save_sets_dir}{Directory to save set in}
+
+\item{use_time_stamp}{Whether to use timestamp in the file name}
 }
 \value{
 

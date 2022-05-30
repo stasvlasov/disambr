@@ -507,7 +507,7 @@ disambr_merge_authors_with_same_affiliation <- function(sets) {
 ##' @param match_refrerences_by_name_year Whether to check citations based on first author name and year pair in addition to machich citations based on DOI
 ##' @return 
 ##' @export 
-disambr_set_cite_others_paper <- function(sets
+disambr_merge_authors_if_citing_others_papers <- function(sets
                                         , match_refrerences_by_name_year = TRUE) {
     disambr_message_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -621,14 +621,12 @@ disambr_set_cite_others_paper <- function(sets
 
 
 ## -------->>  [[file:../disambr.src.org::*disambr_match_authors_if_sharing_coauthors][disambr_match_authors_if_sharing_coauthors:1]]
-##' Make a set of matched authors bases on the cases when one author cites the others paper.
+##' Make a set of matched authors that share co-authors
 ##' @param sets Sets
-##' @param match_refrerences_by_name_year Whether to check citations based on first author name and year pair in addition to machich citations based on DOI
 ##' @return 
 ##' @export 
-disambr_merge_authors_with_common_references <-
-    function(sets
-           , match_refrerences_by_name_year = TRUE) {
+disambr_match_authors_if_sharing_coauthors <-
+    function(sets) {
     disambr_message_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
     ## check if output set is ready

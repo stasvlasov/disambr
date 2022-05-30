@@ -8,8 +8,8 @@ m <- matrix(c(1,2,3
           , nrow = 3
           , byrow = TRUE)
 
-i <- 2
-j <- 1
+i <- 1
+j <- 2
 
 expect_equal(
     m[i,j]
@@ -26,12 +26,12 @@ expect_equal(
 )
 
 
-i <- 3
-j <- 2
+i <- 2
+j <- 3
 
 expect_equal(
     m[i,j]
-  , get_upper_triangle_index(i,j,dim(m)[1])
+  , get_upper_triangle_index(j,i,dim(m)[1])
 )
 
 ## 4x4
@@ -43,8 +43,8 @@ m <- matrix(c(1,2,3,4
           , byrow = TRUE)
 
 
-i <- 2
-j <- 1
+i <- 1
+j <- 2
 
 expect_equal(
     m[i,j]
@@ -61,12 +61,12 @@ expect_equal(
 )
 
 
-i <- 3
-j <- 2
+i <- 2
+j <- 3
 
 expect_equal(
     m[i,j]
-  , get_upper_triangle_index(i,j,dim(m)[1])
+  , get_upper_triangle_index(j,i,dim(m)[1])
 )
 
 
@@ -75,7 +75,7 @@ i <- 4
 j <- 2
 
 expect_equal(
-    m[i,j]
+    m[j,i]
   , get_upper_triangle_index(i,j,dim(m)[1])
 )
 

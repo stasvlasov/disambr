@@ -2,26 +2,18 @@
 % Please edit documentation in R/disambr_eva.r
 \name{disambr_merge_authors_with_common_references}
 \alias{disambr_merge_authors_with_common_references}
-\title{Make a set of matched authors bases on the cases when one author cites the others paper.}
+\title{Make set of authors that have number of references in common}
 \usage{
-disambr_merge_authors_with_common_references(sets, references_in_common = 3)
-
 disambr_merge_authors_with_common_references(sets, references_in_common = 3)
 }
 \arguments{
 \item{sets}{Sets}
 
 \item{references_in_common}{number of references in common}
-
-\item{match_refrerences_by_name_year}{Whether to check citations based on first author name and year pair in addition to machich citations based on DOI}
 }
 \value{
-
-
 Sets with new set
 }
 \description{
-Make a set of matched authors bases on the cases when one author cites the others paper.
-
 Make set of authors that have number of references in common
 }

@@ -252,7 +252,7 @@ get_upper_triangle_index <- function(i, j, n) {
     if(j >= i) {
         n*(n - 1)/2 - (n - i)*(n - i + 1)/2 + j
     } else {
-        index_upper_triangle(j, i, n)
+        get_upper_triangle_index(j, i, n)
     }
 }
 ## --------<<  get_upper_triangle_index:1 ends here

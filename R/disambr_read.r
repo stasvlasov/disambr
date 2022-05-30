@@ -1,6 +1,9 @@
 ## -------->>  [[file:../disambr.src.org::*TEMPLATE][TEMPLATE:1]]
 ##' Reads the data for disambiguation
 ##' @param files_path Path to data. You can specify almost everything
+##' @param save_sets_as 
+##' @param save_sets_dir 
+##' @param use_time_stamp 
 ##' @return 
 ##' 
 ##' @md 
@@ -36,6 +39,9 @@ disambr_read <- function(files_path
 ## -------->>  [[file:../disambr.src.org::*disambr_read][disambr_read:1]]
 ##' Reads the data for disambiguation
 ##' @param files_path Path to data. You can specify almost everything
+##' @param save_sets_as Save set as
+##' @param save_sets_dir Directory to save set in
+##' @param use_time_stamp Whether to use timestamp in the file name
 ##' @return 
 ##' 
 ##' @md 
