@@ -108,6 +108,14 @@
         </td>
         <td><p>Make references table from WoS tsv data</p></td>
       </tr><tr><td>
+          <p><code><a href="disambr_match_authors_if_sharing_coauthors.html">disambr_match_authors_if_sharing_coauthors()</a></code> </p>
+        </td>
+        <td><p>Make a set of matched authors that share co-authors</p></td>
+      </tr><tr><td>
+          <p><code><a href="disambr_merge_authors_if_citing_others_papers.html">disambr_merge_authors_if_citing_others_papers()</a></code> </p>
+        </td>
+        <td><p>Make a set of matched authors bases on the cases when one author cites the others paper.</p></td>
+      </tr><tr><td>
           <p><code><a href="disambr_merge_authors_if_citing_self_citation.html">disambr_merge_authors_if_citing_self_citation()</a></code> </p>
         </td>
         <td><p>Make a set of matched authors based on cases when one author cites others self citation. Self-citations here are detected based on DOI.</p></td>
@@ -116,9 +124,9 @@
         </td>
         <td><p>Makes set of authors with number of keywords in their papers in common</p></td>
       </tr><tr><td>
-          <p><code><a href="disambr_merge_authors_with_common_references.html">disambr_merge_authors_with_common_references()</a></code> <code><a href="disambr_merge_authors_with_common_references.html">disambr_merge_authors_with_common_references()</a></code> </p>
+          <p><code><a href="disambr_merge_authors_with_common_references.html">disambr_merge_authors_with_common_references()</a></code> </p>
         </td>
-        <td><p>Make a set of matched authors bases on the cases when one author cites the others paper.</p></td>
+        <td><p>Make set of authors that have number of references in common</p></td>
       </tr><tr><td>
           <p><code><a href="disambr_merge_authors_with_same_affiliation.html">disambr_merge_authors_with_same_affiliation()</a></code> </p>
         </td>
@@ -179,10 +187,6 @@
           <p><code><a href="disambr_set_attr.html">disambr_set_attr()</a></code> </p>
         </td>
         <td><p>Adds attribures to the set with data.table::setattr</p></td>
-      </tr><tr><td>
-          <p><code><a href="disambr_set_cite_others_paper.html">disambr_set_cite_others_paper()</a></code> </p>
-        </td>
-        <td><p>Make a set of matched authors bases on the cases when one author cites the others paper.</p></td>
       </tr><tr><td>
           <p><code><a href="disambr_split_authors_if_on_the_same_paper.html">disambr_split_authors_if_on_the_same_paper()</a></code> </p>
         </td>
