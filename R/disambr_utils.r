@@ -236,3 +236,25 @@ match_fuzzy <- function(bank, method, max_dist, id_name) {
 ## --------<<  match_fuzzy:1 ends here
 
 
+
+## -------->>  [[file:../disambr.src.org::*get_upper_triangle_index][get_upper_triangle_index:1]]
+##' Returns the index of element in upper triangle of squared `n` by `n` matrix
+##'
+##' inspired from https://math.stackexchange.com/questions/2134011 but modified so
+##' index starts from 1 as the original answer was for index starting from 0
+##' 
+##' @param i row index
+##' @param j column index
+##' @param n the size of squared matrix
+##'
+##' @return An index as integer number. Index starts from 1
+get_upper_triangle_index <- function(i, j, n) {
+    if(j >= i) {
+        n*(n - 1)/2 - (n - i)*(n - i + 1)/2 + j
+    } else {
+        index_upper_triangle(j, i, n)
+    }
+}
+## --------<<  get_upper_triangle_index:1 ends here
+
+

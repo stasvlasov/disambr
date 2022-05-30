@@ -1,9 +1,6 @@
 ## -------->>  [[file:../disambr.src.org::*TEMPLATE][TEMPLATE:1]]
 ##' Reads the data for disambiguation
 ##' @param files_path Path to data. You can specify almost everything
-##' @param save_sets_as How save sets
-##' @param save_sets_dir where to save sets 
-##' @param use_time_stamp wheather to use timestamp 
 ##' @return 
 ##' 
 ##' @md 
@@ -51,7 +48,7 @@ disambr_read <- function(files_path
     ## see if the data is available already
     if(is.character(save_sets_as) &&
        file.exists(file.path(save_sets_dir, save_sets_as))) {
-        disambr_message(paste("- reusing saved sets:", save_sets_as))
+        disambr_mess(paste("- reusing saved sets:", save_sets_as))
         return(readRDS(file.path(save_sets_dir, save_sets_as)))
     }
     files_path <- parse_files_path(files_path)
@@ -64,7 +61,7 @@ disambr_read <- function(files_path
                        , save_set_dir = save_sets_dir
                        , use_time_stamp = use_time_stamp)
     }
-    disambr_message_finish()
+    disambr_mess_finish()
     return(sets)
 }
 ## --------<<  disambr_read:1 ends here

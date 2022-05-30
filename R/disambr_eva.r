@@ -1,15 +1,17 @@
 ## -------->>  [[file:../disambr.src.org::*disambr_set_tekles_bornmann][disambr_set_tekles_bornmann:1]]
-##' Subsets WoS authors table with Researcher IDs used in Tekles & Bornmann (2019). Meant for reproducability.
+##' Subsets WoS authors table with Researcher IDs
 ##'
 ##' This procedure does not alter sets attributes. Just filters WoS author table.
 ##'
-##' Reference: Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746. http://arxiv.org/abs/1904.12746
 ##' @param sets WoS data
-##' @param file_path path to Researcher IDs
+##' @param file_path path to Researcher IDs. The default list of Researcher IDs is taken from Tekles & Bornmann (2019) for reproducing their test samples (see reference)
 ##' @return updated WoS data
-##' 
-##' @export 
-disambr_set_tekles_bornmann <-
+##'
+##' @references Tekles, A., & Bornmann, L. (2019). Author name disambiguation of bibliometric data: A comparison of several unsupervised approaches. ArXiv:1904.12746. http://arxiv.org/abs/1904.12746
+
+##'
+##' @export
+disambr_filter_authors_by_researcher_ids <-
     function(sets
            , file_path =
                  system.file("testdata" 
@@ -41,7 +43,7 @@ disambr_set_tekles_bornmann <-
         }
         authors_data_set <- sets[[authors_data_set_index]]
         ## ======================================================================
-        disambr_message("- filtering authors from Tekles & Bornmann (2019)")
+        disambr_message("- filtering authors by Researcher ID")
         authors_data_set_new <- authors_data_set[author_researcher_id %in% researcher_ids]
         ## ======================================================================
         mostattributes(authors_data_set_new) <- attributes(authors_data_set)
@@ -61,7 +63,7 @@ disambr_set_tekles_bornmann <-
 ##' @return Updated sets
 ##' 
 ##' @export 
-disambr_set_on_same_paper <- function(sets) {
+disambr_split_authors_if_on_the_same_paper <- function(sets) {
     force(sets)
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -147,7 +149,7 @@ disambr_set_not_on_same_paper <- function(sets
 ##' @param maxDist see max_dist in `match_fuzzy`
 ##' @return Sets with new appended
 ##' @export 
-disambr_set_similar_initials <- function(sets
+disambr_merge_authors_with_similar_initials <- function(sets
                                        , maxDist = 1) {
     force(sets)
     disambr_mess_start()
@@ -267,7 +269,7 @@ disambr_set_similar_initials <- function(sets
 ##' @param min_length who is short names defined, default 0 which means do not condider short names
 ##' @return Sets with new appended
 ##' @export 
-disambr_set_similar_last_names <- function(sets
+disambr_merge_authors_with_similar_last_names <- function(sets
                                          , max_dist = 1
                                          , max_dist_short = 0
                                          , min_length = 0) {
@@ -359,7 +361,7 @@ disambr_set_similar_last_names <- function(sets
 ##' @param sets Sets
 ##' @return Sets with new attached
 ##' @export 
-disambr_set_same_email <- function(sets) {
+disambr_merge_authors_with_same_emails <- function(sets) {
     force(sets)
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -429,7 +431,7 @@ disambr_set_same_email <- function(sets) {
 ##' @param sets Sets
 ##' @return Sets with new attached
 ##' @export 
-disambr_set_same_affiliation <- function(sets) {
+disambr_merge_authors_with_same_affiliation <- function(sets) {
     force(sets)
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -505,7 +507,7 @@ disambr_set_same_affiliation <- function(sets) {
 ##' @param match_refrerences_by_name_year Whether to check citations based on first author name and year pair in addition to machich citations based on DOI
 ##' @return 
 ##' @export 
-disambr_set_cite_others_paper <- function(sets
+disambr_merge_authors_if_citing_others_papers <- function(sets
                                         , match_refrerences_by_name_year = TRUE) {
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -523,7 +525,7 @@ disambr_set_cite_others_paper <- function(sets
         disambr_get_first_data_set(sets, recipe = "wos_tsv_author_year_citations")
     input_set <- disambr_get_last_unstrong_set(sets)
       ## ======================================================================
-    disambr_message("- checking if author sites other author's paper")
+    disambr_mess("- checking if author sites other author's paper")
     ## TODO: Add papers that were already matched previously
     ## get paper ids
     input_set[, `:=`(
@@ -556,7 +558,7 @@ disambr_set_cite_others_paper <- function(sets
                        , collection = "dyad_table"
                        , reference = "wos_tsv_authors")
     disambr_save_set(output_set)
-    disambr_message_finish()
+    disambr_mess_finish()
     return(c(sets, list(output_set)))
 }
 
@@ -618,13 +620,87 @@ disambr_set_cite_others_paper <- function(sets
 
 
 
+## -------->>  [[file:../disambr.src.org::*disambr_match_authors_if_sharing_coauthors][disambr_match_authors_if_sharing_coauthors:1]]
+##' Make a set of matched authors bases on the cases when one author cites the others paper.
+##' @param sets Sets
+##' @param match_refrerences_by_name_year Whether to check citations based on first author name and year pair in addition to machich citations based on DOI
+##' @return 
+##' @export 
+disambr_merge_authors_with_common_references <-
+    function(sets
+           , match_refrerences_by_name_year = TRUE) {
+    disambr_mess_start()
+    if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
+    ## check if output set is ready
+    output_set <- disambr_get_output_set(sets)
+    if(!is.null(output_set)) return(sets)
+    output_set <- disambr_read_output_set()
+    if(!is.null(output_set)) return(c(sets, list(output_set)))
+    ## ----------------------------------------------------------------------
+    author_data_set <-
+        disambr_get_first_data_set(sets, recipe = "wos_tsv_authors")
+    paper_id_max <- max(author_data_set$paper_id)
+    input_set <- disambr_get_last_unstrong_set(sets)
+      ## ======================================================================
+    disambr_mess("- filtering cases with shared co-authors")
+    ## get paper ids
+    output_set <- 
+        input_set[
+          , paper_dyad_ids :=
+                mapply(get_upper_triangle_index
+                     , author_data_set$paper_id[author_id1]
+                     , author_data_set$paper_id[author_id2]
+                     , paper_id_max)
+        ][
+          , `:=`(records_per_paper = .N
+               , open_triangles =
+                     as.vector(table(author_id1)[as.character(author_id1)]) +
+                     as.vector(table(author_id2)[as.character(author_id2)]) - 2)
+          , keyby = paper_dyad_ids
+        ][records_per_paper - open_triangles > 1
+        , .(author_id1, author_id2)
+          ]
+    ## ======================================================================
+    disambr_add_set_attr(output_set, author_data_set
+                       , strength = 1
+                       , collection = "dyad_table"
+                       , reference = "wos_tsv_authors")
+    disambr_save_set(output_set)
+    disambr_mess_finish()
+    return(c(sets, list(output_set)))
+}
+
+
+
+## TESTS
+## data.table(
+##     a1 = c(1,1,1, 8,1, 2, 4)
+##   , a2 = c(5,2,3, 2, 5 , 3, 5)
+##   , p1 = c(1,1,10,1,3,4,5)
+##   , p2 = c(10,10,1,10,8,5,4))[
+##   , paper_dyad_ids :=
+##         mapply(get_upper_triangle_index
+##              , p1
+##              , p2
+##              , max(c(p1, p2)))
+## ][
+##   , `:=`(records_per_paper = .N
+##        , open_triangles =
+##              as.vector(table(a1)[as.character(a1)]) +
+##              as.vector(table(a2)[as.character(a2)]) - 2)
+##   , keyby = paper_dyad_ids
+## ][records_per_paper - open_triangles > 1]
+## --------<<  disambr_match_authors_if_sharing_coauthors:1 ends here
+
+
+
 ## -------->>  [[file:../disambr.src.org::*disambr_set_common_references][disambr_set_common_references:1]]
 ##' Make set of authors that have number of references in common
 ##' @param sets Sets
 ##' @param references_in_common number of references in common
 ##' @return Sets with new set
 ##' @export 
-disambr_set_common_references <- function(sets
+disambr_merge_authors_with_common_references <- function(sets
                                         , references_in_common = 3) {
     force(sets)
     disambr_mess_start()
@@ -762,7 +838,7 @@ disambr_set_common_references <- function(sets
 ##' @param sets Sets
 ##' @return Sets with new appended
 ##' @export 
-disambr_set_cite_self_citation <- function(sets) {
+disambr_merge_authors_if_citing_self_citation <- function(sets) {
     force(sets)
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
@@ -915,7 +991,7 @@ disambr_set_cite_self_citation <- function(sets) {
 ##' @return Sets with new set appended
 ##' 
 ##' @export 
-disambr_set_common_keywords <- function(sets
+disambr_merge_authors_with_common_keywords <- function(sets
                                       , keywords_in_common = 3) {
     force(sets)
     disambr_mess_start()
@@ -1005,7 +1081,7 @@ disambr_set_common_keywords <- function(sets
 ##' @return Sets with new set appended
 ##' 
 ##' @export 
-disambr_set_same_researcher_ids <- function(sets) {
+disambr_merge_authors_with_same_researcher_ids <- function(sets) {
     force(sets)
     disambr_mess_start()
     if(!is.list(sets)) disambr_stop("- 'sets' parameter should be list!")
