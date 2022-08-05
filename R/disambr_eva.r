@@ -196,19 +196,28 @@ disambr_merge_authors_with_similar_initials <- function(sets
         ## try cluster
         ## cl <- parallel::makeCluster(20,type="SOCK")
         output_set <- 
-            pbapply::pblapply(1:(input_set_l-1), function(i) {
+            pbapply::pblapply(1:(input_set_l - 1), function(i) {
                 ## combn using is data.table method
-                comb <- data.table::CJ(author_id1 = input_set[[i]]
-                                     , author_id2 = unlist(input_set[(i+1):input_set_l])
-                                     , sorted = FALSE)
+                comb <-
+                    data.table::CJ(author_id1 = input_set[[i]]
+                                 , author_id2 = unlist(input_set[(i+1):input_set_l])
+                                 , sorted = FALSE)
                 ## add initials_bank
                 comb[, `:=`(
                     author_initials_1 = initials_data_set[author_id1]
                   , author_initials_2 = initials_data_set[author_id2]
                 )]
+                ## alternative to the above
+                ## data.table::set(comb, , c("author_initials_1"
+                                        ## , "author_initials_2")
+                              ## , list(initials_data_set[comb$author_id1]
+                                   ## , initials_data_set[comb$author_id2]))
                 ## check matches
-                comb <- merge(comb, initials_match
-                            , by = c("author_initials_1", "author_initials_2"))
+                comb <-
+                    data.tables::merge(comb
+                                     , initials_match
+                                     , by = c("author_initials_1"
+                                            , "author_initials_2"))
                 return(comb[,.(author_id1, author_id2)])
             })
         ##parallel::stopCluster(cl = cl)
@@ -314,9 +323,11 @@ disambr_merge_authors_with_similar_last_names <- function(sets
             pbapply::pblapply(1:(input_set_l-1), function(i) {
 
                 ## this is data.table method
-                combs <- data.table::CJ(author_id1 = input_set[[i]]
-                                      , author_id2 = unlist(input_set[(i+1):input_set_l])
-                                      , sorted = FALSE)
+                combs <-
+                    data.table::CJ(author_id1 = input_set[[i]]
+                                 , author_id2 =
+                                        unlist(input_set[(i + 1) : input_set_l])
+                                 , sorted = FALSE)
                 ## add names
                 combs[, `:=`(
                     author_last_name_1 = last_name_data_set[author_id1]
@@ -682,8 +693,8 @@ disambr_match_authors_if_sharing_coauthors <-
 
 ## TESTS
 ## data.table(
-##     a1 = c(1,1,1, 8,1, 2, 4)
-##   , a2 = c(5,2,3, 2, 5 , 3, 5)
+##     a1 = c(1,1,1, 8,10, 200, 400)
+##   , a2 = c(5,2,3, 2, 50 , 300, 500)
 ##   , p1 = c(1,1,10,1,3,4,5)
 ##   , p2 = c(10,10,1,10,8,5,4))[
 ##   , paper_dyad_ids :=
@@ -697,7 +708,7 @@ disambr_match_authors_if_sharing_coauthors <-
 ##              as.vector(table(a1)[as.character(a1)]) +
 ##              as.vector(table(a2)[as.character(a2)]) - 2)
 ##   , keyby = paper_dyad_ids
-## ][records_per_paper - open_triangles > 1]
+## ][, criteria := records_per_paper - open_triangles - 1][]
 ## --------<<  disambr_match_authors_if_sharing_coauthors:1 ends here
 
 

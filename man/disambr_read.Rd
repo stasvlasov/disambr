@@ -10,13 +10,6 @@ disambr_read(
   save_sets_dir = "disambr-data",
   use_time_stamp = FALSE
 )
-
-disambr_read(
-  files_path,
-  save_sets_as = NULL,
-  save_sets_dir = "disambr-data",
-  use_time_stamp = FALSE
-)
 }
 \arguments{
 \item{files_path}{Path to data. You can specify almost everything}
@@ -27,13 +20,6 @@ disambr_read(
 
 \item{use_time_stamp}{Whether to use timestamp in the file name}
 }
-\value{
-
-
-
-}
 \description{
-Reads the data for disambiguation
-
 Reads the data for disambiguation
 }

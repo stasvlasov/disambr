@@ -12,7 +12,7 @@ disambr_read_tsv_wos(f, header)
 \item{header}{header}
 }
 \value{
-
+disambr set
 }
 \description{
 Reads WoS tsv export file and makes disambr set out of it (just adding some attributes to the data.table)

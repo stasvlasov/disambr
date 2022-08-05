@@ -1,41 +1,3 @@
-## -------->>  [[file:../disambr.src.org::*TEMPLATE][TEMPLATE:1]]
-##' Reads the data for disambiguation
-##' @param files_path Path to data. You can specify almost everything
-##' @param save_sets_as 
-##' @param save_sets_dir 
-##' @param use_time_stamp 
-##' @return 
-##' 
-##' @md 
-##' @export 
-disambr_read <- function(files_path
-                       , save_sets_as = NULL
-                       , save_sets_dir = "disambr-data"
-                       , use_time_stamp = FALSE) {
-    disambr_message_start()
-    ## see if the data is available already
-    if(is.character(save_sets_as) &&
-       file.exists(file.path(save_sets_dir, save_sets_as))) {
-        disambr_message(paste("- reusing saved sets:", save_sets_as))
-        return(readRDS(file.path(save_sets_dir, save_sets_as)))
-    }
-    files_path <- parse_files_path(files_path)
-    files_data_list <- lapply(files_path, disambr_read_file)
-    sets <- disambr_make_data(files_data_list)
-    ## save just in case
-    if(is.character(save_sets_as)) {
-        disambr_save_set(sets
-                       , save_set_as =  save_sets_as
-                       , save_set_dir = save_sets_dir
-                       , use_time_stamp = use_time_stamp)
-    }
-    disambr_message_finish()
-    return(sets)
-}
-## --------<<  TEMPLATE:1 ends here
-
-
-
 ## -------->>  [[file:../disambr.src.org::*disambr_read][disambr_read:1]]
 ##' Reads the data for disambiguation
 ##' @param files_path Path to data. You can specify almost everything
@@ -100,20 +62,20 @@ disambr_read_file <- function(f) {
 ##' 
 ##' @export 
 disambr_read_tsv <- function(f) {
-      ## check tsv file type base on first line
-      first_line <- readLines(f, n = 1
-                            , warn = FALSE
-                            , skipNul = TRUE)
-      header <- parse_tsv_wos_header(first_line)
-      if(!isFALSE(header)) {
-          disambr_read_tsv_wos(f, header)
-      } else {
-          ## here we can add more tsv types
-          message("Disambr: unrecognized header of tsv file: ", header
-                , "\n  - skipping file: ", f)
-          NULL
-      }
-  }
+    ## check tsv file type base on first line
+    first_line <- readLines(f, n = 1
+                          , warn = FALSE
+                          , skipNul = TRUE)
+    header <- parse_tsv_wos_header(first_line)
+    if(!isFALSE(header)) {
+        disambr_read_tsv_wos(f, header)
+    } else {
+        ## here we can add more tsv types
+        message("Disambr: unrecognized header of tsv file: ", header
+              , "\n  - skipping file: ", f)
+        NULL
+    }
+}
 ## --------<<  disambr_read_tsv:1 ends here
 
 
@@ -134,42 +96,41 @@ parse_tsv_wos_header <- function(first_line) {
 
 ## -------->>  [[file:../disambr.src.org::*disambr_read_tsv_wos][disambr_read_tsv_wos:1]]
 ##' Reads WoS tsv export file and makes disambr set out of it (just adding some attributes to the data.table)
+##' 
 ##' @param f path
 ##' @param header header 
-##' @return 
+##' @return disambr set
 ##' 
-##' @md 
-##' @importFrom magrittr %>%
 ##' @export 
 disambr_read_tsv_wos <- function(f, header) {
-      s <- read_to_utf8(f)
-      s <- recode_return_characters(s, f)
-      f_data <- data.table::fread(text = s
-                                , skip = 1
-                                , strip.white = TRUE
-                                , header = FALSE
-                                , col.names = header
-                                , select = 1:length(header)
-                                  ## , colClasses = rep("character", length(header))
-                                , quote=""
-                                , keepLeadingZeros = FALSE
-                                , encoding = "UTF-8"
-                                , sep = "\t")
-      ## set attrib (file, funcall, meanning of the fields and data scheme)
-      disambr_add_set_attr(f_data, NULL
-                     , unit = "publication"
-                     , reference = "self"
-                     , type = "different"
-                     , id = "index"
-                     , strength = 1
-                     , name = "wos_tsv"
-                     , collection = "unit_table"
-                     , recipe = list(func = "disambr_read_tsv_wos"
-                                   , file_name = f
-                                   , file_md5sum = tools::md5sum(f)
-                                   , file_header = header))
-      return(f_data)
-  }
+    s <- read_to_utf8(f)
+    s <- recode_return_characters(s, f)
+    f_data <- data.table::fread(text = s
+                              , skip = 1
+                              , strip.white = TRUE
+                              , header = FALSE
+                              , col.names = header
+                              , select = 1:length(header)
+                                ## , colClasses = rep("character", length(header))
+                              , quote=""
+                              , keepLeadingZeros = FALSE
+                              , encoding = "UTF-8"
+                              , sep = "\t")
+    ## set attrib (file, funcall, meanning of the fields and data scheme)
+    disambr_add_set_attr(f_data, NULL
+                       , unit = "publication"
+                       , reference = "self"
+                       , type = "different"
+                       , id = "index"
+                       , strength = 1
+                       , name = "wos_tsv"
+                       , collection = "unit_table"
+                       , recipe = list(func = "disambr_read_tsv_wos"
+                                     , file_name = f
+                                     , file_md5sum = tools::md5sum(f)
+                                     , file_header = header))
+    return(f_data)
+}
 ## --------<<  disambr_read_tsv_wos:1 ends here
 
 
@@ -202,9 +163,8 @@ disambr_make_data <- function(files_data_list
                 ## filter those that exists
                 remove_headers <-
                     remove_headers[remove_headers %in% processabe_data_headers[[1]]]
-                ## remove headers without hard copy
-                ## to use a varialbe it should be in ()
-                wos_publication[, (remove_headers) := NULL]
+                ## remove headers without hard copy and `[.data.table` overhead
+                data.table::set(wos_publication, , remove_headers, NULL)
             }
             disambr_message("- making wos references table..")
             wos_reference <- disambr_make_wos_tsv_references(wos_publication)
@@ -213,8 +173,8 @@ disambr_make_data <- function(files_data_list
                 ## filter those that exists
                 remove_headers <-
                     remove_headers[remove_headers %in% processabe_data_headers[[1]]]
-                ## remove headers without hard copy
-                wos_publication[, (remove_headers) := NULL]
+                ## remove headers without hard copy and `[.data.table` overhead
+                data.table::set(wos_publication, , remove_headers, NULL)
             }
             disambr_message("- making author-year citations table..")
             citation_name_table <-
@@ -230,9 +190,9 @@ disambr_make_data <- function(files_data_list
                 return(list(
                     ## TODO implement
                     ## disambr_subsets(files_data_list
-                                  ## , list(disambr_set_name = "wos_records_tsv_export")
-                                  ## , negate_subsets = TRUE)
-                  wos_publication
+                    ## , list(disambr_set_name = "wos_records_tsv_export")
+                    ## , negate_subsets = TRUE)
+                    wos_publication
                   , wos_author
                   , wos_reference
                   , citation_name_table

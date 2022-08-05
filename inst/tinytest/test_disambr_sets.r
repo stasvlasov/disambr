@@ -164,10 +164,10 @@ expect_equal(
 
 
 ## -------->>  [[file:../../disambr.src.org::*disambr_add_set_attr][disambr_add_set_attr:2]]
-a <- data.table(a = c(1,2,3,4)
+a <- data.table::data.table(a = c(1,2,3,4)
                ,b = c(11,22,33,44))
 
-b <- data.table(a = c(6,7,8)
+b <- data.table::data.table(a = c(6,7,8)
                ,b = c(66,77,88))
 
 disambr_set_attr(a

@@ -23,9 +23,6 @@ stop_unless(
 
 \item{return_if_false}{return_if_false}
 }
-\value{
-
-}
 \description{
 Stops process unless cond is true
 }

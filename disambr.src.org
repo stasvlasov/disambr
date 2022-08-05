@@ -1,7 +1,7 @@
 #+title: disabmr - Named Entity Disambiguation in R
 #+author: Stanislav A. Vlasov
 # ------------------------------------------------------------------------------
-#+PROPERTY: header-args:R :comments link  :session :mkdirp yes :padline yes
+#+PROPERTY: header-args:R :comments link :session :mkdirp yes :padline yes
 
 * Description
 :PROPERTIES:
@@ -515,7 +515,6 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 | data.table |          1.14.2 |         1.13.0 |      |
 | stringi    |           1.7.6 |          1.6.0 |      |
 | parallel   |           4.1.2 |          4.0.0 |      |
-| magrittr   |           2.0.1 |          1.4.0 |      |
 | pbapply    |           1.5.0 |          1.5.0 |      |
 | stringdist |           0.9.8 |          0.9.0 |      |
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
@@ -547,7 +546,8 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
      , Imports = paste(
            paste0(dependencies$packages, " (>= ", dependencies$ensure_version, ")")
          , collapse = ", ")
-     , Depends = "R (>= 4.0), data.table(>= 1.13.0)"
+       ## , Depends = "R (>= 4.0), data.table(>= 1.13.0)"
+     , Depends = "R (>= 4.0)"
      , Suggests = paste(suggests$packages, collapse = ", ")
      , Version = "0.0.0.9000"
      , Date = Sys.Date()
@@ -597,6 +597,11 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 * Functions
 ** disambr_options
+:PROPERTIES:
+:ID:       org:sluexcb1gjj0
+:END:
+
+#+name: disambr_options
 | option                      | behaviour when not set |
 |-----------------------------+------------------------|
 | disambr_save_as             | NULL                   |
@@ -607,6 +612,16 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 | disambr_mess_pretty         | FALSE                  |
 | disambr_get_output_set      | FALSE                  |
 | disambr_read_output_set     | FALSE                  |
+
+
+#+BEGIN_SRC R :tangle no
+  .onAttach <- function(libname, pkgname) {
+      options(
+          
+      )
+  }
+#+END_SRC
+
 
 ** disambr_utils
 *** dhms
@@ -639,91 +654,91 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 #+BEGIN_SRC R :tangle R/disambr_messaging.r
   ##' Creates message string for reporting during procedures
-      ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
-      ##' @param h Forse specific ouline level of message
-      ##' @param indent Forse indentation
-      ##' @param prefix Add overal prefix
-      ##' @param h_marks Marks that sets outline. Default is "-". Can be many characters, e.g. "-*#".
-      ##' @param h_prefix Character vector of prefixes for each outline level
-      ##' @param h_prefix_sep Separator between `h_prefix` and `mess`
-      ##' @param pretty Whether to use "crayon" package for pretty printing
-      ##' @param mess_color Color of message
-      ##' @param h_prefix_color Color of ouline prefix
-      ##' @param ... Here we can pass `verbose` argument from upper functions. Default is TRUE
-      ##' @return Message string
-      ##' 
-      ##' @export 
-      create_message <- function(mess
-                            , h = integer(0)
-                            , indent = integer(0)
-                            , prefix = ""
-                            , h_marks = "-"
-                            , h_prefix = character()
-                            , h_prefix_sep = " "
-                            , pretty = getOption("disambr_mess_pretty")
-                            , mess_color = "green"
-                            , h_prefix_color = "blue"
-                            , ...) {
-          ## set outline
-          if(isTRUE(length(h) != 1)) {
-              mess.regex <- paste0("^([", h_marks, "]*)\\s*(.*)")
-              mess.parsed <-
-                  stringi::stri_match_first_regex(mess, mess.regex)
-              mess <- mess.parsed[[3]]
-              h <- nchar(mess.parsed[[2]]) + 1
-          }
-          ## set h_prefix
-          if(length(h_prefix) < h) {
-              h_prefix_l <- length(h_prefix)
-              ## if h_prefix is NULL
-              if(h_prefix_l == 0) {
-                  h_prefix <- ""
-                  h_prefix_l <- 1
-              }
-              h_prefix <- c(h_prefix, rep(h_prefix[h_prefix_l], h - h_prefix_l))
-          }
-          ## set indentation
-          if(isTRUE(length(indent) != 1)) {
-              indent <-
-                  nchar(paste(c("", h_prefix)[1:h], collapse = "")) +
-                  (h-1)*nchar(h_prefix_sep)
-              indent <- strrep(" ",  indent)
-          } else{
-              indent <-
-                  switch(class(indent)
-                       , numeric = if(indent == 0) ""
-                                   else strrep(" ",  indent)
-                       , character = indent)
-          }
-          ## create message
-          h_prefix <- h_prefix[h]
-          mess.plain <-
-              paste0(prefix
-                   , indent
-                   , h_prefix
-                   , h_prefix_sep
-                   , mess)
-          if(isTRUE(pretty) &&
-             ## in case I want to move crayon to Sugests:
-             requireNamespace("crayon", quietly = TRUE)) {
-              h_prefix.style <-
-                  crayon::make_style(h_prefix_color)
-              mess.style <-
-                  crayon::make_style(mess_color)
-              mess.style <-
-                  crayon::combine_styles(crayon::bold, mess.style)
-              mess <-
-                  Reduce(crayon::`%+%`
-                       , list(prefix
-                            , indent
-                            , h_prefix.style(h_prefix)
-                            , h_prefix_sep
-                            , mess.style(mess)))
-          } else {
-              mess <- mess.plain
-          }
-          return(mess)
+  ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
+  ##' @param h Forse specific ouline level of message
+  ##' @param indent Forse indentation
+  ##' @param prefix Add overal prefix
+  ##' @param h_marks Marks that sets outline. Default is "-". Can be many characters, e.g. "-*#".
+  ##' @param h_prefix Character vector of prefixes for each outline level
+  ##' @param h_prefix_sep Separator between `h_prefix` and `mess`
+  ##' @param pretty Whether to use "crayon" package for pretty printing
+  ##' @param mess_color Color of message
+  ##' @param h_prefix_color Color of ouline prefix
+  ##' @param ... Here we can pass `verbose` argument from upper functions. Default is TRUE
+  ##' @return Message string
+  ##' 
+  ##' @export 
+  create_message <- function(mess
+                           , h = integer(0)
+                           , indent = integer(0)
+                           , prefix = ""
+                           , h_marks = "-"
+                           , h_prefix = character()
+                           , h_prefix_sep = " "
+                           , pretty = getOption("disambr_mess_pretty")
+                           , mess_color = "green"
+                           , h_prefix_color = "blue"
+                           , ...) {
+      ## set outline
+      if(isTRUE(length(h) != 1)) {
+          mess.regex <- paste0("^([", h_marks, "]*)\\s*(.*)")
+          mess.parsed <-
+              stringi::stri_match_first_regex(mess, mess.regex)
+          mess <- mess.parsed[[3]]
+          h <- nchar(mess.parsed[[2]]) + 1
       }
+      ## set h_prefix
+      if(length(h_prefix) < h) {
+          h_prefix_l <- length(h_prefix)
+          ## if h_prefix is NULL
+          if(h_prefix_l == 0) {
+              h_prefix <- ""
+              h_prefix_l <- 1
+          }
+          h_prefix <- c(h_prefix, rep(h_prefix[h_prefix_l], h - h_prefix_l))
+      }
+      ## set indentation
+      if(isTRUE(length(indent) != 1)) {
+          indent <-
+              nchar(paste(c("", h_prefix)[1:h], collapse = "")) +
+              (h-1)*nchar(h_prefix_sep)
+          indent <- strrep(" ",  indent)
+      } else{
+          indent <-
+              switch(class(indent)
+                   , numeric = if(indent == 0) ""
+                               else strrep(" ",  indent)
+                   , character = indent)
+      }
+      ## create message
+      h_prefix <- h_prefix[h]
+      mess.plain <-
+          paste0(prefix
+               , indent
+               , h_prefix
+               , h_prefix_sep
+               , mess)
+      if(isTRUE(pretty) &&
+         ## in case I want to move crayon to Sugests:
+         requireNamespace("crayon", quietly = TRUE)) {
+          h_prefix.style <-
+              crayon::make_style(h_prefix_color)
+          mess.style <-
+              crayon::make_style(mess_color)
+          mess.style <-
+              crayon::combine_styles(crayon::bold, mess.style)
+          mess <-
+              Reduce(crayon::`%+%`
+                   , list(prefix
+                        , indent
+                        , h_prefix.style(h_prefix)
+                        , h_prefix_sep
+                        , mess.style(mess)))
+      } else {
+          mess <- mess.plain
+      }
+      return(mess)
+  }
 #+END_SRC
 
 **** disambr_message
@@ -912,21 +927,12 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   ##' @param f file name 
   ##' @return extention
   ##' 
-  ##' @importFrom magrittr %>%
   ##' @export 
   get_file_extension <- function(f) {
-      if(length(f) == 1) {
-          if(is.character(f)) {
-              f %>% basename %>% 
-                  stringi::stri_split_fixed(".") %>% 
-                  extract2(1) %>%
-                  extract(ifelse(length(.) == 1, NA, length(.))) %>%
-                  ifelse(is.na(.), "", .)
-          } else if(is.na(f)) {
-              NA
-          }
+      if(length(f) == 0) {
+          return(NULL)
       } else {
-          NULL
+          tools::file_ext(f)
       }
   }
 
@@ -944,7 +950,7 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
   ## get_file_extension(".")
   ## get_file_extension(".....")
 
-  ## build in
+  ## ## build in
   ## tools::file_ext(my.file)
   ## tools::file_ext(my.file1)
   ## tools::file_ext("sdfsdf....")
@@ -1002,32 +1008,30 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 :END:
 #+BEGIN_SRC R :tangle R/disambr_utils.r
   ##' Returns vector of file paths from path(s) recursively
-    ##' @param files_path Path(s) where the files are
-    ##' @param recursive Whether to look in subfolders recursively
-    ##' @return Vector of file paths from path(s) recursively
-    ##' 
-    ##' @md
-    ##' @importFrom magrittr %>%
-    ##' @export 
-    parse_files_path <- function(files_path, recursive = TRUE) {
-        stop_unless(is.character(files_path), "Files path shoud be a character string!")
-        files_path <- 
-        lapply(files_path, function(file.path) {
-            if(stop_unless(file.exists(file.path)
-                         , paste(file.path, " - does not exist!")
-                         , stop_if_false = FALSE
-                         , return_if_true = FALSE)) {
-                NULL
-            } else if(dir.exists(file.path)) {
-                dir(file.path
-                  , full.names = TRUE
-                  , recursive = recursive)
-            } else {
-                file.path
-            }
-        })
-        return(unique(normalizePath(unlist(files_path))))
-    }
+  ##' @param files_path Path(s) where the files are
+  ##' @param recursive Whether to look in subfolders recursively
+  ##' @return Vector of file paths from path(s) recursively
+  ##' 
+  ##' @export 
+  parse_files_path <- function(files_path, recursive = TRUE) {
+      stop_unless(is.character(files_path), "Files path shoud be a character string!")
+      files_path <- 
+          lapply(files_path, function(file.path) {
+              if(stop_unless(file.exists(file.path)
+                           , paste(file.path, " - does not exist!")
+                           , stop_if_false = FALSE
+                           , return_if_true = FALSE)) {
+                  NULL
+              } else if(dir.exists(file.path)) {
+                  dir(file.path
+                    , full.names = TRUE
+                    , recursive = recursive)
+              } else {
+                  file.path
+              }
+          })
+      return(unique(normalizePath(unlist(files_path))))
+  }
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_utils.r
@@ -1870,10 +1874,10 @@ disambr_cbind_lists <- function(...) {
 
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_sets.r
-  a <- data.table(a = c(1,2,3,4)
+  a <- data.table::data.table(a = c(1,2,3,4)
                  ,b = c(11,22,33,44))
 
-  b <- data.table(a = c(6,7,8)
+  b <- data.table::data.table(a = c(6,7,8)
                  ,b = c(66,77,88))
 
   disambr_set_attr(a
@@ -2242,46 +2246,6 @@ disambr_cbind_lists <- function(...) {
 :PROPERTIES:
 :ID:       org:1p6ja7119ri0
 :END:
-*** TEMPLATE
-:PROPERTIES:
-:ID:       org:blbgnb60jti0
-:END:
-#+BEGIN_SRC R :tangle R/disambr_read.r
-  ##' Reads the data for disambiguation
-  ##' @param files_path Path to data. You can specify almost everything
-  ##' @param save_sets_as 
-  ##' @param save_sets_dir 
-  ##' @param use_time_stamp 
-  ##' @return 
-  ##' 
-  ##' @md 
-  ##' @export 
-  disambr_read <- function(files_path
-                         , save_sets_as = NULL
-                         , save_sets_dir = "disambr-data"
-                         , use_time_stamp = FALSE) {
-      disambr_message_start()
-      ## see if the data is available already
-      if(is.character(save_sets_as) &&
-         file.exists(file.path(save_sets_dir, save_sets_as))) {
-          disambr_message(paste("- reusing saved sets:", save_sets_as))
-          return(readRDS(file.path(save_sets_dir, save_sets_as)))
-      }
-      files_path <- parse_files_path(files_path)
-      files_data_list <- lapply(files_path, disambr_read_file)
-      sets <- disambr_make_data(files_data_list)
-      ## save just in case
-      if(is.character(save_sets_as)) {
-          disambr_save_set(sets
-                         , save_set_as =  save_sets_as
-                         , save_set_dir = save_sets_dir
-                         , use_time_stamp = use_time_stamp)
-      }
-      disambr_message_finish()
-      return(sets)
-  }
-#+END_SRC
-
 
 *** disambr_read
 :PROPERTIES:
@@ -2325,6 +2289,7 @@ disambr_cbind_lists <- function(...) {
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_disambr_read.r
   my.file <- system.file("testdata", "wos-tsv-test-recent.txt", package = "disambr")
+
   if(file.exists(my.file)) {
       expect_equal(
           length(disambr_read(my.file)), 4
@@ -2391,20 +2356,20 @@ test
   ##' 
   ##' @export 
   disambr_read_tsv <- function(f) {
-        ## check tsv file type base on first line
-        first_line <- readLines(f, n = 1
-                              , warn = FALSE
-                              , skipNul = TRUE)
-        header <- parse_tsv_wos_header(first_line)
-        if(!isFALSE(header)) {
-            disambr_read_tsv_wos(f, header)
-        } else {
-            ## here we can add more tsv types
-            message("Disambr: unrecognized header of tsv file: ", header
-                  , "\n  - skipping file: ", f)
-            NULL
-        }
-    }
+      ## check tsv file type base on first line
+      first_line <- readLines(f, n = 1
+                            , warn = FALSE
+                            , skipNul = TRUE)
+      header <- parse_tsv_wos_header(first_line)
+      if(!isFALSE(header)) {
+          disambr_read_tsv_wos(f, header)
+      } else {
+          ## here we can add more tsv types
+          message("Disambr: unrecognized header of tsv file: ", header
+                , "\n  - skipping file: ", f)
+          NULL
+      }
+  }
 #+END_SRC
 
 *** parse_tsv_wos_header
@@ -2429,42 +2394,41 @@ test
 :END:
 #+BEGIN_SRC R :tangle R/disambr_read.r
   ##' Reads WoS tsv export file and makes disambr set out of it (just adding some attributes to the data.table)
+  ##' 
   ##' @param f path
   ##' @param header header 
-  ##' @return 
+  ##' @return disambr set
   ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
   ##' @export 
   disambr_read_tsv_wos <- function(f, header) {
-        s <- read_to_utf8(f)
-        s <- recode_return_characters(s, f)
-        f_data <- data.table::fread(text = s
-                                  , skip = 1
-                                  , strip.white = TRUE
-                                  , header = FALSE
-                                  , col.names = header
-                                  , select = 1:length(header)
-                                    ## , colClasses = rep("character", length(header))
-                                  , quote=""
-                                  , keepLeadingZeros = FALSE
-                                  , encoding = "UTF-8"
-                                  , sep = "\t")
-        ## set attrib (file, funcall, meanning of the fields and data scheme)
-        disambr_add_set_attr(f_data, NULL
-                       , unit = "publication"
-                       , reference = "self"
-                       , type = "different"
-                       , id = "index"
-                       , strength = 1
-                       , name = "wos_tsv"
-                       , collection = "unit_table"
-                       , recipe = list(func = "disambr_read_tsv_wos"
-                                     , file_name = f
-                                     , file_md5sum = tools::md5sum(f)
-                                     , file_header = header))
-        return(f_data)
-    }
+      s <- read_to_utf8(f)
+      s <- recode_return_characters(s, f)
+      f_data <- data.table::fread(text = s
+                                , skip = 1
+                                , strip.white = TRUE
+                                , header = FALSE
+                                , col.names = header
+                                , select = 1:length(header)
+                                  ## , colClasses = rep("character", length(header))
+                                , quote=""
+                                , keepLeadingZeros = FALSE
+                                , encoding = "UTF-8"
+                                , sep = "\t")
+      ## set attrib (file, funcall, meanning of the fields and data scheme)
+      disambr_add_set_attr(f_data, NULL
+                         , unit = "publication"
+                         , reference = "self"
+                         , type = "different"
+                         , id = "index"
+                         , strength = 1
+                         , name = "wos_tsv"
+                         , collection = "unit_table"
+                         , recipe = list(func = "disambr_read_tsv_wos"
+                                       , file_name = f
+                                       , file_md5sum = tools::md5sum(f)
+                                       , file_header = header))
+      return(f_data)
+  }
 #+END_SRC
 
 *** disambr_make_data
@@ -2499,9 +2463,8 @@ test
                   ## filter those that exists
                   remove_headers <-
                       remove_headers[remove_headers %in% processabe_data_headers[[1]]]
-                  ## remove headers without hard copy
-                  ## to use a varialbe it should be in ()
-                  wos_publication[, (remove_headers) := NULL]
+                  ## remove headers without hard copy and `[.data.table` overhead
+                  data.table::set(wos_publication, , remove_headers, NULL)
               }
               disambr_message("- making wos references table..")
               wos_reference <- disambr_make_wos_tsv_references(wos_publication)
@@ -2510,8 +2473,8 @@ test
                   ## filter those that exists
                   remove_headers <-
                       remove_headers[remove_headers %in% processabe_data_headers[[1]]]
-                  ## remove headers without hard copy
-                  wos_publication[, (remove_headers) := NULL]
+                  ## remove headers without hard copy and `[.data.table` overhead
+                  data.table::set(wos_publication, , remove_headers, NULL)
               }
               disambr_message("- making author-year citations table..")
               citation_name_table <-
@@ -2527,9 +2490,9 @@ test
                   return(list(
                       ## TODO implement
                       ## disambr_subsets(files_data_list
-                                    ## , list(disambr_set_name = "wos_records_tsv_export")
-                                    ## , negate_subsets = TRUE)
-                    wos_publication
+                      ## , list(disambr_set_name = "wos_records_tsv_export")
+                      ## , negate_subsets = TRUE)
+                      wos_publication
                     , wos_author
                     , wos_reference
                     , citation_name_table
@@ -2550,6 +2513,14 @@ test
 :ID:       org:l7egnb60jti0
 :END:
 #+BEGIN_SRC R :tangle R/disambr_wos_tsv.r
+  ##' Make set of publications
+  ##' 
+  ##' @param tables_list list of tables
+  ##' @param recipes recipes
+  ##' @return set
+  ##' 
+  ##' @import data.table
+  ##' @export 
   disambr_make_wos_tsv_publications <- function(tables_list, recipes) {
       publication_table <-
           data.table::rbindlist(tables_list, fill=TRUE)
@@ -2561,22 +2532,22 @@ test
              , first_author_first_initial =
                    toupper(stringi::stri_extract_first_regex(AU, "(?<=, )[A-Za-z]"))
              , doi = stringi::stri_match_first_regex(DI
-                                                 , "10.\\d{4,9}/[-._;()/:A-Za-z0-9]+"))]
+                                                   , "10.\\d{4,9}/[-._;()/:A-Za-z0-9]+"))]
       publication_table[
         , name_year := paste(first_author_last_name
                            , first_author_first_initial
                            , PY)]
       ## set publication attributes
       disambr_add_set_attr(publication_table, NULL
-                     , unit = "publication"
-                     , reference = "self"
-                     , type = "different"
-                     , strength = 1
-                     , name = "wos_tsv_publications"
-                     , collection = "unit_table"
-                       ## add files recipies
-                     , recipe = c(list('disambr_make_wos_tsv_publications')
-                                , recipes))
+                         , unit = "publication"
+                         , reference = "self"
+                         , type = "different"
+                         , strength = 1
+                         , name = "wos_tsv_publications"
+                         , collection = "unit_table"
+                           ## add files recipies
+                         , recipe = c(list('disambr_make_wos_tsv_publications')
+                                    , recipes))
       return(publication_table)
   }
 #+END_SRC
@@ -3751,19 +3722,28 @@ dt.test <-
           ## try cluster
           ## cl <- parallel::makeCluster(20,type="SOCK")
           output_set <- 
-              pbapply::pblapply(1:(input_set_l-1), function(i) {
+              pbapply::pblapply(1:(input_set_l - 1), function(i) {
                   ## combn using is data.table method
-                  comb <- data.table::CJ(author_id1 = input_set[[i]]
-                                       , author_id2 = unlist(input_set[(i+1):input_set_l])
-                                       , sorted = FALSE)
+                  comb <-
+                      data.table::CJ(author_id1 = input_set[[i]]
+                                   , author_id2 = unlist(input_set[(i+1):input_set_l])
+                                   , sorted = FALSE)
                   ## add initials_bank
                   comb[, `:=`(
                       author_initials_1 = initials_data_set[author_id1]
                     , author_initials_2 = initials_data_set[author_id2]
                   )]
+                  ## alternative to the above
+                  ## data.table::set(comb, , c("author_initials_1"
+                                          ## , "author_initials_2")
+                                ## , list(initials_data_set[comb$author_id1]
+                                     ## , initials_data_set[comb$author_id2]))
                   ## check matches
-                  comb <- merge(comb, initials_match
-                              , by = c("author_initials_1", "author_initials_2"))
+                  comb <-
+                      data.tables::merge(comb
+                                       , initials_match
+                                       , by = c("author_initials_1"
+                                              , "author_initials_2"))
                   return(comb[,.(author_id1, author_id2)])
               })
           ##parallel::stopCluster(cl = cl)
@@ -3871,9 +3851,11 @@ dt.test <-
               pbapply::pblapply(1:(input_set_l-1), function(i) {
 
                   ## this is data.table method
-                  combs <- data.table::CJ(author_id1 = input_set[[i]]
-                                        , author_id2 = unlist(input_set[(i+1):input_set_l])
-                                        , sorted = FALSE)
+                  combs <-
+                      data.table::CJ(author_id1 = input_set[[i]]
+                                   , author_id2 =
+                                          unlist(input_set[(i + 1) : input_set_l])
+                                   , sorted = FALSE)
                   ## add names
                   combs[, `:=`(
                       author_last_name_1 = last_name_data_set[author_id1]
@@ -4438,8 +4420,8 @@ tests
 
   ## TESTS
   ## data.table(
-  ##     a1 = c(1,1,1, 8,1, 2, 4)
-  ##   , a2 = c(5,2,3, 2, 5 , 3, 5)
+  ##     a1 = c(1,1,1, 8,10, 200, 400)
+  ##   , a2 = c(5,2,3, 2, 50 , 300, 500)
   ##   , p1 = c(1,1,10,1,3,4,5)
   ##   , p2 = c(10,10,1,10,8,5,4))[
   ##   , paper_dyad_ids :=
@@ -4453,7 +4435,7 @@ tests
   ##              as.vector(table(a1)[as.character(a1)]) +
   ##              as.vector(table(a2)[as.character(a2)]) - 2)
   ##   , keyby = paper_dyad_ids
-  ## ][records_per_paper - open_triangles > 1]
+  ## ][, criteria := records_per_paper - open_triangles - 1][]
 #+END_SRC
 
 *** disambr_merge_authors_with_common_references

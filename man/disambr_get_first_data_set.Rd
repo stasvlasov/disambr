@@ -21,9 +21,6 @@ disambr_get_first_data_set(sets, recipe, ..., match_parcially = TRUE)
 
 \item{match_parcially}{whether to match recipe partially}
 }
-\value{
-
-}
 \description{
 Get first data set in list sets
 }

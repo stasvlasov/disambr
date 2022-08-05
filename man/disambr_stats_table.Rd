@@ -9,9 +9,6 @@ disambr_stats_table(sets_dir)
 \arguments{
 \item{sets_dir}{dir}
 }
-\value{
-
-}
 \description{
 Makes comparative table with statistics
 }

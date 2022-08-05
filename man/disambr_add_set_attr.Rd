@@ -24,9 +24,6 @@ disambr_add_set_attr(
 
 \item{attr_names_prefix}{"disambr_set_" by default. Only prefixed by it will be copied from \code{template_set}}
 }
-\value{
-
-}
 \description{
 It adds attributes by reference (with setattr {data.table}), i.e. without making a copy
 }

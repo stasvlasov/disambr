@@ -1,90 +1,90 @@
 ## -------->>  [[file:../disambr.src.org::*create_message][create_message:1]]
 ##' Creates message string for reporting during procedures
-    ##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
-    ##' @param h Forse specific ouline level of message
-    ##' @param indent Forse indentation
-    ##' @param prefix Add overal prefix
-    ##' @param h_marks Marks that sets outline. Default is "-". Can be many characters, e.g. "-*#".
-    ##' @param h_prefix Character vector of prefixes for each outline level
-    ##' @param h_prefix_sep Separator between `h_prefix` and `mess`
-    ##' @param pretty Whether to use "crayon" package for pretty printing
-    ##' @param mess_color Color of message
-    ##' @param h_prefix_color Color of ouline prefix
-    ##' @param ... Here we can pass `verbose` argument from upper functions. Default is TRUE
-    ##' @return Message string
-    ##' 
-    ##' @export 
-    create_message <- function(mess
-                          , h = integer(0)
-                          , indent = integer(0)
-                          , prefix = ""
-                          , h_marks = "-"
-                          , h_prefix = character()
-                          , h_prefix_sep = " "
-                          , pretty = getOption("disambr_mess_pretty")
-                          , mess_color = "green"
-                          , h_prefix_color = "blue"
-                          , ...) {
-        ## set outline
-        if(isTRUE(length(h) != 1)) {
-            mess.regex <- paste0("^([", h_marks, "]*)\\s*(.*)")
-            mess.parsed <-
-                stringi::stri_match_first_regex(mess, mess.regex)
-            mess <- mess.parsed[[3]]
-            h <- nchar(mess.parsed[[2]]) + 1
-        }
-        ## set h_prefix
-        if(length(h_prefix) < h) {
-            h_prefix_l <- length(h_prefix)
-            ## if h_prefix is NULL
-            if(h_prefix_l == 0) {
-                h_prefix <- ""
-                h_prefix_l <- 1
-            }
-            h_prefix <- c(h_prefix, rep(h_prefix[h_prefix_l], h - h_prefix_l))
-        }
-        ## set indentation
-        if(isTRUE(length(indent) != 1)) {
-            indent <-
-                nchar(paste(c("", h_prefix)[1:h], collapse = "")) +
-                (h-1)*nchar(h_prefix_sep)
-            indent <- strrep(" ",  indent)
-        } else{
-            indent <-
-                switch(class(indent)
-                     , numeric = if(indent == 0) ""
-                                 else strrep(" ",  indent)
-                     , character = indent)
-        }
-        ## create message
-        h_prefix <- h_prefix[h]
-        mess.plain <-
-            paste0(prefix
-                 , indent
-                 , h_prefix
-                 , h_prefix_sep
-                 , mess)
-        if(isTRUE(pretty) &&
-           ## in case I want to move crayon to Sugests:
-           requireNamespace("crayon", quietly = TRUE)) {
-            h_prefix.style <-
-                crayon::make_style(h_prefix_color)
-            mess.style <-
-                crayon::make_style(mess_color)
-            mess.style <-
-                crayon::combine_styles(crayon::bold, mess.style)
-            mess <-
-                Reduce(crayon::`%+%`
-                     , list(prefix
-                          , indent
-                          , h_prefix.style(h_prefix)
-                          , h_prefix_sep
-                          , mess.style(mess)))
-        } else {
-            mess <- mess.plain
-        }
-        return(mess)
+##' @param mess Message to report. If prefixed by h `h_marks` it will be ouline of level `h`
+##' @param h Forse specific ouline level of message
+##' @param indent Forse indentation
+##' @param prefix Add overal prefix
+##' @param h_marks Marks that sets outline. Default is "-". Can be many characters, e.g. "-*#".
+##' @param h_prefix Character vector of prefixes for each outline level
+##' @param h_prefix_sep Separator between `h_prefix` and `mess`
+##' @param pretty Whether to use "crayon" package for pretty printing
+##' @param mess_color Color of message
+##' @param h_prefix_color Color of ouline prefix
+##' @param ... Here we can pass `verbose` argument from upper functions. Default is TRUE
+##' @return Message string
+##' 
+##' @export 
+create_message <- function(mess
+                         , h = integer(0)
+                         , indent = integer(0)
+                         , prefix = ""
+                         , h_marks = "-"
+                         , h_prefix = character()
+                         , h_prefix_sep = " "
+                         , pretty = getOption("disambr_mess_pretty")
+                         , mess_color = "green"
+                         , h_prefix_color = "blue"
+                         , ...) {
+    ## set outline
+    if(isTRUE(length(h) != 1)) {
+        mess.regex <- paste0("^([", h_marks, "]*)\\s*(.*)")
+        mess.parsed <-
+            stringi::stri_match_first_regex(mess, mess.regex)
+        mess <- mess.parsed[[3]]
+        h <- nchar(mess.parsed[[2]]) + 1
     }
+    ## set h_prefix
+    if(length(h_prefix) < h) {
+        h_prefix_l <- length(h_prefix)
+        ## if h_prefix is NULL
+        if(h_prefix_l == 0) {
+            h_prefix <- ""
+            h_prefix_l <- 1
+        }
+        h_prefix <- c(h_prefix, rep(h_prefix[h_prefix_l], h - h_prefix_l))
+    }
+    ## set indentation
+    if(isTRUE(length(indent) != 1)) {
+        indent <-
+            nchar(paste(c("", h_prefix)[1:h], collapse = "")) +
+            (h-1)*nchar(h_prefix_sep)
+        indent <- strrep(" ",  indent)
+    } else{
+        indent <-
+            switch(class(indent)
+                 , numeric = if(indent == 0) ""
+                             else strrep(" ",  indent)
+                 , character = indent)
+    }
+    ## create message
+    h_prefix <- h_prefix[h]
+    mess.plain <-
+        paste0(prefix
+             , indent
+             , h_prefix
+             , h_prefix_sep
+             , mess)
+    if(isTRUE(pretty) &&
+       ## in case I want to move crayon to Sugests:
+       requireNamespace("crayon", quietly = TRUE)) {
+        h_prefix.style <-
+            crayon::make_style(h_prefix_color)
+        mess.style <-
+            crayon::make_style(mess_color)
+        mess.style <-
+            crayon::combine_styles(crayon::bold, mess.style)
+        mess <-
+            Reduce(crayon::`%+%`
+                 , list(prefix
+                      , indent
+                      , h_prefix.style(h_prefix)
+                      , h_prefix_sep
+                      , mess.style(mess)))
+    } else {
+        mess <- mess.plain
+    }
+    return(mess)
+}
 ## --------<<  create_message:1 ends here
 
 

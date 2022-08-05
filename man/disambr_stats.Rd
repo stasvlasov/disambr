@@ -23,9 +23,6 @@ disambr_stats(
 
 \item{save_rds}{save_rds}
 }
-\value{
-
-}
 \description{
 Make a statistics for a collection of sets (specific algorithm) and writes to the file in \code{sets_dir}
 }

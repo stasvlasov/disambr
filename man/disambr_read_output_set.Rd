@@ -20,9 +20,6 @@ disambr_read_output_set(
 
 \item{attr_names_prefix}{arrt prefix}
 }
-\value{
-
-}
 \description{
 Reads last output set saved on disk
 }

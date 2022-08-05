@@ -14,9 +14,6 @@ disambr_merge_authors_if_citing_others_papers(
 
 \item{match_refrerences_by_name_year}{Whether to check citations based on first author name and year pair in addition to machich citations based on DOI}
 }
-\value{
-
-}
 \description{
 Make a set of matched authors bases on the cases when one author cites the others paper.
 }

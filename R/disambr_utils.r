@@ -23,21 +23,12 @@ dhms <- function(t) {
 ##' @param f file name 
 ##' @return extention
 ##' 
-##' @importFrom magrittr %>%
 ##' @export 
 get_file_extension <- function(f) {
-    if(length(f) == 1) {
-        if(is.character(f)) {
-            f %>% basename %>% 
-                stringi::stri_split_fixed(".") %>% 
-                extract2(1) %>%
-                extract(ifelse(length(.) == 1, NA, length(.))) %>%
-                ifelse(is.na(.), "", .)
-        } else if(is.na(f)) {
-            NA
-        }
+    if(length(f) == 0) {
+        return(NULL)
     } else {
-        NULL
+        tools::file_ext(f)
     }
 }
 
@@ -55,7 +46,7 @@ get_file_extension <- function(f) {
 ## get_file_extension(".")
 ## get_file_extension(".....")
 
-## build in
+## ## build in
 ## tools::file_ext(my.file)
 ## tools::file_ext(my.file1)
 ## tools::file_ext("sdfsdf....")
@@ -100,32 +91,30 @@ stop_unless <- function(cond
 
 ## -------->>  [[file:../disambr.src.org::*parse_files_path][parse_files_path:1]]
 ##' Returns vector of file paths from path(s) recursively
-  ##' @param files_path Path(s) where the files are
-  ##' @param recursive Whether to look in subfolders recursively
-  ##' @return Vector of file paths from path(s) recursively
-  ##' 
-  ##' @md
-  ##' @importFrom magrittr %>%
-  ##' @export 
-  parse_files_path <- function(files_path, recursive = TRUE) {
-      stop_unless(is.character(files_path), "Files path shoud be a character string!")
-      files_path <- 
-      lapply(files_path, function(file.path) {
-          if(stop_unless(file.exists(file.path)
-                       , paste(file.path, " - does not exist!")
-                       , stop_if_false = FALSE
-                       , return_if_true = FALSE)) {
-              NULL
-          } else if(dir.exists(file.path)) {
-              dir(file.path
-                , full.names = TRUE
-                , recursive = recursive)
-          } else {
-              file.path
-          }
-      })
-      return(unique(normalizePath(unlist(files_path))))
-  }
+##' @param files_path Path(s) where the files are
+##' @param recursive Whether to look in subfolders recursively
+##' @return Vector of file paths from path(s) recursively
+##' 
+##' @export 
+parse_files_path <- function(files_path, recursive = TRUE) {
+    stop_unless(is.character(files_path), "Files path shoud be a character string!")
+    files_path <- 
+        lapply(files_path, function(file.path) {
+            if(stop_unless(file.exists(file.path)
+                         , paste(file.path, " - does not exist!")
+                         , stop_if_false = FALSE
+                         , return_if_true = FALSE)) {
+                NULL
+            } else if(dir.exists(file.path)) {
+                dir(file.path
+                  , full.names = TRUE
+                  , recursive = recursive)
+            } else {
+                file.path
+            }
+        })
+    return(unique(normalizePath(unlist(files_path))))
+}
 ## --------<<  parse_files_path:1 ends here
 
 

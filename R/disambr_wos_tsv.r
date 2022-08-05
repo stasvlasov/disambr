@@ -1,4 +1,12 @@
 ## -------->>  [[file:../disambr.src.org::*disambr_make_wos_tsv_publications][disambr_make_wos_tsv_publications:1]]
+##' Make set of publications
+##' 
+##' @param tables_list list of tables
+##' @param recipes recipes
+##' @return set
+##' 
+##' @import data.table
+##' @export 
 disambr_make_wos_tsv_publications <- function(tables_list, recipes) {
     publication_table <-
         data.table::rbindlist(tables_list, fill=TRUE)
@@ -10,22 +18,22 @@ disambr_make_wos_tsv_publications <- function(tables_list, recipes) {
            , first_author_first_initial =
                  toupper(stringi::stri_extract_first_regex(AU, "(?<=, )[A-Za-z]"))
            , doi = stringi::stri_match_first_regex(DI
-                                               , "10.\\d{4,9}/[-._;()/:A-Za-z0-9]+"))]
+                                                 , "10.\\d{4,9}/[-._;()/:A-Za-z0-9]+"))]
     publication_table[
       , name_year := paste(first_author_last_name
                          , first_author_first_initial
                          , PY)]
     ## set publication attributes
     disambr_add_set_attr(publication_table, NULL
-                   , unit = "publication"
-                   , reference = "self"
-                   , type = "different"
-                   , strength = 1
-                   , name = "wos_tsv_publications"
-                   , collection = "unit_table"
-                     ## add files recipies
-                   , recipe = c(list('disambr_make_wos_tsv_publications')
-                              , recipes))
+                       , unit = "publication"
+                       , reference = "self"
+                       , type = "different"
+                       , strength = 1
+                       , name = "wos_tsv_publications"
+                       , collection = "unit_table"
+                         ## add files recipies
+                       , recipe = c(list('disambr_make_wos_tsv_publications')
+                                  , recipes))
     return(publication_table)
 }
 ## --------<<  disambr_make_wos_tsv_publications:1 ends here
