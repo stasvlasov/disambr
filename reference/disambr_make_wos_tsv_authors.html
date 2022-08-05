@@ -65,28 +65,35 @@ OI ORCID Identifier (Open Researcher and Contributor ID)
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">disambr_make_wos_tsv_authors</span><span class="op">(</span>
-  <span class="va">wos_data_table</span>,
-  list_of_author_fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"author_order"</span>, <span class="st">"author_short_name"</span>, <span class="st">"author_initials"</span>,
-    <span class="st">"author_last_name"</span>, <span class="st">"author_full_name"</span>, <span class="st">"author_first_names"</span>,
-    <span class="st">"author_first_full_name"</span>, <span class="st">"author_email"</span>, <span class="st">"author_researcher_id"</span>, <span class="st">"author_orcid"</span>,
-    <span class="st">"author_affiliations"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">disambr_make_wos_tsv_authors</span><span class="op">(</span></span>
+<span>  <span class="va">wos_data_table</span>,</span>
+<span>  list_of_author_fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"author_order"</span>, <span class="st">"author_short_name"</span>, <span class="st">"author_initials"</span>,</span>
+<span>    <span class="st">"author_last_name"</span>, <span class="st">"author_full_name"</span>, <span class="st">"author_first_names"</span>,</span>
+<span>    <span class="st">"author_first_full_name"</span>, <span class="st">"author_email"</span>, <span class="st">"author_researcher_id"</span>, <span class="st">"author_orcid"</span>,</span>
+<span>    <span class="st">"author_affiliations"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>wos_data_table</dt>
 <dd><p>WoS tsv export data.table</p></dd>
+
+
 <dt>list_of_author_fields</dt>
 <dd><p>list of data to parse to construct (if not all selected as by default it will save time)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>set verbose if needed here</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>author table</p>
+    
+
+<p>author table</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -108,7 +115,7 @@ OI ORCID Identifier (Open Researcher and Contributor ID)
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -50,28 +50,37 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">disambr_subsets</span><span class="op">(</span>
-  <span class="va">sets_list</span>,
-  <span class="va">attribute_value_list</span>,
-  which_to_return <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"all"</span>, <span class="st">"first"</span>, <span class="st">"last"</span><span class="op">)</span>,
-  negate_subsets <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">disambr_subsets</span><span class="op">(</span></span>
+<span>  <span class="va">sets_list</span>,</span>
+<span>  <span class="va">attribute_value_list</span>,</span>
+<span>  which_to_return <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"all"</span>, <span class="st">"first"</span>, <span class="st">"last"</span><span class="op">)</span>,</span>
+<span>  negate_subsets <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>sets_list</dt>
 <dd><p>list of sets</p></dd>
+
+
 <dt>attribute_value_list</dt>
 <dd><p>list of attribute values where list elements name correspond attribute names used for filtering sets</p></dd>
+
+
 <dt>which_to_return</dt>
 <dd><p>whether to return "all", "first" or "last" set from filtered sets</p></dd>
+
+
 <dt>negate_subsets</dt>
 <dd><p>whether to return sets that was not matched insted</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>list of sets or set if <code>which_to_return</code> is either "first" or "last"</p>
+    
+
+<p>list of sets or set if <code>which_to_return</code> is either "first" or "last"</p>
     </div>
 
   </div>
@@ -86,7 +95,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
